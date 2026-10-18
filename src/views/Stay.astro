@@ -13,6 +13,7 @@ import { stay as getStay, type StayId } from '../data/stays';
 import { TOURS } from '../data/tours';
 import { REVIEWS, VIDEOS } from '../data/reviews';
 import VideoCard from '../components/VideoCard.astro';
+import LightShow from '../components/LightShow.astro';
 import { waUrl, mailUrl } from '../lib/wa';
 interface Props { lang: Lang; id: string }
 const { lang, id } = Astro.props;
@@ -55,7 +56,7 @@ const jsonld = soon ? [] : [{
     <>
       <!-- HERO -->
       <section class="sh">
-        <div class="sh-media"><Img id={s.hero} lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} /><div class="sh-glow" aria-hidden="true"></div><div class="sh-shade"></div></div>
+        <div class="sh-media"><Img id={s.hero} lang={lang} vt={`stay-${s.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} /><div class="sh-glow" aria-hidden="true"></div><div class="sh-shade"></div></div>
         <div class="wrap sh-in on-dark">
           <a class="th-back" href={path(lang, 'stays')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.stays')}</a>
           <p class="eyebrow">{name} · {pick(s.place, lang)}</p>
@@ -87,7 +88,7 @@ const jsonld = soon ? [] : [{
           <div class="why-list">
             {s.why.map((w, i) => (
               <article class:list={['why-item rv', i % 2 && 'why-flip']}>
-                <div class="frame"><Img id={w.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 50vw, 100vw" widths={[640, 960, 1280]} /></div>
+                <div class="frame ls-wrap"><Img id={w.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 50vw, 100vw" widths={[640, 960, 1280]} />{w.photo === 'rooftop-night-pyramids' && <LightShow id={`ls-${i}`} />}</div>
                 <div class="why-text"><span class="marker">{digits(String(i + 1).padStart(2, '0'), lang)}</span><h2>{pick(w.title, lang)}</h2><p class="lead">{pick(w.text, lang)}</p></div>
               </article>
             ))}
@@ -243,6 +244,7 @@ const jsonld = soon ? [] : [{
   .intro-lead { font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.5; color: var(--ink); }
 
   .why-list { display: grid; gap: 48px; }
+  .ls-wrap { overflow: visible; } .ls-wrap :global(.photo) { position: relative; } .ls-wrap :global(.lightshow) { border-radius: var(--radius); }
   .why-item { display: grid; gap: 24px; align-items: center; }
   .why-text { position: relative; display: grid; gap: 10px; } .why-text .marker { position: absolute; top: -62px; inset-inline-start: -4px; }
   .why-text { padding-top: 24px; }

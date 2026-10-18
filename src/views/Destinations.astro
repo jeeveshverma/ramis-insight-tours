@@ -22,7 +22,7 @@ const count = (id: string) => TOURS.filter((x) => x.route.includes(id as any) &&
       <div class="grid-3 stagger" style="margin-top:48px">
         {main.map((p) => (
           <a class="dcard card" href={path(lang, 'destination', p.id)}>
-            {p.photo ? <Img id={p.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 30vw, 100vw" /> : <div class="dcard-tile pattern"><Icon name="pin" size={32} /></div>}
+            {p.photo ? <Img id={p.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 30vw, 100vw" vt={`dest-${p.id}`} /> : <div class="dcard-tile pattern"><Icon name="pin" size={32} /></div>}
             <div class="dcard-body"><span class="eyebrow">{t(`tours.regions.${p.region === 'coast' ? 'cairo' : p.region}`)}</span><h2>{pick(p.name, lang)}</h2><p class="muted">{pick(p.blurb, lang)}</p><span class="pill"><Icon name="route" size={13} /> {count(p.id)} {t('dest.tours').toLowerCase()}</span></div>
           </a>
         ))}

@@ -24,6 +24,23 @@ const custom = x.style === 'custom';
 const places = [...new Set(x.route)].map((p) => place(p));
 const wa = waUrl(t('tour.waMsg', { tour: name, nights: digits(x.nights, lang) }));
 const related = TOURS.filter((y) => y.id !== x.id && y.style !== 'custom' && (y.regions.some((r) => x.regions.includes(r)))).slice(0, 3);
+// For the map traveller: each day's stop on the route polyline (v), how it sits during that day (s), and how it
+// travels from that day to the next (m). Flights are written either as the next day's first item ("Morning flight
+// Cairo to Aswan") or as this day's last item ("Evening flight Luxor to Cairo"), so both count as a flying leg.
+type Day = (typeof x.itinerary)[number];
+const isFlight = (s?: { en: string }) => !!s && /flight/i.test(s.en);
+const groundMode = (d: Day) => {
+  if (d.night === 'cruise' || d.night === 'felucca' || d.icon === 'boat') return 'boat';
+  if (place(d.place).region === 'desert' || d.icon === 'camel' || d.night === 'camp' || d.night === 'tent') return 'camel';
+  return 'car';
+};
+let lastV = 0;
+const legs = x.itinerary.map((d, i) => {
+  const v = x.route.indexOf(d.place); lastV = v >= 0 ? v : lastV;
+  const next = x.itinerary[i + 1];
+  const m = next && (isFlight(next.items[0]) || isFlight(d.items[d.items.length - 1])) ? 'plane' : next ? groundMode(next) : groundMode(d);
+  return { v: lastV, s: groundMode(d), m };
+});
 const stayIcon: Record<string, string> = { guesthouse: 'rooftop', hotel: 'bed', hotel5: 'star', cruise: 'boat', felucca: 'felucca', tent: 'tent', camp: 'fire' };
 const jsonld = custom ? [] : [{
   '@context': 'https://schema.org', '@type': 'TouristTrip', name: x.name.en, description: x.intro.en, touristType: x.style, provider: { '@id': `${SITE.url}/#org` },
@@ -34,7 +51,7 @@ const jsonld = custom ? [] : [{
 <Layout lang={lang} page="tour" sub={x.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(x.tagline, lang)} overHero jsonld={jsonld}>
   <!-- HERO -->
   <section class="th">
-    <div class="th-media"><Img id={x.hero} lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="th-shade"></div></div>
+    <div class="th-media"><Img id={x.hero} lang={lang} vt={`tour-${x.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="th-shade"></div></div>
     <div class="wrap th-in on-dark">
       <a class="th-back" href={path(lang, 'tours')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.tours')}</a>
       <div class="th-pills">
@@ -88,8 +105,8 @@ const jsonld = custom ? [] : [{
         <div class="wrap">
           <div class="section-head rv"><p class="eyebrow">{t('tour.itinerary')}</p><h2>{t('tour.route')}</h2><p class="lead">{t('tour.itineraryText')}</p></div>
           <div class="itin-in">
-            <div class="itin-map rv"><EgyptMap lang={lang} show={x.route} route={x.route} compact links={false} /></div>
-            <ol class="days" data-days>
+            <div class="itin-map rv"><EgyptMap lang={lang} show={x.route} route={x.route} compact links={false} traveller /></div>
+            <ol class="days" data-days data-legs={JSON.stringify(legs)}>
               <span class="spine" aria-hidden="true"><i data-spine></i></span>
               {x.itinerary.map((d) => (
                 <li class="day rv" data-place={d.place}>
@@ -184,8 +201,42 @@ const jsonld = custom ? [] : [{
     const set = (place?: string) => map?.querySelectorAll<HTMLElement>('.pin').forEach((p) => p.classList.toggle('active', !!place && p.dataset.place === place));
     const io = new IntersectionObserver((es) => { const hit = es.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]; if (hit) set((hit.target as HTMLElement).dataset.place); }, { rootMargin: '-35% 0px -45% 0px', threshold: 0 });
     days.forEach((d) => io.observe(d));
-    const onScroll = () => { const r = list.getBoundingClientRect(); const vh = innerHeight; const p = Math.min(1, Math.max(0, (vh * 0.6 - r.top) / r.height)); spine.style.transform = `scaleY(${p})`; };
-    onScroll(); addEventListener('scroll', onScroll, { passive: true });
+
+    // The traveller rides the route: between day i and day i+1 it moves from stop v[i] to stop v[i+1] in step with
+    // how far the reading line (45% down the viewport) has passed through day i. The icon is the mode of the leg.
+    const legs = JSON.parse(list.dataset.legs || '[]') as { v: number; s: string; m: string }[];
+    const trav = map?.querySelector<SVGGElement>('[data-trav]');
+    const path = map?.querySelector<SVGPathElement>('[data-route-path]');
+    const done = map?.querySelector<SVGPathElement>('[data-route-done]');
+    const cum = trav ? (JSON.parse(trav.dataset.cum || '[]') as number[]) : [];
+    const total = path ? path.getTotalLength() : 0;
+    let mode = '';
+    const setMode = (m: string) => { if (m === mode || !trav) return; mode = m; trav.querySelectorAll<SVGPathElement>('.trav-ico').forEach((p) => p.classList.toggle('on', p.dataset.mode === m)); };
+    const moveTraveller = () => {
+      if (!trav || !path || !legs.length) return;
+      const line = innerHeight * 0.45;
+      let i = 0; let f = 0;
+      for (let k = 0; k < days.length; k++) { const r = days[k].getBoundingClientRect(); if (r.top <= line) { i = k; f = Math.min(1, (line - r.top) / Math.max(1, r.height)); } }
+      const a = legs[i], b = legs[Math.min(i + 1, legs.length - 1)];
+      const moving = b.v !== a.v && f > 0;
+      // ease within the leg so it lifts off and lands rather than sliding linearly
+      const e = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+      const L = cum[a.v] + (cum[b.v] - cum[a.v]) * (moving ? e : 0);
+      const pt = path.getPointAtLength(Math.max(0, Math.min(total, L)));
+      trav.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)})`);
+      if (done) done.style.strokeDasharray = `${Math.max(0, L).toFixed(1)} 99999`;
+      setMode(moving ? a.m : a.s);
+    };
+
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0;
+        const r = list.getBoundingClientRect(); const vh = innerHeight; const p = Math.min(1, Math.max(0, (vh * 0.6 - r.top) / r.height)); spine.style.transform = `scaleY(${p})`;
+        moveTraveller();
+      });
+    };
+    onScroll(); addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll);
   }
 </script>
 
@@ -212,7 +263,12 @@ const jsonld = custom ? [] : [{
   .intro-lead { font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.5; color: var(--ink); }
 
   .itin-in { display: grid; gap: 40px; align-items: start; }
-  .itin-map { position: sticky; top: calc(var(--header-h) + 16px); }
+  .itin-map { position: sticky; top: calc(var(--header-h) + 16px); z-index: 2; }
+  /* phones: the map becomes a compact strip pinned under the header so the traveller stays visible while the days scroll under it */
+  @media (max-width: 959px) {
+    .itin-map { top: var(--header-h); margin-inline: calc(var(--gutter) * -1); padding: 10px var(--gutter) 12px; background: linear-gradient(180deg, var(--nile) 85%, rgba(14, 47, 68, 0)); }
+    .itin-map :global(.emap) { max-width: 250px; margin-inline: auto; }
+  }
   .days { list-style: none; margin: 0; padding: 0 0 0 44px; display: grid; gap: 28px; position: relative; }
   html[dir='rtl'] .days { padding: 0 44px 0 0; }
   .spine { position: absolute; top: 8px; bottom: 8px; inset-inline-start: 17px; width: 2px; background: var(--line-dark); overflow: hidden; }

@@ -13,7 +13,7 @@ const custom = tour.style === 'custom';
 ---
 <a class:list={['tcard card', big && 'tcard-big', custom && 'tcard-custom']} href={href} data-region={tour.regions.join(' ')} data-style={tour.style} data-nights={tour.nights}>
   <div class="tcard-media">
-    <Img id={tour.hero} lang={lang} ratio="4/5" sizes={big ? '(min-width:960px) 50vw, 100vw' : '(min-width:960px) 30vw, (min-width:640px) 50vw, 100vw'} widths={[420, 640, 900]} />
+    <Img id={tour.hero} lang={lang} ratio="4/5" vt={`tour-${tour.id}`} sizes={big ? '(min-width:960px) 50vw, 100vw' : '(min-width:960px) 30vw, (min-width:640px) 50vw, 100vw'} widths={[420, 640, 900]} />
     <div class="tcard-top">
       {!custom && <span class="pill"><Icon name="moon" size={14} /> {t('tours.nights', { n: digits(tour.nights, lang) })}</span>}
       {tour.style === 'honeymoon' && <span class="pill"><Icon name="heart" size={14} /> {t('tours.styles.honeymoon')}</span>}

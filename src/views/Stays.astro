@@ -17,7 +17,7 @@ const { t } = useT(lang);
       <div class="scards stagger">
         {STAYS.map((s) => s.status === 'open' ? (
           <a class="scard card" href={path(lang, 'stay', s.id)}>
-            <div class="scard-media"><Img id={s.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 60vw, 100vw" widths={[640, 960, 1280]} /><span class="pill scard-badge"><Icon name="check" size={13} /> {t('stays.open')}</span></div>
+            <div class="scard-media"><Img id={s.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 60vw, 100vw" widths={[640, 960, 1280]} vt={`stay-${s.id}`} /><span class="pill scard-badge"><Icon name="check" size={13} /> {t('stays.open')}</span></div>
             <div class="scard-body">
               <p class="eyebrow">{pick(s.place, lang)}</p>
               <h2>{pick(s.name, lang)}</h2>

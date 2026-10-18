@@ -235,6 +235,18 @@ html[lang='ar'] .marker { font-style: normal; font-variation-settings: normal; }
 @media (min-width: 640px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: 1fr 1fr; } .grid-4 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 960px) { .grid-3 { grid-template-columns: repeat(3, 1fr); } .grid-4 { grid-template-columns: repeat(4, 1fr); } }
 
+/* Page transitions: native cross-document view transitions (Chrome/Edge 126+, Safari 18.2+; others load normally).
+   Photos tagged with a shared view-transition-name (Img `vt`) morph from card to hero; the header holds still. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+.hdr { view-transition-name: site-header; }
+::view-transition-group(*) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1); }
+::view-transition-old(*.photo-morph), ::view-transition-new(*.photo-morph) { width: 100%; height: 100%; object-fit: cover; overflow: clip; }
+::view-transition-old(root) { animation: vt-out 0.3s var(--ease) both; }
+::view-transition-new(root) { animation: vt-in 0.5s var(--ease-out) 0.08s both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(14px); } }
+
 /* MapLibre tweaks */
 .maplibregl-ctrl-attrib { font-size: 10px; }
 .maplibregl-popup-content { font-family: var(--sans); border-radius: 4px; padding: 10px 14px; }

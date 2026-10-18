@@ -18,7 +18,7 @@ const tours = TOURS.filter((x) => x.route.includes(p.id) && x.style !== 'custom'
 <Layout lang={lang} page="destination" sub={p.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(p.blurb, lang)} overHero={!!p.photo}>
   {p.photo ? (
     <section class="dh">
-      <div class="dh-media"><Img id={p.photo} lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="dh-shade"></div></div>
+      <div class="dh-media"><Img id={p.photo} lang={lang} vt={`dest-${p.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="dh-shade"></div></div>
       <div class="wrap dh-in on-dark"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1></div>
     </section>
   ) : (
