@@ -1,0 +1,37 @@
+---
+/**
+ * The horizon mark: three pyramids under a sun, drawn as one line, with the wordmark beside it.
+ * `lockup` for the header, `stack` for the footer, `mark` alone.
+ */
+import { SITE } from '../data/site';
+import type { Lang } from '../i18n';
+interface Props { variant?: 'lockup' | 'stack' | 'mark'; lang: Lang; size?: number; class?: string }
+const { variant = 'lockup', lang, size = 40, class: cls = '' } = Astro.props;
+const name = SITE.name[lang];
+const sub = lang === 'ar' ? 'الجيزة · منذ 2014' : 'Giza · since 2014';
+---
+<span class:list={['logo', `logo-${variant}`, cls]} style={`--s:${size}px`}>
+  <svg class="logo-mark" viewBox="0 0 64 44" width={size} height={size * 0.69} aria-hidden="true">
+    <circle cx="46" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+    <path d="M2 40 L18 14 L30 34 L38 22 L50 40 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+    <path d="M18 14 L22 40 M38 22 L41 40" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".6" />
+    <path d="M2 40 H62" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+  </svg>
+  {variant !== 'mark' && (
+    <span class="logo-text">
+      <span class="logo-name">{name}</span>
+      <span class="logo-sub">{sub}</span>
+    </span>
+  )}
+</span>
+<style>
+  .logo { display: inline-flex; align-items: center; gap: 12px; color: inherit; line-height: 1; }
+  .logo-stack { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .logo-mark { color: var(--gold); flex: none; }
+  .logo-text { display: grid; gap: 3px; }
+  .logo-name { font-family: var(--display); font-size: calc(var(--s) * 0.5); color: var(--ink); font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; font-variation-settings: 'opsz' 48, 'SOFT' 50; }
+  html[lang='ar'] .logo-name { font-weight: 700; font-size: calc(var(--s) * 0.48); font-variation-settings: normal; }
+  .logo-sub { font-family: var(--sans); font-size: calc(var(--s) * 0.24); letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-text); font-weight: 700; }
+  html[lang='ar'] .logo-sub { letter-spacing: 0; font-size: calc(var(--s) * 0.3); }
+  .logo-stack .logo-name { font-size: calc(var(--s) * 0.42); }
+</style>

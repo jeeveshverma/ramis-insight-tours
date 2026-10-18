@@ -1,0 +1,129 @@
+---
+/**
+ * The enquiry form. No backend: it builds a structured WhatsApp message to Rami. Dates or
+ * "flexible", travellers split adults/children/students, interest preselected from the page.
+ * Draft kept in localStorage; "Copy message" fallback for people without WhatsApp.
+ */
+import { useT, pick, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { TOURS } from '../data/tours';
+import Icon from './Icon.astro';
+interface Props { lang: Lang; interest?: string; compact?: boolean; title?: string }
+const { lang, interest = '', compact = false, title } = Astro.props;
+const { t } = useT(lang);
+const keys = ['waIntro', 'waName', 'waCountry', 'waDates', 'waFlexible', 'waTravellers', 'waInterest', 'waNote', 'waFrom', 'adults', 'children', 'students', 'errName', 'errDates', 'copied', 'copy', 'any', 'stayOnly'] as const;
+const dict = Object.fromEntries(keys.map((k) => [k, t(`enquire.${k}`)]));
+const options = Object.fromEntries(TOURS.map((x) => [x.id, pick(x.name, lang)]));
+---
+<form class:list={['enq', compact && 'enq-compact']} data-enquiry data-dict={JSON.stringify(dict)} data-options={JSON.stringify(options)} data-wa={SITE.whatsapp} data-lang={lang} data-interest={interest} novalidate>
+  {title && <h3 class="enq-title">{title}</h3>}
+  <div class="enq-row">
+    <label class="enq-field"><span class="enq-label">{t('enquire.name')}</span><input type="text" name="name" autocomplete="name" required /><span class="enq-err" data-err="name" hidden></span></label>
+    <label class="enq-field"><span class="enq-label">{t('enquire.country')}</span><input type="text" name="country" autocomplete="country-name" /></label>
+  </div>
+  <fieldset class="enq-dates">
+    <legend class="enq-label">{t('enquire.dates')}</legend>
+    <div class="enq-row">
+      <label class="enq-field"><span class="enq-sub">{t('enquire.from')}</span><input type="date" name="from" /></label>
+      <label class="enq-field"><span class="enq-sub">{t('enquire.to')}</span><input type="date" name="to" /></label>
+    </div>
+    <label class="enq-check"><input type="checkbox" name="flexible" /> <span>{t('enquire.flexible')}</span></label>
+    <p class="enq-err" data-err="dates" hidden></p>
+  </fieldset>
+  <fieldset>
+    <legend class="enq-label">{t('enquire.travellers')}</legend>
+    <div class="enq-trip">
+      <label class="enq-field"><span class="enq-sub">{t('enquire.adults')}</span><input type="number" name="adults" min="1" max="20" value="2" inputmode="numeric" /></label>
+      <label class="enq-field"><span class="enq-sub">{t('enquire.children')}</span><input type="number" name="children" min="0" max="10" value="0" inputmode="numeric" /></label>
+      <label class="enq-field"><span class="enq-sub">{t('enquire.students')}</span><input type="number" name="students" min="0" max="20" value="0" inputmode="numeric" /></label>
+    </div>
+  </fieldset>
+  <label class="enq-field"><span class="enq-label">{t('enquire.interest')}</span>
+    <select name="interest">
+      <option value="">{t('enquire.any')}</option>
+      {TOURS.map((x) => <option value={x.id} selected={x.id === interest}>{pick(x.name, lang)}</option>)}
+      <option value="stay" selected={interest === 'stay'}>{t('enquire.stayOnly')}</option>
+    </select>
+  </label>
+  <label class="enq-field"><span class="enq-label">{t('enquire.message')}</span><textarea name="msg" rows="3" placeholder={t('enquire.messagePh')}></textarea></label>
+  <div class="enq-actions">
+    <button type="submit" class="btn btn-wa btn-lg"><Icon name="whatsapp" /> {t('enquire.send')}</button>
+    <button type="button" class="btn btn-outline" data-copy><Icon name="copy" size={18} /> <span>{t('enquire.copy')}</span></button>
+  </div>
+  <p class="small muted enq-mail">{t('enquire.emailInstead', { email: '' })} <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('[data-enquiry]').forEach((form) => {
+    const D = JSON.parse(form.dataset.dict!) as Record<string, string>;
+    const OPT = JSON.parse(form.dataset.options!) as Record<string, string>;
+    const lang = form.dataset.lang!;
+    const q = <T extends Element>(s: string) => form.querySelector<T>(s)!;
+    const from = q<HTMLInputElement>('[name=from]'), to = q<HTMLInputElement>('[name=to]'), flex = q<HTMLInputElement>('[name=flexible]');
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    from.min = iso(today); to.min = iso(today);
+    const fmt = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    const err = (k: string, msg: string | null) => { const el = form.querySelector<HTMLElement>(`[data-err=${k}]`)!; el.hidden = !msg; el.textContent = msg || ''; };
+    const validate = () => {
+      let ok = true;
+      const name = q<HTMLInputElement>('[name=name]'); if (!name.value.trim()) { err('name', D.errName); ok = false; } else err('name', null);
+      if (!flex.checked && !from.value) { err('dates', D.errDates); ok = false; } else err('dates', null);
+      if (!ok) form.querySelector<HTMLElement>('.enq-err:not([hidden])')?.closest('.enq-row, .enq-field, fieldset')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return ok;
+    };
+    const message = () => {
+      const f = new FormData(form);
+      const dates = flex.checked ? (from.value ? `${fmt(from.value)} (${D.waFlexible})` : D.waFlexible) : `${fmt(from.value)}${to.value ? ` → ${fmt(to.value)}` : ''}`;
+      const n = (k: string) => Number(f.get(k) || 0);
+      const trav = [`${n('adults')} ${D.adults.toLowerCase()}`, n('children') ? `${n('children')} ${D.children.toLowerCase()}` : '', n('students') ? `${n('students')} ${D.students.toLowerCase()}` : ''].filter(Boolean).join(', ');
+      const interest = String(f.get('interest') || ''); const interestLabel = interest === 'stay' ? D.stayOnly : interest ? OPT[interest] : D.any;
+      const lines = [D.waIntro, '', `${D.waName}: ${String(f.get('name')).trim()}`];
+      const c = String(f.get('country') || '').trim(); if (c) lines.push(`${D.waCountry}: ${c}`);
+      lines.push(`${D.waDates}: ${dates}`, `${D.waTravellers}: ${trav}`, `${D.waInterest}: ${interestLabel}`);
+      const note = String(f.get('msg') || '').trim(); if (note) lines.push(`${D.waNote}: ${note}`);
+      lines.push('', `— ${D.waFrom}`);
+      return lines.join('\n');
+    };
+    form.addEventListener('submit', (e) => { e.preventDefault(); if (!validate()) return; window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(message())}`, '_blank', 'noopener'); });
+    q<HTMLButtonElement>('[data-copy]').addEventListener('click', async () => {
+      if (!validate()) return;
+      const b = q<HTMLButtonElement>('[data-copy]'); const span = b.querySelector('span')!;
+      try { await navigator.clipboard.writeText(message()); span.textContent = D.copied; setTimeout(() => (span.textContent = D.copy), 1800); } catch { prompt('', message()); }
+    });
+    const KEY = 'rit-enquiry';
+    const save = () => { try { const f = new FormData(form); const o: Record<string, string> = {}; f.forEach((v, k) => (o[k] = String(v))); o.flexible = String(flex.checked); localStorage.setItem(KEY, JSON.stringify(o)); } catch {} };
+    const load = () => { try { const o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (!o) return; for (const [k, v] of Object.entries(o)) { if (k === 'interest') continue; const el = form.querySelector<HTMLInputElement>(`[name=${k}]`); if (!el) continue; if (el.type === 'checkbox') el.checked = v === 'true'; else el.value = String(v); } } catch {} };
+    load();
+    form.addEventListener('input', save); form.addEventListener('change', save);
+    from.addEventListener('change', () => { if (from.value && (!to.value || to.value < from.value)) { const d = new Date(from.value); d.setDate(d.getDate() + 7); to.value = iso(d); } });
+  });
+</script>
+
+<style>
+  .enq { display: grid; gap: 20px; background: var(--paper); border: 1px solid var(--line); padding: clamp(20px, 4vw, 32px); position: relative; border-radius: var(--radius); }
+  .enq::before { content: ''; position: absolute; inset: 7px; border: 1px solid var(--gold); opacity: 0.35; pointer-events: none; border-radius: 2px; }
+  .enq-title { margin-bottom: 4px; }
+  .enq fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .enq-label { display: block; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-text); font-weight: 700; margin-bottom: 6px; }
+  html[lang='ar'] .enq-label { letter-spacing: 0; font-size: 0.95rem; }
+  .enq-sub { display: block; font-size: 0.85rem; color: var(--stone); margin-bottom: 4px; font-weight: 600; }
+  .enq-field { display: block; }
+  .enq input:not([type=checkbox]), .enq select, .enq textarea { width: 100%; min-height: 50px; padding: 10px 14px; border: 1px solid var(--line); background: var(--white); color: var(--ink); font: inherit; border-radius: 3px; }
+  .enq textarea { min-height: 96px; resize: vertical; }
+  .enq input:focus, .enq select:focus, .enq textarea:focus { outline: 2px solid var(--gold); outline-offset: 0; border-color: var(--gold); }
+  .enq-row { display: grid; gap: 14px; }
+  .enq-trip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .enq-check { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
+  .enq-check input { width: 20px; height: 20px; accent-color: var(--gold-text); }
+  .enq-err { color: var(--danger); font-size: 0.9rem; margin: 6px 0 0; display: block; }
+  .enq-actions { display: grid; gap: 10px; }
+  .enq-mail { margin: 0; } .enq-mail a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  [hidden] { display: none !important; }
+  @media (min-width: 560px) { .enq-row { grid-template-columns: 1fr 1fr; } .enq-actions { grid-auto-flow: column; justify-content: start; } }
+  :global(.on-dark) .enq { background: rgba(246, 240, 227, 0.04); border-color: var(--line-dark); }
+  :global(.on-dark) .enq-label { color: var(--gold-light); } :global(.on-dark) .enq-sub { color: rgba(246, 240, 227, 0.6); }
+  :global(.on-dark) .enq-title { color: var(--papyrus); }
+  :global(.on-dark) .enq-mail a { color: var(--papyrus); }
+  :global(.on-dark) .enq-check { color: var(--papyrus); }
+</style>

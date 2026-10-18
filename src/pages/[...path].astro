@@ -1,0 +1,59 @@
+---
+import { LANGS, type Lang, type PageKey } from '../i18n';
+import { TOURS } from '../data/tours';
+import { STAYS } from '../data/stays';
+import { PLACES } from '../data/places';
+import { POSTS } from '../data/posts';
+import Home from '../views/Home.astro';
+import Tours from '../views/Tours.astro';
+import Tour from '../views/Tour.astro';
+import Stays from '../views/Stays.astro';
+import Stay from '../views/Stay.astro';
+import Destinations from '../views/Destinations.astro';
+import Destination from '../views/Destination.astro';
+import About from '../views/About.astro';
+import Reviews from '../views/Reviews.astro';
+import Gallery from '../views/Gallery.astro';
+import Tips from '../views/Tips.astro';
+import Journal from '../views/Journal.astro';
+import Post from '../views/Post.astro';
+import Contact from '../views/Contact.astro';
+
+export function getStaticPaths() {
+  const out: { params: { path: string | undefined }; props: { lang: Lang; page: PageKey; sub?: string } }[] = [];
+  for (const { code: lang } of LANGS) {
+    const pre = lang === 'ar' ? 'ar/' : '';
+    const add = (slug: string, page: PageKey, sub?: string) => out.push({ params: { path: (pre + slug).replace(/\/$/, '') || undefined }, props: { lang, page, sub } });
+    add('', 'home');
+    add('tours/', 'tours');
+    for (const x of TOURS) add(`tours/${x.id}/`, 'tour', x.id);
+    add('stays/', 'stays');
+    for (const s of STAYS) add(`stays/${s.id}/`, 'stay', s.id);
+    add('destinations/', 'destinations');
+    for (const p of PLACES) add(`destinations/${p.id}/`, 'destination', p.id);
+    add('about/', 'about');
+    add('reviews/', 'reviews');
+    add('gallery/', 'gallery');
+    add('travel-tips/', 'tips');
+    add('journal/', 'journal');
+    for (const p of POSTS) add(`journal/${p.id}/`, 'post', p.id);
+    add('contact/', 'contact');
+  }
+  return out;
+}
+const { lang, page, sub } = Astro.props;
+---
+{page === 'home' && <Home lang={lang} />}
+{page === 'tours' && <Tours lang={lang} />}
+{page === 'tour' && <Tour lang={lang} id={sub!} />}
+{page === 'stays' && <Stays lang={lang} />}
+{page === 'stay' && <Stay lang={lang} id={sub!} />}
+{page === 'destinations' && <Destinations lang={lang} />}
+{page === 'destination' && <Destination lang={lang} id={sub!} />}
+{page === 'about' && <About lang={lang} />}
+{page === 'reviews' && <Reviews lang={lang} />}
+{page === 'gallery' && <Gallery lang={lang} />}
+{page === 'tips' && <Tips lang={lang} />}
+{page === 'journal' && <Journal lang={lang} />}
+{page === 'post' && <Post lang={lang} id={sub!} />}
+{page === 'contact' && <Contact lang={lang} />}

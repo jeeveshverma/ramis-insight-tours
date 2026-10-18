@@ -1,0 +1,259 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import Ribbon from '../components/Ribbon.astro';
+import EgyptMap from '../components/EgyptMap.astro';
+import TourCard from '../components/TourCard.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import { useT, path, pick, digits, usd, type Lang } from '../i18n';
+import en from '../i18n/en.json';
+import ar from '../i18n/ar.json';
+import { SITE } from '../data/site';
+import { TOURS, tour as getTour, type TourId } from '../data/tours';
+import { place } from '../data/places';
+import { GUEST_HOUSE } from '../data/stays';
+import { waUrl } from '../lib/wa';
+interface Props { lang: Lang; id: string }
+const { lang, id } = Astro.props;
+const { t } = useT(lang);
+const D = lang === 'ar' ? ar : en;
+const x = getTour(id as TourId);
+const name = pick(x.name, lang);
+const custom = x.style === 'custom';
+const places = [...new Set(x.route)].map((p) => place(p));
+const wa = waUrl(t('tour.waMsg', { tour: name, nights: digits(x.nights, lang) }));
+const related = TOURS.filter((y) => y.id !== x.id && y.style !== 'custom' && (y.regions.some((r) => x.regions.includes(r)))).slice(0, 3);
+const stayIcon: Record<string, string> = { guesthouse: 'rooftop', hotel: 'bed', hotel5: 'star', cruise: 'boat', felucca: 'felucca', tent: 'tent', camp: 'fire' };
+const jsonld = custom ? [] : [{
+  '@context': 'https://schema.org', '@type': 'TouristTrip', name: x.name.en, description: x.intro.en, touristType: x.style, provider: { '@id': `${SITE.url}/#org` },
+  itinerary: { '@type': 'ItemList', itemListElement: x.itinerary.map((d, i) => ({ '@type': 'ListItem', position: i + 1, name: d.title.en })) },
+  offers: x.price.couple ? { '@type': 'Offer', price: x.price.couple, priceCurrency: 'USD' } : { '@type': 'Offer', price: x.price.from, priceCurrency: 'USD' },
+}];
+---
+<Layout lang={lang} page="tour" sub={x.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(x.tagline, lang)} overHero jsonld={jsonld}>
+  <!-- HERO -->
+  <section class="th">
+    <div class="th-media"><Img id={x.hero} lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="th-shade"></div></div>
+    <div class="wrap th-in on-dark">
+      <a class="th-back" href={path(lang, 'tours')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.tours')}</a>
+      <div class="th-pills">
+        {!custom && <span class="pill"><Icon name="moon" size={14} /> {t('tours.nights', { n: digits(x.nights, lang) })}</span>}
+        <span class="pill">{t(`tours.styles.${x.style}`)}</span>
+        {x.flights.length > 0 && <span class="pill"><Icon name="plane" size={14} /> {x.flights.length === 1 ? t('tours.flight') : t('tours.flights', { n: digits(x.flights.length, lang) })}</span>}
+      </div>
+      <h1>{name}</h1>
+      <p class="lead">{pick(x.tagline, lang)}</p>
+      <div class="th-row">
+        {x.price.onRequest ? <span class="cartouche"><small>{t('tours.onRequest')}</small></span>
+          : x.price.couple ? <span class="cartouche"><b>{usd(x.price.couple)}</b><small>{t('tours.couple')}</small></span>
+          : <span class="cartouche"><small>{t('tours.from')}</small><b>{usd(x.price.from!)}</b><small>{t('tours.pp')}</small></span>}
+        <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('tour.enquire')}</a>
+      </div>
+    </div>
+  </section>
+
+  {!custom && (
+    <section class="glance">
+      <div class="wrap glance-in">
+        <div><Icon name="moon" /><span class="glance-l">{t('tour.nights')}</span><strong>{digits(x.nights, lang)}</strong></div>
+        <div><Icon name="pin" /><span class="glance-l">{t('tour.cities')}</span><strong>{digits(places.length, lang)}</strong></div>
+        <div><Icon name="plane" /><span class="glance-l">{t('tour.flights')}</span><strong>{digits(x.flights.length, lang)}</strong></div>
+        <div><Icon name="users" /><span class="glance-l">{t('tour.group')}</span><strong class="glance-s">{t('tour.groupAny')}</strong></div>
+        <div><Icon name="sun" /><span class="glance-l">{t('tour.best')}</span><strong class="glance-s">{pick(x.bestMonths, lang)}</strong></div>
+      </div>
+    </section>
+  )}
+
+  <!-- INTRO -->
+  <section class="section-tight">
+    <div class="wrap wrap-narrow rv"><p class="lead intro-lead">{pick(x.intro, lang)}</p></div>
+  </section>
+
+  {custom ? (
+    <section class="section">
+      <div class="wrap custom-in">
+        <div class="rv">
+          <p class="eyebrow">{t('tour.customTitle')}</p>
+          <ol class="steps">{(D.tour.customSteps as string[]).map((s, i) => <li><span class="marker">{digits(String(i + 1).padStart(2, '0'), lang)}</span><p>{s}</p></li>)}</ol>
+          <div class="rv rv-d1"><EgyptMap lang={lang} dark={false} compact /></div>
+        </div>
+        <div class="rv rv-d1"><EnquiryForm lang={lang} interest={x.id} title={t('enquire.title')} /></div>
+      </div>
+    </section>
+  ) : (
+    <>
+      <!-- ITINERARY + MAP -->
+      <section class="section dark on-dark itin pattern">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('tour.itinerary')}</p><h2>{t('tour.route')}</h2><p class="lead">{t('tour.itineraryText')}</p></div>
+          <div class="itin-in">
+            <div class="itin-map rv"><EgyptMap lang={lang} show={x.route} route={x.route} compact links={false} /></div>
+            <ol class="days" data-days>
+              <span class="spine" aria-hidden="true"><i data-spine></i></span>
+              {x.itinerary.map((d) => (
+                <li class="day rv" data-place={d.place}>
+                  <span class="day-dot"><Icon name={d.icon || 'pin'} size={16} /></span>
+                  <div class="day-body">
+                    <span class="day-n">{t('tour.day', { n: digits(d.n, lang) })} · <span class="day-place">{pick(place(d.place).name, lang)}</span></span>
+                    <h3>{pick(d.title, lang)}</h3>
+                    <ul class="ilist">{d.items.map((it) => <li><Icon name="check" size={16} /><span>{pick(it, lang)}</span></li>)}</ul>
+                    {d.night && <span class="day-night pill"><Icon name={stayIcon[d.night]} size={13} /> {t('tour.night')}: {t(`tour.stays.${d.night}`)}</span>}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- INCLUDED / STAYS -->
+      <section class="section">
+        <div class="wrap inc-in">
+          <div class="rv">
+            <p class="eyebrow">{t('tour.included')}</p>
+            <ul class="ilist inc">{x.included.map((it) => <li><Icon name="check" size={18} /><span>{pick(it, lang)}</span></li>)}</ul>
+          </div>
+          <div class="rv rv-d1">
+            <p class="eyebrow">{t('tour.excluded')}</p>
+            <ul class="ilist exc">{x.excluded.map((it) => <li><Icon name="minus" size={18} /><span>{pick(it, lang)}</span></li>)}</ul>
+            {x.addons.length > 0 && <><p class="eyebrow" style="margin-top:28px">{t('tour.addons')}</p>
+              <ul class="ilist">{x.addons.map((a) => <li><Icon name="plus" size={18} /><span><strong>{pick(a.name, lang)}</strong>{a.price ? ` · ${usd(a.price)}` : ''}{a.note ? <span class="muted"> · {pick(a.note, lang)}</span> : null}</span></li>)}</ul></>}
+          </div>
+        </div>
+      </section>
+
+      <Ribbon />
+
+      <section class="section sand-bg">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('tour.stay')}</p><h2>{t('tour.stay')}</h2><p class="lead">{t('tour.staysText')}</p></div>
+          <div class="stays-grid stagger">
+            {x.stays.map((s) => s.kind === 'guesthouse' ? (
+              <a class="stay-card card stay-gh" href={path(lang, 'stay', GUEST_HOUSE.id)}>
+                <Img id="rooftop-breakfast" lang={lang} ratio="16/9" sizes="(min-width:960px) 40vw, 100vw" />
+                <div class="stay-card-body"><span class="pill"><Icon name="moon" size={13} /> {t('tours.nights', { n: digits(s.nights, lang) })}</span><h3>{pick(GUEST_HOUSE.name, lang)}</h3><p class="muted">{pick(s.where, lang)} · {t('stay.facts.sphinx')}</p><span class="stay-go">{t('stays.view')} <Icon name="arrowRight" class="rtl-flip" size={16} /></span></div>
+              </a>
+            ) : (
+              <div class="stay-card card stay-plain"><Icon name={stayIcon[s.kind]} size={30} class="stay-icon" /><div><span class="pill"><Icon name="moon" size={13} /> {t('tours.nights', { n: digits(s.nights, lang) })}</span><h3>{t(`tour.stays.${s.kind}`)}</h3><p class="muted">{pick(s.where, lang)}</p></div></div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- PRICE -->
+      <section class="section">
+        <div class="wrap price-in">
+          <div class="rv">
+            <p class="eyebrow">{t('tour.price')}</p>
+            <h2>{x.price.couple ? t('tour.perCouple') : t('tour.perPerson')}</h2>
+            {x.price.couple ? (
+              <p class="cartouche big"><b>{usd(x.price.couple)}</b><small>{t('tours.couple')}</small></p>
+            ) : (
+              <table class="ptable">
+                <thead><tr><th></th><th>{t('tour.adult')}</th><th>{t('tour.student')}</th></tr></thead>
+                <tbody>{x.price.tiers!.map((tier) => <tr><th>{pick(tier.label, lang)}</th><td class="num">{usd(tier.adult!)}</td><td class="num">{usd(tier.student!)}</td></tr>)}</tbody>
+              </table>
+            )}
+            {x.price.kidsUnder5 && <p class="kids muted"><Icon name="users" size={16} /> {t('tour.kids')}: {t('tour.kidsUnder', { p: x.price.kidsUnder5 })} · {t('tour.kidsOver', { p: x.price.kidsOver5! })}</p>}
+            <p class="muted small">{pick(x.included[0], lang)}. {pick(x.included[1], lang)}.</p>
+          </div>
+          <div class="rv rv-d1"><EnquiryForm lang={lang} interest={x.id} title={t('tour.enquireDates')} /></div>
+        </div>
+      </section>
+    </>
+  )}
+
+  {related.length > 0 && (
+    <section class="section-tight related">
+      <div class="wrap">
+        <div class="section-head rv" style="margin-bottom:28px"><p class="eyebrow">{t('tour.related')}</p></div>
+        <div class="grid-3 stagger">{related.map((y) => <TourCard lang={lang} tour={y} />)}</div>
+      </div>
+    </section>
+  )}
+</Layout>
+
+<script>
+  // Scroll-linked: light the current city on the map and draw the spine as the reader moves through the days.
+  const list = document.querySelector<HTMLElement>('[data-days]');
+  if (list) {
+    const map = document.querySelector<HTMLElement>('.itin-map [data-egypt-map]');
+    const spine = list.querySelector<HTMLElement>('[data-spine]')!;
+    const days = [...list.querySelectorAll<HTMLElement>('.day')];
+    const set = (place?: string) => map?.querySelectorAll<HTMLElement>('.pin').forEach((p) => p.classList.toggle('active', !!place && p.dataset.place === place));
+    const io = new IntersectionObserver((es) => { const hit = es.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]; if (hit) set((hit.target as HTMLElement).dataset.place); }, { rootMargin: '-35% 0px -45% 0px', threshold: 0 });
+    days.forEach((d) => io.observe(d));
+    const onScroll = () => { const r = list.getBoundingClientRect(); const vh = innerHeight; const p = Math.min(1, Math.max(0, (vh * 0.6 - r.top) / r.height)); spine.style.transform = `scaleY(${p})`; };
+    onScroll(); addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .th { position: relative; min-height: 78svh; display: grid; align-items: end; padding-top: var(--header-h); background: var(--nile-deep); overflow: hidden; }
+  .th-media { position: absolute; inset: 0; } .th-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
+  .th-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.4), rgba(7, 32, 47, 0) 35%, rgba(7, 32, 47, 0.92) 100%); }
+  .th-in { position: relative; padding-bottom: clamp(40px, 7vh, 80px); display: grid; gap: 14px; }
+  .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
+  .th-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .th h1 { font-size: clamp(2.4rem, 7vw, 5rem); max-width: 14em; }
+  .th-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 8px; }
+  :global(.rtl-flip) { } html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+
+  .glance { border-bottom: 1px solid var(--line); background: var(--paper); }
+  .glance-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 16px; padding-block: 22px; }
+  .glance-in > div { display: grid; grid-template-columns: 24px 1fr; grid-template-rows: auto auto; gap: 2px 10px; align-items: center; }
+  .glance-in svg { grid-row: 1 / 3; color: var(--gold-text); }
+  .glance-l { font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); font-weight: 700; }
+  html[lang='ar'] .glance-l { letter-spacing: 0; font-size: 0.85rem; }
+  .glance-in strong { font-family: var(--display); font-size: 1.4rem; color: var(--ink); line-height: 1.1; }
+  .glance-in strong.glance-s { font-family: var(--sans); font-size: 0.95rem; font-weight: 600; }
+  @media (min-width: 720px) { .glance-in { grid-template-columns: repeat(5, auto); justify-content: space-between; } }
+  .intro-lead { font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.5; color: var(--ink); }
+
+  .itin-in { display: grid; gap: 40px; align-items: start; }
+  .itin-map { position: sticky; top: calc(var(--header-h) + 16px); }
+  .days { list-style: none; margin: 0; padding: 0 0 0 44px; display: grid; gap: 28px; position: relative; }
+  html[dir='rtl'] .days { padding: 0 44px 0 0; }
+  .spine { position: absolute; top: 8px; bottom: 8px; inset-inline-start: 17px; width: 2px; background: var(--line-dark); overflow: hidden; }
+  .spine i { display: block; width: 100%; height: 100%; background: linear-gradient(180deg, var(--gold), #6fb0e0); transform: scaleY(0); transform-origin: top; transition: transform 0.2s linear; }
+  .day { position: relative; display: grid; gap: 4px; }
+  .day-dot { position: absolute; inset-inline-start: -44px; top: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--nile-deep); border: 1.5px solid var(--gold); display: grid; place-items: center; color: var(--gold-light); }
+  .day-n { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; color: var(--gold-light); }
+  html[lang='ar'] .day-n { letter-spacing: 0; font-size: 0.9rem; }
+  .day-place { color: rgba(246, 240, 227, 0.7); }
+  .day h3 { margin: 4px 0 10px; font-size: 1.45rem; }
+  .day .ilist li span { color: rgba(246, 240, 227, 0.88); }
+  .day-night { margin-top: 12px; width: fit-content; }
+  @media (min-width: 960px) { .itin-in { grid-template-columns: 0.9fr 1.1fr; gap: 64px; } .days { padding-inline-start: 56px; } .day-dot { inset-inline-start: -56px; } .spine { inset-inline-start: 17px; } }
+
+  .inc-in { display: grid; gap: 36px; }
+  .inc-in .eyebrow { margin-bottom: 16px; }
+  .inc li svg { color: var(--wa); } .exc li svg { color: var(--terracotta); }
+  @media (min-width: 720px) { .inc-in { grid-template-columns: 1fr 1fr; gap: 64px; } }
+
+  .stays-grid { display: grid; gap: 20px; }
+  .stay-card { display: grid; text-decoration: none; color: inherit; }
+  .stay-card-body { padding: 18px 20px 22px; display: grid; gap: 8px; }
+  .stay-card h3 { font-size: 1.3rem; } .stay-card p { margin: 0; }
+  .stay-go { font-weight: 700; color: var(--gold-text); display: inline-flex; gap: 6px; align-items: center; margin-top: 6px; }
+  .stay-plain { grid-template-columns: 48px 1fr; gap: 16px; padding: 22px; align-items: start; }
+  .stay-icon { color: var(--gold-text); margin-top: 6px; }
+  .stay-plain div { display: grid; gap: 8px; }
+  @media (min-width: 720px) { .stays-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } .stay-gh { grid-column: span 2; grid-template-columns: 1fr 1fr; } .stay-gh :global(.photo) { height: 100%; aspect-ratio: auto; } }
+
+  .price-in { display: grid; gap: 36px; align-items: start; }
+  .price-in h2 { margin: 12px 0 20px; font-size: clamp(1.6rem, 3vw, 2.4rem); }
+  .ptable { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+  .ptable th, .ptable td { text-align: start; padding: 12px 8px; border-bottom: 1px solid var(--line); }
+  .ptable thead th { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); }
+  html[lang='ar'] .ptable thead th { letter-spacing: 0; font-size: 0.9rem; }
+  .ptable tbody th { font-weight: 600; color: var(--ink); }
+  .ptable td.num { font-size: 1.35rem; color: var(--ink); }
+  .cartouche.big { font-size: 1.4rem; padding: 10px 24px; margin-bottom: 18px; }
+  .kids { display: flex; gap: 8px; align-items: center; }
+  .steps { list-style: none; margin: 20px 0 32px; padding: 0; display: grid; gap: 20px; }
+  .steps li { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; } .steps li p { margin: 0; font-size: 1.1rem; color: var(--ink); }
+  .custom-in { display: grid; gap: 40px; align-items: start; }
+  @media (min-width: 960px) { .price-in, .custom-in { grid-template-columns: 1fr 1fr; gap: 72px; } }
+</style>

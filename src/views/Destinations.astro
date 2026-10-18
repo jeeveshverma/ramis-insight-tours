@@ -1,0 +1,46 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import EgyptMap from '../components/EgyptMap.astro';
+import { useT, path, pick, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { PLACES } from '../data/places';
+import { TOURS } from '../data/tours';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const main = PLACES.filter((p) => !p.minor);
+const minor = PLACES.filter((p) => p.minor);
+const count = (id: string) => TOURS.filter((x) => x.route.includes(id as any) && x.style !== 'custom').length;
+---
+<Layout lang={lang} page="destinations" title={`${t('nav.destinations')} · ${SITE.name[lang]}`} desc={t('dest.lead')}>
+  <section class="section ph">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{t('dest.title')}</h1><p class="lead">{t('dest.lead')}</p></div>
+      <div class="rv rv-d1 dmap"><EgyptMap lang={lang} dark={false} /></div>
+      <div class="grid-3 stagger" style="margin-top:48px">
+        {main.map((p) => (
+          <a class="dcard card" href={path(lang, 'destination', p.id)}>
+            {p.photo ? <Img id={p.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 30vw, 100vw" /> : <div class="dcard-tile pattern"><Icon name="pin" size={32} /></div>}
+            <div class="dcard-body"><span class="eyebrow">{t(`tours.regions.${p.region === 'coast' ? 'cairo' : p.region}`)}</span><h2>{pick(p.name, lang)}</h2><p class="muted">{pick(p.blurb, lang)}</p><span class="pill"><Icon name="route" size={13} /> {count(p.id)} {t('dest.tours').toLowerCase()}</span></div>
+          </a>
+        ))}
+      </div>
+      <div class="minor rv">
+        <p class="eyebrow">{lang === 'ar' ? 'وأيضاً' : 'Also on the way'}</p>
+        <div class="minor-list">{minor.map((p) => <a class="pill" href={path(lang, 'destination', p.id)}><Icon name="pin" size={13} /> {pick(p.name, lang)}</a>)}</div>
+      </div>
+    </div>
+  </section>
+</Layout>
+<style>
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .dmap { max-width: 900px; margin-inline: auto; }
+  .dcard { display: grid; text-decoration: none; color: inherit; }
+  .dcard-tile { aspect-ratio: 4/3; background: var(--sand); display: grid; place-items: center; color: var(--gold-text); }
+  .dcard-body { padding: 18px 20px 22px; display: grid; gap: 8px; }
+  .dcard-body h2 { font-size: 1.5rem; } .dcard-body p { margin: 0; font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .dcard-body .pill { width: fit-content; margin-top: 4px; }
+  .minor { margin-top: 48px; display: grid; gap: 14px; } .minor-list { display: flex; flex-wrap: wrap; gap: 8px; } .minor-list a { text-decoration: none; min-height: 40px; padding-inline: 14px; }
+</style>

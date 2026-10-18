@@ -1,0 +1,43 @@
+---
+import Layout from '../components/Layout.astro';
+import Icon from '../components/Icon.astro';
+import StayMap from '../components/StayMap.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import { useT, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { waUrl, telUrl } from '../lib/wa';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، ' : 'Hi Rami, ');
+---
+<Layout lang={lang} page="contact" title={`${t('nav.contact')} · ${SITE.name[lang]}`} desc={t('contact.lead')}>
+  <section class="section ph">
+    <div class="wrap c-in">
+      <div class="rv">
+        <p class="eyebrow">{t('contact.eyebrow')}</p>
+        <h1>{t('contact.title')}</h1>
+        <p class="lead">{t('contact.lead')}</p>
+        <ul class="clist">
+          <li><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /><span><b>{t('contact.wa')}</b><br />{SITE.whatsappDisplay}</span></a></li>
+          <li><a href={telUrl}><Icon name="phone" /><span><b>{t('common.callUs')}</b><br />{SITE.phoneDisplay}</span></a></li>
+          <li><a href={`mailto:${SITE.email}`}><Icon name="mail" /><span><b>{t('contact.email')}</b><br />{SITE.email}</span></a></li>
+          <li><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" /><span><b>{t('contact.instagram')}</b><br />@{SITE.instagram.handle} · @{SITE.instagramStay.handle}</span></a></li>
+          <li><a href={SITE.facebook.url} target="_blank" rel="noopener"><Icon name="facebook" /><span><b>{t('contact.facebook')}</b><br />/ramisinsighttours</span></a></li>
+          <li><a href={SITE.mapsSearchUrl} target="_blank" rel="noopener"><Icon name="pin" /><span><b>{t('contact.address')}</b><br />{SITE.street[lang]}, {SITE.city[lang]} {SITE.postal}</span></a></li>
+        </ul>
+        <p class="muted small"><Icon name="clock" size={14} /> {t('contact.hours')}</p>
+      </div>
+      <div class="rv rv-d1"><EnquiryForm lang={lang} title={t('enquire.title')} /></div>
+    </div>
+  </section>
+  <section class="section-tight sand-bg"><div class="wrap"><p class="eyebrow" style="margin-bottom:20px">{t('stay.mapEyebrow')}</p><StayMap lang={lang} /></div></section>
+</Layout>
+<style>
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .c-in { display: grid; gap: 40px; align-items: start; } h1 { margin: 12px 0 16px; }
+  .clist { list-style: none; margin: 24px 0; padding: 0; display: grid; gap: 4px; }
+  .clist a { display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; } .clist a:hover b { color: var(--gold-text); }
+  .clist svg { color: var(--gold-text); } .clist b { color: var(--ink); }
+  @media (min-width: 960px) { .c-in { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
+</style>

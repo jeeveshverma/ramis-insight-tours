@@ -1,0 +1,32 @@
+---
+import { useT, pick, type Lang } from '../i18n';
+import type { Review } from '../data/reviews';
+import Icon from './Icon.astro';
+interface Props { lang: Lang; review: Review; class?: string }
+const { lang, review: r, class: cls = '' } = Astro.props;
+const { t } = useT(lang);
+---
+<figure class={`rcard ${cls}`}>
+  <span class="rcard-q" aria-hidden="true">“</span>
+  <blockquote><p>{pick(r.quote, lang)}</p></blockquote>
+  <figcaption>
+    <span class="rcard-name">{r.name}</span>
+    <span class="rcard-from muted">{pick(r.from, lang)}</span>
+    <span class="rcard-src pill">{r.source === 'google' && <Icon name="starFill" size={12} />}{t(`reviews.source.${r.source}`)}</span>
+    {r.url && <a class="rcard-link" href={r.url} target="_blank" rel="noopener">{t('reviews.read')} <Icon name="arrowUpRight" size={14} /></a>}
+  </figcaption>
+</figure>
+<style>
+  .rcard { margin: 0; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 24px 22px; position: relative; display: grid; gap: 16px; height: 100%; }
+  .rcard-q { position: absolute; top: 2px; inset-inline-start: 16px; font-family: var(--display); font-size: 5rem; line-height: 1; color: var(--gold); opacity: 0.5; font-variation-settings: 'opsz' 144, 'SOFT' 100; }
+  html[lang='ar'] .rcard-q { font-size: 3.4rem; top: 10px; }
+  .rcard blockquote { margin: 18px 0 0; }
+  .rcard blockquote p { margin: 0; font-size: 1.05rem; line-height: 1.6; color: var(--ink); }
+  .rcard figcaption { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 0.9rem; }
+  .rcard-name { font-weight: 700; color: var(--ink); }
+  .rcard-src { font-size: 0.74rem; padding: 3px 10px; }
+  .rcard-link { font-weight: 600; color: var(--gold-text); text-decoration: none; display: inline-flex; gap: 4px; align-items: center; flex-basis: 100%; }
+  :global(.on-dark) .rcard { background: rgba(246, 240, 227, 0.05); border-color: var(--line-dark); }
+  :global(.on-dark) .rcard blockquote p, :global(.on-dark) .rcard-name { color: var(--papyrus); }
+  :global(.on-dark) .rcard-link { color: var(--gold-light); }
+</style>

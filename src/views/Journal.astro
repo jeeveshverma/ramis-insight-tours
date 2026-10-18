@@ -1,0 +1,33 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import { useT, path, pick, digits, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { POSTS } from '../data/posts';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<Layout lang={lang} page="journal" title={`${t('nav.journal')} · ${SITE.name[lang]}`} desc={t('journal.lead')}>
+  <section class="section ph">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('journal.eyebrow')}</p><h1>{t('journal.title')}</h1><p class="lead">{t('journal.lead')}</p></div>
+      <div class="plist stagger">
+        {POSTS.map((p, i) => (
+          <a class:list={['pitem card', i === 0 && 'pitem-big']} href={path(lang, 'post', p.id)}>
+            <Img id={p.hero} lang={lang} ratio={i === 0 ? '16/9' : '16/10'} sizes={i === 0 ? '100vw' : '(min-width:960px) 30vw, 100vw'} />
+            <div class="pbody"><span class="muted small">{fmt(p.date)} · {t('journal.read', { n: digits(p.minutes, lang) })}</span><h2>{pick(p.title, lang)}</h2><p class="muted">{pick(p.dek, lang)}</p></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+<style>
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .plist { display: grid; gap: 24px; }
+  .pitem { display: grid; text-decoration: none; color: inherit; }
+  .pbody { padding: 20px 22px 24px; display: grid; gap: 8px; } .pbody h2 { font-size: 1.5rem; } .pbody p { margin: 0; }
+  @media (min-width: 960px) { .plist { grid-template-columns: repeat(3, 1fr); } .pitem-big { grid-column: 1 / -1; grid-template-columns: 1.4fr 1fr; } .pitem-big :global(.photo) { height: 100%; aspect-ratio: auto !important; } .pitem-big .pbody { padding: 36px; align-content: center; } .pitem-big h2 { font-size: 2.2rem; } }
+</style>

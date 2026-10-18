@@ -1,0 +1,324 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import Ribbon from '../components/Ribbon.astro';
+import EgyptMap from '../components/EgyptMap.astro';
+import TourCard from '../components/TourCard.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import { useT, path, pick, digits, usd, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { FEATURED, TOURS } from '../data/tours';
+import { GUEST_HOUSE } from '../data/stays';
+import { REVIEWS } from '../data/reviews';
+import { POSTS } from '../data/posts';
+import { waUrl } from '../lib/wa';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const words = t('hero.title').split(' ');
+const years = new Date().getFullYear() - SITE.founded;
+const ways = [
+  { k: 'history', icon: 'temple', photo: 'temple-light-shaft' },
+  { k: 'culture', icon: 'tea', photo: 'family-food-spread' },
+  { k: 'hidden', icon: 'compass', photo: 'desert-sunset-arms' },
+];
+const posts = POSTS.slice(0, 3);
+const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط لرحلة إلى مصر.' : "Hi Rami, I'd like to plan a trip to Egypt.");
+---
+<Layout lang={lang} page="home" title={`${SITE.name[lang]} · ${t('hero.title')}`} desc={t('hero.sub')} overHero>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-media">
+      <Img id="pyramids-golden-hour" lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} class="hero-img" position="50% 60%" />
+      <div class="hero-shade"></div>
+    </div>
+    <div class="wrap hero-in on-dark">
+      <p class="eyebrow hero-eyebrow">{SITE.city[lang]} · {t('footer.madeWith')}</p>
+      <h1 class="hero-title" aria-label={t('hero.title')}>{words.map((w, i) => <span class="w" style={`--i:${i}`} aria-hidden="true">{w}</span>)}</h1>
+      <svg class="hero-ribbon" viewBox="0 0 320 16" aria-hidden="true"><path d="M0 8 C 40 0, 80 16, 120 8 S 200 0, 240 8 S 300 16, 320 8" /></svg>
+      <p class="hero-sub lead">{t('hero.sub')}</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold btn-lg" href={path(lang, 'tours')}>{t('hero.cta')} <Icon name="arrowRight" class="rtl-flip" /></a>
+        <a class="btn btn-outline btn-lg" href={path(lang, 'stay', GUEST_HOUSE.id)}>{t('hero.cta2')}</a>
+      </div>
+    </div>
+    <a class="hero-scroll on-dark" href="#stats" aria-label={t('hero.scroll')}><Icon name="arrowDown" /></a>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats dark on-dark" id="stats">
+    <div class="wrap stats-in">
+      <div class="stat rv"><span class="stat-n num" data-count={years} data-suffix="">{digits(years, lang)}</span><span class="stat-l">{lang === 'ar' ? 'سنة من الإرشاد' : 'years guiding'}</span></div>
+      <div class="stat rv rv-d1"><span class="stat-n num" data-count={SITE.ratings.google.score} data-dec="1">{SITE.ratings.google.score}</span><span class="stat-l">{t('stats.google')} <Icon name="starFill" size={14} /></span></div>
+      <div class="stat rv rv-d2"><span class="stat-n num" data-count={SITE.ratings.booking.score} data-dec="1">{SITE.ratings.booking.score}</span><span class="stat-l">{t('stats.booking')}</span></div>
+      <div class="stat rv rv-d3"><span class="stat-n num" data-count="800">800</span><span class="stat-l">{t('stats.sphinx')}</span></div>
+      <div class="stat rv rv-d4"><span class="stat-n num" data-count={TOURS.length}>{digits(TOURS.length, lang)}</span><span class="stat-l">{t('stats.tours')}</span></div>
+    </div>
+  </section>
+
+  <!-- INTRO -->
+  <section class="section intro">
+    <div class="wrap intro-in">
+      <div class="intro-text rv">
+        <p class="eyebrow">{t('home.introEyebrow')}</p>
+        <h2>{t('home.introTitle')}</h2>
+        <p class="lead">{t('home.intro1')}</p>
+        <p>{t('home.intro2')}</p>
+        <a class="btn btn-ghost" href={path(lang, 'about')}>{t('home.teamCta')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a>
+      </div>
+      <div class="intro-photos">
+        <div class="frame rv rv-d1"><Img id="rami-guests-selfie" lang={lang} ratio="4/3" sizes="(min-width:960px) 40vw, 100vw" /></div>
+        <div class="frame intro-small rv rv-d2"><Img id="grandfather-1964" lang={lang} ratio="4/5" sizes="200px" widths={[286]} /></div>
+        <span class="intro-caption ital">{lang === 'ar' ? 'جدّي، 1964' : 'My grandfather, 1964'}</span>
+      </div>
+    </div>
+  </section>
+
+  <Ribbon />
+
+  <!-- THREE WAYS -->
+  <section class="section ways">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('home.waysEyebrow')}</p></div>
+      <div class="ways-grid stagger">
+        {ways.map((w, i) => (
+          <article class="way">
+            <div class="way-photo"><Img id={w.photo} lang={lang} ratio="3/4" sizes="(min-width:960px) 30vw, 100vw" /></div>
+            <span class="marker">{digits(String(i + 1).padStart(2, '0'), lang)}</span>
+            <div class="way-body">
+              <Icon name={w.icon} size={28} class="way-icon" />
+              <h3>{t(`home.ways.${w.k}.title`)}</h3>
+              <p>{t(`home.ways.${w.k}.text`)}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section class="section dark on-dark mapsec pattern">
+    <div class="wrap mapsec-in">
+      <div class="rv">
+        <p class="eyebrow">{t('home.mapEyebrow')}</p>
+        <h2>{t('home.mapTitle')}</h2>
+        <p class="lead">{t('home.mapText')}</p>
+        <a class="btn btn-outline" href={path(lang, 'destinations')}>{t('dest.all')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a>
+      </div>
+      <div class="rv rv-d1"><EgyptMap lang={lang} /></div>
+    </div>
+  </section>
+
+  <!-- TOURS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head rv">
+        <p class="eyebrow">{t('home.toursEyebrow')}</p>
+        <h2>{t('home.toursTitle')}</h2>
+        <p class="lead">{t('home.toursText')}</p>
+      </div>
+      <div class="grid-4 stagger">{FEATURED.slice(0, 4).map((x) => <TourCard lang={lang} tour={x} />)}</div>
+      <p class="center-cta rv"><a class="btn btn-lg" href={path(lang, 'tours')}>{t('home.allTours')} <Icon name="arrowRight" class="rtl-flip" /></a></p>
+    </div>
+  </section>
+
+  <!-- GUEST HOUSE -->
+  <section class="gh dark-deep on-dark">
+    <div class="gh-media">
+      <Img id="rooftop-terrace-day" lang={lang} sizes="(min-width:960px) 55vw, 100vw" widths={[640, 960, 1280]} class="gh-img" />
+      <div class="gh-glow" aria-hidden="true"></div>
+      <div class="gh-shade"></div>
+    </div>
+    <div class="wrap gh-in">
+      <div class="gh-text rv">
+        <p class="eyebrow">{t('home.stayEyebrow')}</p>
+        <h2>{t('home.stayTitle')}</h2>
+        <p class="lead">{t('home.stayText')}</p>
+        <ul class="gh-facts">
+          <li><Icon name="walk" size={18} /> {t('stay.facts.sphinx')}</li>
+          <li><Icon name="bed" size={18} /> {t('stay.facts.rooms')}</li>
+          <li><Icon name="breakfast" size={18} /> {t('stay.facts.breakfast')}</li>
+          <li><Icon name="show" size={18} /> {t('stay.facts.rooftop')}</li>
+        </ul>
+        <div class="gh-row">
+          <span class="cartouche"><small>{t('home.from')}</small><b>{usd(GUEST_HOUSE.from!)}</b><small>/ {t('home.night')}</small></span>
+          <span class="pill"><Icon name="starFill" size={13} /> {SITE.ratings.booking.score} Booking</span>
+          <span class="pill"><Icon name="starFill" size={13} /> {SITE.ratings.google.score} Google</span>
+        </div>
+        <a class="btn btn-gold btn-lg" href={path(lang, 'stay', GUEST_HOUSE.id)}>{t('home.stayCta')} <Icon name="arrowRight" class="rtl-flip" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOSTS -->
+  <section class="section hosts">
+    <div class="wrap hosts-in">
+      <div class="hosts-photos rv">
+        <div class="frame"><Img id="rami-guest-pyramids" lang={lang} ratio="4/3" sizes="(min-width:960px) 45vw, 100vw" /></div>
+        <div class="hosts-small frame"><Img id="rami-door-small" lang={lang} ratio="4/5" sizes="180px" widths={[286]} /></div>
+      </div>
+      <div class="rv rv-d1">
+        <p class="eyebrow">{t('home.teamEyebrow')}</p>
+        <h2>{t('home.teamTitle')}</h2>
+        <p class="lead">{t('home.teamText')}</p>
+        <a class="btn btn-outline" href={path(lang, 'about')}>{t('home.teamCta')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS MARQUEE -->
+  <section class="section-tight reviews sand-bg">
+    <div class="wrap section-head rv" style="margin-bottom:28px">
+      <p class="eyebrow">{t('home.reviewsEyebrow')}</p>
+      <h2>{t('home.reviewsTitle')}</h2>
+    </div>
+    <div class="marquee" data-marquee>
+      <div class="marquee-track">
+        {[...REVIEWS, ...REVIEWS].map((r) => <div class="marquee-item"><ReviewCard lang={lang} review={r} /></div>)}
+      </div>
+    </div>
+    <p class="center-cta wrap"><a class="btn btn-ghost" href={path(lang, 'reviews')}>{t('home.allReviews')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a></p>
+  </section>
+
+  <!-- JOURNAL -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('home.journalEyebrow')}</p><h2>{t('home.journalTitle')}</h2></div>
+      <div class="grid-3 stagger">
+        {posts.map((p) => (
+          <a class="post-card card" href={path(lang, 'post', p.id)}>
+            <Img id={p.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 30vw, 100vw" />
+            <div class="post-body"><span class="muted small">{t('journal.read', { n: digits(p.minutes, lang) })}</span><h3>{pick(p.title, lang)}</h3><p class="muted">{pick(p.dek, lang)}</p></div>
+          </a>
+        ))}
+      </div>
+      <p class="center-cta rv"><a class="btn btn-ghost" href={path(lang, 'journal')}>{t('home.allPosts')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a></p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section dark on-dark cta pattern">
+    <div class="wrap cta-in">
+      <div class="rv">
+        <p class="eyebrow">{t('nav.contact')}</p>
+        <h2>{t('home.ctaTitle')}</h2>
+        <p class="lead">{t('home.ctaText')}</p>
+        <a class="btn btn-wa btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
+        <p class="muted small" style="margin-top:14px">{t('contact.hours')}</p>
+      </div>
+      <div class="rv rv-d1"><EnquiryForm lang={lang} /></div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // pause marquee on hover/touch; speed from item count
+  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((m) => {
+    const track = m.querySelector<HTMLElement>('.marquee-track')!;
+    track.style.setProperty('--n', String(track.children.length / 2));
+    m.addEventListener('pointerenter', () => track.style.animationPlayState = 'paused');
+    m.addEventListener('pointerleave', () => track.style.animationPlayState = 'running');
+  });
+</script>
+
+<style>
+  .hero { position: relative; min-height: 100svh; display: grid; align-items: end; padding-top: var(--header-h); overflow: hidden; background: var(--nile-deep); }
+  .hero-media { position: absolute; inset: 0; }
+  .hero-media :global(.photo) { position: absolute; inset: 0; border-radius: 0; height: 100%; }
+  .hero-media :global(img) { animation: kb 28s var(--ease) infinite alternate; transform-origin: 60% 60%; }
+  @keyframes kb { from { transform: scale(1); } to { transform: scale(1.1) translate(-1.5%, 1%); } }
+  .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.35) 0%, rgba(7, 32, 47, 0) 30%, rgba(7, 32, 47, 0.3) 60%, rgba(7, 32, 47, 0.9) 100%); }
+  .hero-in { position: relative; padding-bottom: clamp(72px, 12vh, 140px); display: grid; gap: 18px; max-width: var(--container); }
+  .hero-eyebrow { opacity: 0; animation: up 0.9s var(--ease-out) 0.2s forwards; color: var(--papyrus) !important; text-shadow: 0 1px 12px rgba(7, 32, 47, 0.6); }
+  .hero-eyebrow::before { background: var(--papyrus) !important; }
+  .hero-title { text-shadow: 0 2px 30px rgba(7, 32, 47, 0.35); }
+  .hero-title { max-width: 11em; display: flex; flex-wrap: wrap; gap: 0 0.28em; }
+  .hero-title .w { display: inline-block; opacity: 0; transform: translateY(0.5em) rotate(1deg); animation: word 1s var(--ease-out) forwards; animation-delay: calc(0.35s + var(--i) * 0.09s); }
+  @keyframes word { to { opacity: 1; transform: none; } }
+  @keyframes up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .hero-ribbon { width: min(320px, 60vw); height: 16px; color: var(--gold); }
+  .hero-ribbon path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw 1.8s var(--ease-out) 1s forwards; }
+  .hero-sub { max-width: 30em; opacity: 0; animation: up 0.9s var(--ease-out) 1.1s forwards; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; opacity: 0; animation: up 0.9s var(--ease-out) 1.3s forwards; }
+  .hero-scroll { position: absolute; bottom: 20px; inset-inline-end: var(--gutter); width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(246, 240, 227, 0.5); display: none; place-items: center; animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  @media (min-width: 960px) { .hero-scroll { display: grid; } .hero-in { padding-bottom: 110px; } }
+  @media (prefers-reduced-motion: reduce) { .hero-media :global(img), .hero-scroll { animation: none; } .hero-title .w, .hero-eyebrow, .hero-sub, .hero-cta { animation: none; opacity: 1; transform: none; } .hero-ribbon path { stroke-dashoffset: 0; animation: none; } }
+
+  .stats { padding-block: 32px; border-bottom: 1px solid var(--line-dark); }
+  .stats-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+  .stat { display: grid; gap: 4px; }
+  .stat-n { font-size: clamp(2rem, 4.5vw, 3.2rem); color: var(--gold-light); line-height: 1; font-variation-settings: 'opsz' 144, 'SOFT' 50; }
+  .stat-l { font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; display: inline-flex; gap: 6px; align-items: center; }
+  html[lang='ar'] .stat-l { letter-spacing: 0; text-transform: none; font-size: 0.95rem; }
+  @media (min-width: 720px) { .stats-in { grid-template-columns: repeat(5, 1fr); } .stats { padding-block: 44px; } }
+
+  .intro-in { display: grid; gap: 40px; align-items: center; }
+  .intro-text h2 { margin: 14px 0 18px; }
+  .intro-photos { position: relative; padding-bottom: 60px; }
+  .intro-small { position: absolute; bottom: 0; inset-inline-end: 8%; width: 32%; box-shadow: var(--shadow); background: var(--papyrus); }
+  .intro-caption { position: absolute; bottom: 10px; inset-inline-start: 0; color: var(--stone); font-size: 1.05rem; }
+  @media (min-width: 960px) { .intro-in { grid-template-columns: 1fr 1.1fr; gap: 72px; } }
+
+  .ways-grid { display: grid; gap: 28px; }
+  .way { position: relative; display: grid; gap: 14px; }
+  .way-photo { position: relative; }
+  .way .marker { position: absolute; top: -18px; inset-inline-start: -6px; z-index: 1; }
+  .way-body { display: grid; gap: 8px; }
+  .way-icon { color: var(--gold-text); }
+  .way-body p { margin: 0; color: var(--body); }
+  @media (min-width: 720px) { .ways-grid { grid-template-columns: repeat(3, 1fr); } .way:nth-child(2) { margin-top: 48px; } }
+
+  .mapsec-in { display: grid; gap: 36px; align-items: center; }
+  .mapsec h2 { margin: 14px 0 16px; }
+  @media (min-width: 960px) { .mapsec-in { grid-template-columns: 0.8fr 1.2fr; gap: 64px; } }
+
+  .center-cta { text-align: center; margin-top: 40px; }
+
+  .gh { position: relative; overflow: hidden; display: grid; }
+  .gh-media { position: relative; height: 60vw; max-height: 560px; }
+  .gh-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
+  .gh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0) 40%, rgba(7, 32, 47, 1) 100%); }
+  .gh-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 30% 25% at 62% 38%, rgba(224, 185, 58, 0.55), transparent 70%); mix-blend-mode: screen; animation: glow 6s ease-in-out infinite alternate; pointer-events: none; }
+  @keyframes glow { from { opacity: 0.3; transform: scale(0.95); } to { opacity: 0.9; transform: scale(1.08); } }
+  @media (prefers-reduced-motion: reduce) { .gh-glow { animation: none; opacity: 0.6; } }
+  .gh-in { position: relative; padding-block: 24px 72px; }
+  .gh-text { display: grid; gap: 16px; max-width: 36em; }
+  .gh-facts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+  .gh-facts li { display: flex; gap: 10px; align-items: center; font-size: 0.98rem; }
+  .gh-facts svg { color: var(--gold-light); flex: none; }
+  .gh-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 6px 0 10px; }
+  @media (min-width: 960px) {
+    .gh { grid-template-columns: 1fr; min-height: 640px; }
+    .gh-media { position: absolute; inset: 0; height: auto; max-height: none; }
+    .gh-shade { background: linear-gradient(90deg, rgba(7, 32, 47, 0.96) 0%, rgba(7, 32, 47, 0.85) 38%, rgba(7, 32, 47, 0.1) 70%); }
+    html[dir='rtl'] .gh-shade { background: linear-gradient(-90deg, rgba(7, 32, 47, 0.96) 0%, rgba(7, 32, 47, 0.85) 38%, rgba(7, 32, 47, 0.1) 70%); }
+    .gh-in { padding-block: 96px; display: grid; align-items: center; }
+    .gh-text { max-width: 30em; }
+  }
+
+  .hosts-in { display: grid; gap: 40px; align-items: center; }
+  .hosts h2 { margin: 14px 0 18px; }
+  .hosts-photos { position: relative; padding-inline-end: 14%; padding-bottom: 50px; }
+  .hosts-small { position: absolute; bottom: 0; inset-inline-end: 0; width: 34%; background: var(--papyrus); box-shadow: var(--shadow); }
+  @media (min-width: 960px) { .hosts-in { grid-template-columns: 1.1fr 1fr; gap: 72px; } }
+
+  .marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .marquee-track { display: flex; gap: 20px; width: max-content; animation: scroll calc(var(--n, 7) * 7s) linear infinite; padding-block: 8px; }
+  html[dir='rtl'] .marquee-track { animation-name: scroll-rtl; }
+  .marquee-item { width: min(380px, 82vw); flex: none; }
+  @keyframes scroll { to { transform: translateX(calc(-50% - 10px)); } }
+  @keyframes scroll-rtl { to { transform: translateX(calc(50% + 10px)); } }
+  @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; flex-wrap: wrap; width: auto; } .marquee { mask-image: none; } }
+
+  .post-card { display: grid; text-decoration: none; color: inherit; }
+  .post-body { padding: 18px 20px 22px; display: grid; gap: 8px; }
+  .post-body h3 { font-size: 1.3rem; }
+  .post-body p { margin: 0; font-size: 0.95rem; }
+
+  .cta-in { display: grid; gap: 40px; align-items: start; }
+  .cta h2 { margin: 14px 0 16px; }
+  @media (min-width: 960px) { .cta-in { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
+</style>

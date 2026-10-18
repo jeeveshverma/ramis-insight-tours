@@ -1,0 +1,105 @@
+---
+/**
+ * The live map for the guest house: MapLibre GL on OpenFreeMap's free vector tiles (no key).
+ * Flies in when scrolled into view, pulsing marker on the house, 5- and 10-minute walking rings,
+ * numbered pins for nearby places that match the list beside it. Degrades to the list alone.
+ */
+import { useT, pick, digits, type Lang } from '../i18n';
+import { NEARBY } from '../data/places';
+import { SITE } from '../data/site';
+import { fromHouse, fmtKm, isMetres } from '../lib/geo';
+import Icon from './Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const places = NEARBY.map((p, i) => { const g = fromHouse(p.at, p.mode); return { ...p, n: i + 1, nText: digits(i + 1, lang), km: g.km, kmText: fmtKm(g.km, lang), min: g.min, label: pick(p.name, lang), mins: g.mode === 'foot' ? t('stay.walk', { min: digits(g.min, lang) }) : t('stay.drive', { min: digits(g.min, lang) }), dirs: `https://www.google.com/maps/dir/?api=1&origin=${SITE.geo.lat},${SITE.geo.lng}&destination=${p.at.lat},${p.at.lng}` }; });
+const payload = { house: SITE.geo, houseName: SITE.name[lang], places: places.map((p) => ({ id: p.id, n: p.nText, name: p.label, lat: p.at.lat, lng: p.at.lng, mins: p.mins })), rtl: lang === 'ar', rings: lang === 'ar' ? ['٥ دقائق سيراً', '١٠ دقائق سيراً'] : ['5 min walk', '10 min walk'] };
+---
+<div class="smap" data-stay-map>
+  <div class="smap-canvas" data-canvas aria-label={t('stay.mapTitle')} role="img">
+    <div class="smap-fallback"><Icon name="pin" size={28} /><p>{SITE.street[lang]}, {SITE.city[lang]}</p></div>
+  </div>
+  <ol class="smap-list">
+    {places.map((p) => (
+      <li data-poi={p.id}>
+        <span class="smap-n">{p.nText}</span>
+        <div><strong>{p.label}</strong><span class="muted small">{isMetres(p.km) ? `${p.kmText} m` : t('stay.km', { km: p.kmText })} · {p.mins}</span></div>
+        <a href={p.dirs} target="_blank" rel="noopener" aria-label={`${t('stay.directions')}: ${p.label}`}><Icon name="arrowUpRight" size={16} /></a>
+      </li>
+    ))}
+  </ol>
+  <script type="application/json" data-payload set:html={JSON.stringify(payload)} />
+</div>
+
+<script>
+  import 'maplibre-gl/dist/maplibre-gl.css';
+  // v6 resolves its worker next to its own bundle, which Vite does not emit; hand it the self-contained worker as an asset.
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+  const roots = document.querySelectorAll<HTMLElement>('[data-stay-map]');
+  const circle = (c: { lat: number; lng: number }, km: number) => { const pts: [number, number][] = []; for (let i = 0; i <= 64; i++) { const a = (i / 64) * Math.PI * 2; pts.push([c.lng + (km / (111.32 * Math.cos((c.lat * Math.PI) / 180))) * Math.cos(a), c.lat + (km / 110.57) * Math.sin(a)]); } return { type: 'Feature' as const, properties: {}, geometry: { type: 'Polygon' as const, coordinates: [pts] } }; };
+  roots.forEach((root) => {
+    const canvas = root.querySelector<HTMLElement>('[data-canvas]')!;
+    const data = JSON.parse(root.querySelector('[data-payload]')!.textContent || '{}');
+    let started = false;
+    const start = async () => {
+      if (started) return; started = true;
+      try {
+        const mod: any = await import('maplibre-gl');
+        const maplibregl = mod.default ?? mod;
+        maplibregl.setWorkerUrl(workerUrl);
+        const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const map = new maplibregl.Map({ container: canvas, style: 'https://tiles.openfreemap.org/styles/liberty', center: [data.house.lng + 0.012, data.house.lat + 0.03], zoom: reduce ? 14.6 : 12.2, pitch: 0, attributionControl: { compact: true }, cooperativeGestures: true });
+        map.addControl(new maplibregl.NavigationControl({ showCompass: false }), data.rtl ? 'top-left' : 'top-right');
+        map.on('load', () => {
+          const walk = (min: number) => (min / 60) * 4.8 / 1.3;
+          map.addSource('rings', { type: 'geojson', data: { type: 'FeatureCollection', features: [circle(data.house, walk(10)), circle(data.house, walk(5))] } });
+          map.addLayer({ id: 'rings-fill', type: 'fill', source: 'rings', paint: { 'fill-color': '#c9a227', 'fill-opacity': 0.08 } });
+          map.addLayer({ id: 'rings-line', type: 'line', source: 'rings', paint: { 'line-color': '#c9a227', 'line-width': 1.2, 'line-dasharray': [3, 2] } });
+          const house = document.createElement('div'); house.className = 'smap-house'; house.innerHTML = '<i></i><b></b>';
+          new maplibregl.Marker({ element: house, anchor: 'center' }).setLngLat([data.house.lng, data.house.lat]).setPopup(new maplibregl.Popup({ offset: 14 }).setText(data.houseName)).addTo(map);
+          data.places.forEach((p: any) => {
+            const el = document.createElement('div'); el.className = 'smap-pin'; el.textContent = p.n; el.dataset.poi = p.id;
+            const m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([p.lng, p.lat]).setPopup(new maplibregl.Popup({ offset: 12 }).setHTML(`<strong>${p.name}</strong><br>${p.mins}`)).addTo(map);
+            el.addEventListener('mouseenter', () => root.querySelectorAll('[data-poi]').forEach((li) => li.classList.toggle('sel', (li as HTMLElement).dataset.poi === p.id)));
+            root.querySelector(`li[data-poi="${p.id}"]`)?.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) return; map.flyTo({ center: [p.lng, p.lat], zoom: 15, duration: 1200 }); m.togglePopup(); });
+          });
+          // ring labels
+          [5, 10].forEach((min, i) => { const r = walk(min); const el = document.createElement('div'); el.className = 'smap-ring-lbl'; el.textContent = data.rings[i]; new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([data.house.lng, data.house.lat + r / 110.57]).addTo(map); });
+          // settle between the house and the Great Pyramid (west of it) so the plateau is in frame
+          const settle = { center: [data.house.lng - 0.0045, data.house.lat + 0.0015] as [number, number], zoom: 14.9 };
+          if (reduce) map.jumpTo(settle); else setTimeout(() => map.flyTo({ ...settle, duration: 2600, essential: true }), 300);
+          canvas.classList.add('ready');
+        });
+        map.on('error', (e) => console.error('[stay-map]', e.error ?? e));
+      } catch (e) {
+        // The list beside the map still works; say so in the map frame instead of failing silently.
+        console.error('[stay-map] could not start', e);
+        canvas.querySelector('.smap-fallback p')?.insertAdjacentHTML('afterend', '<p class="small">Live map unavailable, see the list or open Google Maps.</p>');
+      }
+    };
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { start(); io.disconnect(); } }, { rootMargin: '200px' });
+    io.observe(root);
+  });
+</script>
+
+<style is:global>
+  .smap { display: grid; gap: 20px; }
+  .smap-canvas { position: relative; min-height: 360px; height: clamp(360px, 55vw, 520px); background: var(--sand); border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
+  .smap-fallback { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; color: var(--stone); text-align: center; padding: 20px; }
+  .smap-canvas.ready .smap-fallback { display: none; }
+  .smap-house { width: 22px; height: 22px; position: relative; }
+  .smap-house b { position: absolute; inset: 4px; border-radius: 50%; background: var(--terracotta); border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  .smap-house i { position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--terracotta); animation: housepulse 2.2s ease-out infinite; }
+  @keyframes housepulse { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .smap-house i { animation: none; opacity: .5; } }
+  .smap-pin { width: 26px; height: 26px; border-radius: 50%; background: var(--nile); color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 700 12px/1 var(--sans); box-shadow: 0 2px 6px rgba(0,0,0,.3); cursor: pointer; }
+  .smap-ring-lbl { font: 600 11px/1 var(--sans); color: var(--gold-text); background: rgba(251,247,238,.9); padding: 3px 8px; border-radius: 999px; border: 1px solid var(--gold); white-space: nowrap; }
+  .smap-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .smap-list li { display: grid; grid-template-columns: 30px 1fr 36px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .smap-list li.sel .smap-n { background: var(--gold-pale); }
+  .smap-list li div { display: grid; }
+  .smap-list li strong { color: var(--ink); font-weight: 700; }
+  .smap-list li a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); color: var(--ink); }
+  .smap-n { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--nile); color: #fff; font-size: 0.8rem; font-weight: 700; }
+  @media (min-width: 960px) { .smap { grid-template-columns: 1.5fr 1fr; align-items: start; gap: 32px; } .smap-canvas { height: 520px; } }
+</style>

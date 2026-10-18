@@ -1,0 +1,47 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import { useT, path, pick, digits, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { POSTS, post as getPost } from '../data/posts';
+interface Props { lang: Lang; id: string }
+const { lang, id } = Astro.props;
+const { t } = useT(lang);
+const p = getPost(id);
+const title = pick(p.title, lang);
+const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const more = POSTS.filter((x) => x.id !== p.id).slice(0, 3);
+const jsonld = [{ '@context': 'https://schema.org', '@type': 'Article', headline: p.title.en, datePublished: p.date, author: { '@type': 'Person', name: SITE.founder.en }, publisher: { '@id': `${SITE.url}/#org` } }];
+---
+<Layout lang={lang} page="post" sub={p.id} title={`${title} · ${SITE.name[lang]}`} desc={pick(p.dek, lang)} jsonld={jsonld}>
+  <article class="section ph">
+    <div class="wrap wrap-narrow">
+      <a class="back" href={path(lang, 'journal')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('journal.back')}</a>
+      <p class="eyebrow" style="margin-top:16px">{fmt(p.date)} · {t('journal.read', { n: digits(p.minutes, lang) })}</p>
+      <h1>{title}</h1>
+      <p class="lead dek">{pick(p.dek, lang)}</p>
+    </div>
+    <div class="wrap" style="margin-top:28px"><div class="frame rv"><Img id={p.hero} lang={lang} ratio="21/9" sizes="100vw" widths={[640, 960, 1280, 1600]} priority /></div></div>
+    <div class="wrap wrap-narrow body rv">{p.body.map((b, i) => <p class:list={[i === 0 && 'drop']}>{pick(b, lang)}</p>)}
+      <p class="byline"><span class="num">—</span> {SITE.founder[lang]}, {SITE.city[lang]}</p>
+    </div>
+  </article>
+  <section class="section-tight sand-bg">
+    <div class="wrap"><p class="eyebrow" style="margin-bottom:20px">{t('journal.more')}</p>
+      <div class="grid-3 stagger">{more.map((m) => <a class="mcard card" href={path(lang, 'post', m.id)}><Img id={m.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 30vw, 100vw" /><div class="mbody"><h3>{pick(m.title, lang)}</h3></div></a>)}</div>
+    </div>
+  </section>
+</Layout>
+<style>
+  html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; color: var(--gold-text); }
+  h1 { margin: 14px 0 18px; font-size: clamp(2.2rem, 6vw, 4rem); }
+  .dek { font-size: 1.25rem; color: var(--stone); }
+  .body { margin-top: 36px; } .body p { font-size: 1.15rem; line-height: 1.75; }
+  .drop::first-letter { font-family: var(--display); font-size: 4.2em; float: inline-start; line-height: 0.8; margin: 0.08em 0.12em 0 0; color: var(--gold-text); }
+  html[dir='rtl'] .drop::first-letter { margin: 0.08em 0 0 0.12em; }
+  .byline { margin-top: 32px; font-family: var(--display); font-style: italic; color: var(--stone); } html[lang='ar'] .byline { font-style: normal; }
+  .mcard { display: grid; text-decoration: none; color: inherit; } .mbody { padding: 16px 18px 20px; } .mbody h3 { font-size: 1.15rem; }
+</style>

@@ -1,0 +1,61 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import { useT, path, pick, digits, usd, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { STAYS } from '../data/stays';
+import { waUrl } from '../lib/wa';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+---
+<Layout lang={lang} page="stays" title={`${t('nav.stays')} · ${SITE.name[lang]}`} desc={t('stays.lead')}>
+  <section class="section ph">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('stays.eyebrow')}</p><h1>{t('stays.title')}</h1><p class="lead">{t('stays.lead')}</p></div>
+      <div class="scards stagger">
+        {STAYS.map((s) => s.status === 'open' ? (
+          <a class="scard card" href={path(lang, 'stay', s.id)}>
+            <div class="scard-media"><Img id={s.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 60vw, 100vw" widths={[640, 960, 1280]} /><span class="pill scard-badge"><Icon name="check" size={13} /> {t('stays.open')}</span></div>
+            <div class="scard-body">
+              <p class="eyebrow">{pick(s.place, lang)}</p>
+              <h2>{pick(s.name, lang)}</h2>
+              <p class="lead">{pick(s.tagline, lang)}</p>
+              <ul class="scard-facts"><li><Icon name="bed" size={16} /> {t('stays.rooms', { n: digits(s.rooms.length, lang) })}</li><li><Icon name="walk" size={16} /> {t('stays.walk', { min: digits(5, lang) })}</li><li><Icon name="starFill" size={16} /> {SITE.ratings.booking.score} · {SITE.ratings.google.score}</li></ul>
+              <div class="scard-row"><span class="cartouche"><small>{t('common.from')}</small><b>{usd(s.from!)}</b><small>/ {t('common.night')}</small></span><span class="btn btn-sm">{t('stays.view')} <Icon name="arrowRight" class="rtl-flip" size={16} /></span></div>
+            </div>
+          </a>
+        ) : (
+          <a class="scard card scard-soon on-dark" href={path(lang, 'stay', s.id)}>
+            <div class="scard-media"><Img id={s.hero} lang={lang} ratio="16/10" sizes="(min-width:960px) 40vw, 100vw" class="soon-img" /><span class="pill scard-badge"><Icon name="clock" size={13} /> {t('stays.soon')}</span></div>
+            <div class="scard-body">
+              <p class="eyebrow">{pick(s.place, lang)}</p>
+              <h2>{pick(s.name, lang)}</h2>
+              <p class="lead">{pick(s.intro, lang)}</p>
+              <span class="btn btn-outline btn-sm">{t('stays.notify')} <Icon name="arrowRight" class="rtl-flip" size={16} /></span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
+<style>
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .scards { display: grid; gap: 28px; }
+  .scard { display: grid; text-decoration: none; color: inherit; }
+  .scard-media { position: relative; }
+  .scard-badge { position: absolute; top: 14px; inset-inline-start: 14px; background: rgba(251, 247, 238, 0.94); }
+  .scard-body { padding: 24px; display: grid; gap: 12px; align-content: start; }
+  .scard-body h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); }
+  .scard-body .lead { margin: 0; font-size: 1.05rem; }
+  .scard-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; font-size: 0.95rem; }
+  .scard-facts li { display: inline-flex; gap: 6px; align-items: center; } .scard-facts svg { color: var(--gold-text); }
+  .scard-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 6px; }
+  .scard-soon { background: var(--nile); border-color: var(--nile); }
+  .scard-soon .scard-badge { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .scard-soon :global(.soon-img img) { filter: saturate(0.5) brightness(0.7); }
+  html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+  @media (min-width: 960px) { .scard { grid-template-columns: 1.3fr 1fr; } .scard :global(.photo) { height: 100%; aspect-ratio: auto; } .scard-body { padding: 36px; align-content: center; } .scard-soon { grid-template-columns: 1fr 1.3fr; } }
+</style>

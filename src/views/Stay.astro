@@ -1,0 +1,270 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import Ribbon from '../components/Ribbon.astro';
+import StayMap from '../components/StayMap.astro';
+import TourCard from '../components/TourCard.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import EnquiryForm from '../components/EnquiryForm.astro';
+import { useT, path, pick, digits, usd, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { stay as getStay, type StayId } from '../data/stays';
+import { TOURS } from '../data/tours';
+import { REVIEWS } from '../data/reviews';
+import { waUrl, mailUrl } from '../lib/wa';
+interface Props { lang: Lang; id: string }
+const { lang, id } = Astro.props;
+const { t } = useT(lang);
+const s = getStay(id as StayId);
+const name = pick(s.name, lang);
+const soon = s.status === 'coming_soon';
+const wa = waUrl(soon ? t('stay.soonWa') : t('stay.waMsg'));
+const reviews = REVIEWS.filter((r) => r.about !== 'tour');
+const facts: [string, string][] = [['walk', 'sphinx'], ['bed', 'rooms'], ['breakfast', 'breakfast'], ['show', 'rooftop'], ['wifi', 'wifi'], ['plane', 'airport']];
+const scores = SITE.ratings.booking;
+const tours = TOURS.filter((x) => x.stays.some((st) => st.kind === 'guesthouse')).slice(0, 3);
+const jsonld = soon ? [] : [{
+  '@context': 'https://schema.org', '@type': 'LodgingBusiness', name: s.name.en, description: s.intro.en, url: `${SITE.url}${path('en', 'stay', s.id)}`, telephone: SITE.phone, email: SITE.email,
+  address: { '@type': 'PostalAddress', streetAddress: 'Sayed Gabir Street, Al Haram', addressLocality: 'Giza', postalCode: SITE.postal, addressCountry: 'EG' },
+  geo: { '@type': 'GeoCoordinates', latitude: s.geo!.lat, longitude: s.geo!.lng }, checkinTime: '13:00', checkoutTime: '11:00', petsAllowed: true, numberOfRooms: s.rooms.length,
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: SITE.ratings.google.score, bestRating: 5, reviewCount: SITE.ratings.google.count },
+  amenityFeature: ['Free Wi-Fi', 'Rooftop terrace', 'Free breakfast', 'Air conditioning', 'Airport shuttle', 'Family rooms', 'Pets allowed'].map((n) => ({ '@type': 'LocationFeatureSpecification', name: n, value: true })),
+  containsPlace: s.rooms.map((r) => ({ '@type': 'HotelRoom', name: r.name.en, floorSize: { '@type': 'QuantitativeValue', value: r.m2, unitCode: 'MTK' }, occupancy: { '@type': 'QuantitativeValue', maxValue: r.guests } })),
+}];
+---
+<Layout lang={lang} page="stay" sub={s.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(s.tagline, lang) + '. ' + pick(s.intro, lang).slice(0, 120)} overHero jsonld={jsonld} dark={soon}>
+  {soon ? (
+    <section class="soon dark-deep on-dark pattern">
+      <div class="wrap soon-in">
+        <svg class="soon-ribbon" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 C 50 4, 100 36, 150 20 S 250 4, 300 20 S 400 36, 450 20 S 550 4, 600 20" /></svg>
+        <p class="eyebrow">{t('stay.soonEyebrow')} · {pick(s.place, lang)}</p>
+        <h1>{name}</h1>
+        <p class="soon-title ital">{t('stay.soonTitle')}</p>
+        <p class="lead">{pick(s.intro, lang)}</p>
+        <p class="muted">{t('stay.soonText')}</p>
+        <div class="soon-cta">
+          <a class="btn btn-gold btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('stay.soonCta')}</a>
+          <a class="btn btn-outline btn-lg" href={mailUrl(t('stay.soonCta'))}><Icon name="mail" /> {t('contact.email')}</a>
+        </div>
+        <a class="soon-back" href={path(lang, 'stays')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.stays')}</a>
+      </div>
+    </section>
+  ) : (
+    <>
+      <!-- HERO -->
+      <section class="sh">
+        <div class="sh-media"><Img id={s.hero} lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} /><div class="sh-glow" aria-hidden="true"></div><div class="sh-shade"></div></div>
+        <div class="wrap sh-in on-dark">
+          <a class="th-back" href={path(lang, 'stays')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.stays')}</a>
+          <p class="eyebrow">{name} · {pick(s.place, lang)}</p>
+          <h1>{pick(s.tagline, lang)}</h1>
+          <div class="sh-ratings">
+            <span class="rating"><b>{scores.score}</b><span>{t('stay.ratingBooking')}<br /><small>{t('stay.reviews', { n: digits(scores.count, lang) })}</small></span></span>
+            <span class="rating"><b>{SITE.ratings.google.score}<Icon name="starFill" size={16} /></b><span>{t('stay.ratingGoogle')}<br /><small>{t('stay.reviews', { n: digits(SITE.ratings.google.count, lang) })}</small></span></span>
+            <span class="cartouche"><small>{t('common.from')}</small><b>{usd(s.from!)}</b><small>/ {t('common.night')}</small></span>
+          </div>
+          <div class="sh-cta">
+            <a class="btn btn-wa btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('stay.ctaWa')}</a>
+            <a class="btn btn-outline btn-lg" href="#rooms">{t('stay.ctaRooms')}</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- FACTS -->
+      <section class="facts">
+        <div class="wrap facts-in">{facts.map(([icon, k]) => <div class="fact"><Icon name={icon} size={22} /><span>{t(`stay.facts.${k}`)}</span></div>)}</div>
+      </section>
+
+      <!-- INTRO + WHY -->
+      <section class="section">
+        <div class="wrap wrap-narrow rv"><p class="lead intro-lead">{pick(s.intro, lang)}</p></div>
+      </section>
+      <section class="section-tight why">
+        <div class="wrap">
+          <div class="section-head rv" style="margin-bottom:28px"><p class="eyebrow">{t('stay.whyEyebrow')}</p></div>
+          <div class="why-list">
+            {s.why.map((w, i) => (
+              <article class:list={['why-item rv', i % 2 && 'why-flip']}>
+                <div class="frame"><Img id={w.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 50vw, 100vw" widths={[640, 960, 1280]} /></div>
+                <div class="why-text"><span class="marker">{digits(String(i + 1).padStart(2, '0'), lang)}</span><h2>{pick(w.title, lang)}</h2><p class="lead">{pick(w.text, lang)}</p></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Ribbon />
+
+      <!-- ROOMS -->
+      <section class="section" id="rooms">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('stay.roomsEyebrow')}</p><h2>{t('stay.roomsTitle')}</h2><p class="lead">{t('stay.roomsText')}</p></div>
+          <div class="rooms stagger">
+            {s.rooms.map((r) => (
+              <article class="room card">
+                <div class="room-tile pattern"><span class="room-m2"><b>{digits(r.m2, lang)}</b><small>{t('stay.m2')}</small></span><Icon name="bed" size={26} class="room-ic" /></div>
+                <div class="room-body">
+                  <h3>{pick(r.name, lang)}</h3>
+                  <ul class="room-facts"><li><Icon name="bed" size={15} /> {pick(r.beds, lang)}</li><li><Icon name="users" size={15} /> {t('stay.guests', { n: digits(r.guests, lang) })}</li><li><Icon name="terrace" size={15} /> {t('stay.terrace')}</li></ul>
+                  {r.note && <p class="muted small">{pick(r.note, lang)}</p>}
+                  <div class="room-row"><span class="cartouche"><small>{t('common.from')}</small><b>{usd(s.from!)}</b></span><a class="btn btn-sm btn-outline" href={waUrl(t('stay.waRoom', { room: pick(r.name, lang) }))} target="_blank" rel="noopener"><Icon name="whatsapp" size={16} /> {t('stay.askRoom')}</a></div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <details class="compare rv">
+            <summary class="btn btn-ghost"><Icon name="ruler" size={18} /> {t('stay.compare')}</summary>
+            <table class="ctable">
+              <thead><tr><th>{t('stay.room')}</th><th>{t('stay.size')}</th><th>{t('stay.beds')}</th><th>{t('stay.sleeps')}</th></tr></thead>
+              <tbody>{s.rooms.map((r) => <tr><th>{pick(r.name, lang)}</th><td class="num">{digits(r.m2, lang)} {t('stay.m2')}</td><td>{pick(r.beds, lang)}</td><td class="num">{digits(r.guests, lang)}</td></tr>)}</tbody>
+            </table>
+          </details>
+        </div>
+      </section>
+
+      <!-- MAP -->
+      <section class="section sand-bg">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('stay.mapEyebrow')}</p><h2>{t('stay.mapTitle')}</h2><p class="lead">{t('stay.mapText')}</p></div>
+          <div class="rv rv-d1"><StayMap lang={lang} /></div>
+          <p class="map-links"><a class="btn btn-outline btn-sm" href={SITE.mapsSearchUrl} target="_blank" rel="noopener"><Icon name="pin" size={16} /> {t('stay.openMap')}</a> <span class="muted small">{pick(s.address!, lang)}</span></p>
+        </div>
+      </section>
+
+      <!-- AMENITIES -->
+      <section class="section">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('stay.amenEyebrow')}</p><h2>{t('stay.amenTitle')}</h2></div>
+          <div class="amen stagger">
+            {s.amenities.map((g) => (
+              <div class="amen-group">
+                <h3>{pick(g.title, lang)}</h3>
+                <ul>{g.items.map((it) => <li><Icon name={it.icon} size={20} /><span>{pick(it.label, lang)}{it.paid && <small class="muted"> · {t('stay.paid')}</small>}</span></li>)}</ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- GALLERY -->
+      <section class="section-tight">
+        <div class="wrap">
+          <div class="section-head rv" style="margin-bottom:24px"><p class="eyebrow">{t('stay.galleryEyebrow')}</p><h2>{t('stay.galleryTitle')}</h2></div>
+          <div class="sgal stagger">{s.photos.map((p, i) => <div class:list={['sgal-item', i === 0 && 'sgal-big']}><Img id={p} lang={lang} ratio={i === 0 ? '16/9' : '1/1'} sizes={i === 0 ? '(min-width:960px) 66vw, 100vw' : '(min-width:960px) 33vw, 50vw'} /></div>)}</div>
+        </div>
+      </section>
+
+      <!-- REVIEWS -->
+      <section class="section dark on-dark pattern">
+        <div class="wrap rev-in">
+          <div class="rv">
+            <p class="eyebrow">{t('stay.reviewsEyebrow')}</p>
+            <h2>{t('stay.reviewsTitle')}</h2>
+            <div class="scores">
+              {([['staff', scores.staff], ['wifi', scores.wifi], ['clean', scores.clean], ['location', scores.location]] as [string, number][]).map(([k, v]) => <div class="score"><span>{t(`stay.scores.${k}`)}</span><div class="bar"><i style={`--p:${v * 10}%`}></i></div><b>{v}</b></div>)}
+            </div>
+            <p class="muted small">{t('stay.ratingBooking')} · {t('stay.reviews', { n: digits(scores.count, lang) })}</p>
+            <a class="btn btn-outline" href={SITE.bookingUrl} target="_blank" rel="noopener">{t('stay.ctaBooking')} <Icon name="arrowUpRight" size={16} /></a>
+          </div>
+          <div class="grid-2 stagger">{reviews.slice(0, 4).map((r) => <ReviewCard lang={lang} review={r} />)}</div>
+        </div>
+      </section>
+
+      <!-- RULES -->
+      <section class="section">
+        <div class="wrap rules-in">
+          <div class="rv"><p class="eyebrow">{t('stay.rulesEyebrow')}</p><h2>{t('stay.rulesTitle')}</h2></div>
+          <dl class="rows rv rv-d1">{s.rules.map((r) => <div><dt>{pick(r.label, lang)}</dt><dd>{pick(r.value, lang)}</dd></div>)}</dl>
+        </div>
+      </section>
+
+      <!-- STAY + TOUR -->
+      <section class="section sand-bg">
+        <div class="wrap">
+          <div class="section-head rv"><p class="eyebrow">{t('stay.toursEyebrow')}</p><h2>{t('stay.toursTitle')}</h2><p class="lead">{t('stay.toursText')}</p></div>
+          <div class="grid-3 stagger">{tours.map((x) => <TourCard lang={lang} tour={x} />)}</div>
+        </div>
+      </section>
+
+      <!-- ENQUIRE -->
+      <section class="section" id="enquire">
+        <div class="wrap enq-in">
+          <div class="rv"><p class="eyebrow">{t('stay.enquireEyebrow')}</p><h2>{t('stay.enquireTitle')}</h2><p class="lead">{t('stay.enquireText')}</p><a class="btn btn-wa btn-lg" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('stay.ctaWa')}</a></div>
+          <div class="rv rv-d1"><EnquiryForm lang={lang} interest="stay" /></div>
+        </div>
+      </section>
+    </>
+  )}
+</Layout>
+
+<style>
+  html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+  .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
+  .sh { position: relative; min-height: 86svh; display: grid; align-items: end; padding-top: var(--header-h); background: var(--nile-deep); overflow: hidden; }
+  .sh-media { position: absolute; inset: 0; } .sh-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
+  .sh-media :global(img) { animation: kb 30s var(--ease) infinite alternate; }
+  @keyframes kb { from { transform: scale(1); } to { transform: scale(1.08) translate(1%, -1%); } }
+  .sh-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 28% 22% at 70% 34%, rgba(224, 185, 58, 0.5), transparent 70%); mix-blend-mode: screen; animation: glow 6s ease-in-out infinite alternate; }
+  @keyframes glow { from { opacity: 0.25; } to { opacity: 0.85; } }
+  .sh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.4), rgba(7, 32, 47, 0) 30%, rgba(7, 32, 47, 0.94) 100%); }
+  .sh-in { position: relative; padding-bottom: clamp(40px, 7vh, 80px); display: grid; gap: 14px; }
+  .sh h1 { font-size: clamp(2.4rem, 7vw, 5.2rem); max-width: 12em; }
+  .sh-ratings { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; margin-top: 6px; }
+  .rating { display: inline-flex; gap: 10px; align-items: center; font-size: 0.85rem; line-height: 1.25; }
+  .rating b { font-family: var(--display); font-size: 2rem; color: var(--gold-light); display: inline-flex; align-items: center; gap: 4px; }
+  .rating small { opacity: 0.7; }
+  .sh-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
+  @media (prefers-reduced-motion: reduce) { .sh-media :global(img), .sh-glow { animation: none; } }
+
+  .facts { background: var(--paper); border-bottom: 1px solid var(--line); }
+  .facts-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 20px; padding-block: 20px; }
+  .fact { display: flex; gap: 10px; align-items: center; font-weight: 600; font-size: 0.95rem; color: var(--ink); } .fact svg { color: var(--gold-text); flex: none; }
+  @media (min-width: 720px) { .facts-in { grid-template-columns: repeat(3, 1fr); } } @media (min-width: 1100px) { .facts-in { grid-template-columns: repeat(6, auto); justify-content: space-between; } }
+  .intro-lead { font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.5; color: var(--ink); }
+
+  .why-list { display: grid; gap: 48px; }
+  .why-item { display: grid; gap: 24px; align-items: center; }
+  .why-text { position: relative; display: grid; gap: 10px; } .why-text .marker { position: absolute; top: -40px; inset-inline-start: -4px; }
+  .why-text h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); } .why-text .lead { margin: 0; }
+  @media (min-width: 960px) { .why-item { grid-template-columns: 1fr 1fr; gap: 64px; } .why-flip .frame { order: 2; } .why-list { gap: 72px; } }
+
+  .rooms { display: grid; gap: 20px; }
+  .room { display: grid; }
+  .room-tile { aspect-ratio: 16/9; background: var(--sand); display: grid; place-items: center; position: relative; }
+  .room-m2 { display: inline-flex; align-items: baseline; gap: 4px; font-family: var(--display); color: var(--ink); z-index: 1; } .room-m2 b { font-size: 3.4rem; font-weight: 500; line-height: 1; } .room-m2 small { font-family: var(--sans); color: var(--stone); font-weight: 600; }
+  .room-ic { position: absolute; top: 14px; inset-inline-end: 14px; color: var(--gold-text); opacity: 0.7; }
+  .room-body { padding: 18px 20px 22px; display: grid; gap: 10px; }
+  .room-body h3 { font-size: 1.3rem; }
+  .room-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.92rem; } .room-facts li { display: flex; gap: 8px; align-items: center; } .room-facts svg { color: var(--gold-text); }
+  .room-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-top: 6px; }
+  @media (min-width: 640px) { .rooms { grid-template-columns: 1fr 1fr; } } @media (min-width: 1100px) { .rooms { grid-template-columns: repeat(4, 1fr); } .rooms .room:nth-child(n+5) { grid-column: span 1; } }
+  .compare { margin-top: 28px; } .compare summary { list-style: none; cursor: pointer; width: fit-content; } .compare summary::-webkit-details-marker { display: none; }
+  .ctable { width: 100%; border-collapse: collapse; margin-top: 16px; } .ctable th, .ctable td { text-align: start; padding: 12px 8px; border-bottom: 1px solid var(--line); } .ctable thead th { font-size: 0.76rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); } html[lang='ar'] .ctable thead th { letter-spacing: 0; font-size: 0.9rem; } .ctable tbody th { color: var(--ink); font-weight: 600; } .ctable .num { color: var(--ink); font-size: 1.1rem; }
+
+  .map-links { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 24px; }
+  .amen { display: grid; gap: 28px; }
+  .amen-group h3 { font-size: 1.1rem; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+  .amen-group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; } .amen-group li { display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start; font-size: 0.95rem; } .amen-group li svg { color: var(--gold-text); margin-top: 2px; }
+  @media (min-width: 640px) { .amen { grid-template-columns: 1fr 1fr; } } @media (min-width: 1100px) { .amen { grid-template-columns: repeat(5, 1fr); gap: 32px; } }
+  .sgal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } .sgal-big { grid-column: 1 / -1; }
+  @media (min-width: 960px) { .sgal { grid-template-columns: repeat(3, 1fr); } .sgal-big { grid-column: span 2; grid-row: span 2; } .sgal-big :global(.photo) { height: 100%; aspect-ratio: auto !important; } }
+
+  .rev-in { display: grid; gap: 36px; align-items: start; } .rev-in h2 { margin: 12px 0 20px; }
+  .scores { display: grid; gap: 12px; margin-bottom: 14px; max-width: 420px; }
+  .score { display: grid; grid-template-columns: 90px 1fr 36px; gap: 12px; align-items: center; font-size: 0.9rem; } .score b { font-family: var(--display); font-size: 1.2rem; color: var(--gold-light); text-align: end; }
+  .bar { height: 6px; background: rgba(246, 240, 227, 0.15); border-radius: 3px; overflow: hidden; } .bar i { display: block; height: 100%; width: var(--p); background: var(--gold); transform-origin: 0 50%; animation: grow 1.4s var(--ease-out) both; } html[dir='rtl'] .bar i { transform-origin: 100% 50%; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  @media (min-width: 960px) { .rev-in { grid-template-columns: 0.8fr 1.2fr; gap: 64px; } }
+  .rules-in { display: grid; gap: 28px; } .rules-in h2 { margin-top: 12px; } @media (min-width: 960px) { .rules-in { grid-template-columns: 0.7fr 1.3fr; gap: 64px; } }
+  .enq-in { display: grid; gap: 36px; align-items: start; } .enq-in h2 { margin: 12px 0 16px; } @media (min-width: 960px) { .enq-in { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
+
+  .soon { min-height: 100svh; display: grid; align-items: center; padding-top: var(--header-h); }
+  .soon-in { display: grid; gap: 18px; max-width: 760px; padding-block: 60px; position: relative; }
+  .soon-ribbon { width: min(600px, 100%); height: 40px; color: var(--gold); } .soon-ribbon path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 3s var(--ease-out) 0.3s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .soon h1 { font-size: clamp(2.4rem, 7vw, 5rem); }
+  .soon-title { font-family: var(--display); font-size: clamp(1.6rem, 4vw, 2.6rem); color: var(--gold-light); margin: 0; }
+  .soon-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  .soon-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; opacity: 0.8; margin-top: 20px; }
+</style>

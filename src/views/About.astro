@@ -1,0 +1,86 @@
+---
+import Layout from '../components/Layout.astro';
+import Img from '../components/Img.astro';
+import Icon from '../components/Icon.astro';
+import Ribbon from '../components/Ribbon.astro';
+import { useT, path, digits, type Lang } from '../i18n';
+import en from '../i18n/en.json';
+import ar from '../i18n/ar.json';
+import { SITE } from '../data/site';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const D = lang === 'ar' ? ar : en;
+const how = D.about.how as { title: string; text: string }[];
+const icons = ['tip', 'breakfast', 'plane', 'route'];
+---
+<Layout lang={lang} page="about" title={`${t('nav.about')} · ${SITE.name[lang]}`} desc={t('about.p1').slice(0, 150)}>
+  <section class="section ph">
+    <div class="wrap about-hero">
+      <div class="rv"><p class="eyebrow">{t('about.eyebrow')}</p><h1>{t('about.title')}</h1></div>
+      <div class="about-photos rv rv-d1">
+        <div class="frame"><Img id="rami-portrait-night" lang={lang} ratio="1/1" sizes="(min-width:960px) 30vw, 60vw" widths={[420, 720]} /></div>
+        <div class="frame about-gf"><Img id="grandfather-1964" lang={lang} ratio="4/5" sizes="160px" widths={[286]} /></div>
+      </div>
+    </div>
+  </section>
+  <section class="section-tight">
+    <div class="wrap wrap-narrow article rv">
+      <p class="drop">{t('about.p1')}</p>
+      <p>{t('about.p2')}</p>
+      <blockquote class="pull"><p>{t('home.introTitle')}</p></blockquote>
+      <p>{t('about.p3')}</p>
+      <p>{t('about.p4')}</p>
+    </div>
+  </section>
+  <section class="section-tight">
+    <div class="wrap"><div class="frame rv"><Img id="nile-bank-picnic" lang={lang} ratio="21/9" sizes="100vw" widths={[640, 960, 1280, 1600]} /></div><p class="caption ital muted" style="margin-top:14px">{lang === 'ar' ? 'نزهة الغروب على ضفة النيل، مع العائلة والضيوف' : 'Sunset picnic on the Nile bank, family and guests together'}</p></div>
+  </section>
+
+  <section class="section dark on-dark pattern">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('about.timeline')}</p></div>
+      <ol class="tl stagger">
+        <li><span class="tl-year num">{digits(1964, lang)}</span><p>{t('about.t1964')}</p></li>
+        <li><span class="tl-year num">{digits(2014, lang)}</span><p>{t('about.t2014')}</p></li>
+        <li><span class="tl-year num">{digits(new Date().getFullYear(), lang)}</span><p>{t('about.tNow')}</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap rania-in">
+      <div class="frame rv"><Img id="rami-guest-pyramids" lang={lang} ratio="4/3" sizes="(min-width:960px) 45vw, 100vw" /></div>
+      <div class="rv rv-d1"><p class="eyebrow">{t('about.raniaEyebrow')}</p><h2>{t('about.raniaTitle')}</h2><p class="lead">{t('about.raniaText')}</p><a class="btn btn-outline" href={path(lang, 'contact')}>{t('nav.contact')} <Icon name="arrowRight" class="rtl-flip" size={18} /></a></div>
+    </div>
+  </section>
+
+  <Ribbon />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head rv"><p class="eyebrow">{t('about.howEyebrow')}</p></div>
+      <div class="grid-4 stagger">{how.map((h, i) => <div class="how card"><Icon name={icons[i]} size={30} class="how-ic" /><h3>{h.title}</h3><p class="muted">{h.text}</p></div>)}</div>
+    </div>
+  </section>
+</Layout>
+<style>
+  html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .about-hero { display: grid; gap: 36px; align-items: center; } .about-hero h1 { margin-top: 14px; }
+  .about-photos { position: relative; padding-inline-end: 18%; padding-bottom: 40px; max-width: 520px; }
+  .about-gf { position: absolute; bottom: 0; inset-inline-end: 0; width: 36%; background: var(--papyrus); box-shadow: var(--shadow); }
+  @media (min-width: 960px) { .about-hero { grid-template-columns: 1.1fr 0.9fr; gap: 72px; } }
+  .article p { font-size: 1.12rem; line-height: 1.7; }
+  .drop::first-letter { font-family: var(--display); font-size: 4.2em; float: inline-start; line-height: 0.8; margin: 0.08em 0.12em 0 0; color: var(--gold-text); }
+  html[dir='rtl'] .drop::first-letter { margin: 0.08em 0 0 0.12em; }
+  .pull { margin: 36px 0; padding-inline-start: 24px; border-inline-start: 2px solid var(--gold); } .pull p { font-family: var(--display); font-size: clamp(1.6rem, 3vw, 2.4rem); color: var(--ink); line-height: 1.2; margin: 0; }
+  html[lang='ar'] .pull p { font-weight: 700; }
+  .tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; }
+  .tl li { display: grid; gap: 6px; padding-top: 18px; border-top: 1px solid var(--gold); } .tl li p { margin: 0; }
+  .tl-year { font-size: clamp(2.4rem, 5vw, 4rem); color: var(--gold-light); line-height: 1; }
+  @media (min-width: 720px) { .tl { grid-template-columns: repeat(3, 1fr); gap: 40px; } }
+  .rania-in { display: grid; gap: 36px; align-items: center; } .rania-in h2 { margin: 12px 0 16px; }
+  @media (min-width: 960px) { .rania-in { grid-template-columns: 1fr 1fr; gap: 72px; } }
+  .how { padding: 24px; display: grid; gap: 10px; align-content: start; } .how h3 { font-size: 1.2rem; } .how p { margin: 0; font-size: 0.95rem; } .how-ic { color: var(--gold-text); }
+</style>

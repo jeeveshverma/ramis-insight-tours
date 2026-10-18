@@ -1,0 +1,245 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/manrope';
+import '@fontsource/amiri/400.css';
+import '@fontsource/amiri/700.css';
+import '@fontsource/ibm-plex-sans-arabic/400.css';
+import '@fontsource/ibm-plex-sans-arabic/500.css';
+import '@fontsource/ibm-plex-sans-arabic/700.css';
+import '../styles/global.css';
+import { LANGS, path, switchLang, useT, dirOf, type Lang, type PageKey } from '../i18n';
+import { SITE } from '../data/site';
+import { waUrl, telUrl } from '../lib/wa';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+
+interface Props { lang: Lang; page: PageKey; sub?: string; title: string; desc: string; overHero?: boolean; jsonld?: object[]; noindex?: boolean; ogImage?: string; dark?: boolean }
+const { lang, page, sub = '', title, desc, overHero = false, jsonld = [], noindex = false, ogImage, dark = false } = Astro.props;
+const { t } = useT(lang);
+const L = LANGS.find((l) => l.code === lang)!;
+const abs = (p: string) => new URL(p, SITE.url + '/').href.replace(/([^:])\/\//g, '$1/');
+const canonical = abs(path(lang, page, sub));
+const ogUrl = ogImage ? abs(ogImage) : abs(`${import.meta.env.BASE_URL}og-image.jpg`);
+const other = LANGS.find((l) => l.code !== lang)!;
+const nav: [PageKey, string][] = [['tours', t('nav.tours')], ['stays', t('nav.stays')], ['destinations', t('nav.destinations')], ['about', t('nav.about')], ['journal', t('nav.journal')], ['contact', t('nav.contact')]];
+const more: [PageKey, string][] = [['reviews', t('nav.reviews')], ['gallery', t('nav.gallery')], ['tips', t('nav.tips')]];
+const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود السؤال عن رحلة إلى مصر.' : "Hi Rami, I'd like to ask about a trip to Egypt.");
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'TravelAgency',
+  '@id': `${SITE.url}/#org`,
+  name: SITE.name.en, alternateName: SITE.name.ar, url: `${SITE.url}/`, image: [ogUrl], telephone: SITE.phone, email: SITE.email, foundingDate: String(SITE.founded),
+  address: { '@type': 'PostalAddress', streetAddress: SITE.street.en, addressLocality: SITE.city.en, postalCode: SITE.postal, addressCountry: 'EG' },
+  geo: { '@type': 'GeoCoordinates', latitude: SITE.geo.lat, longitude: SITE.geo.lng },
+  sameAs: [SITE.instagram.url, SITE.facebook.url, SITE.instagramStay.url], availableLanguage: ['en', 'ar'],
+};
+---
+<!doctype html>
+<html lang={L.hreflang} dir={dirOf(lang)} class="no-js">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>{title}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  {LANGS.map((l) => <link rel="alternate" hreflang={l.hreflang} href={abs(path(l.code, page, sub))} />)}
+  <link rel="alternate" hreflang="x-default" href={abs(path('en', page, sub))} />
+  {noindex && <meta name="robots" content="noindex, follow" />}
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={SITE.name[lang]} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogUrl} />
+  <meta property="og:locale" content={L.ogLocale} />
+  <meta property="og:locale:alternate" content={other.ogLocale} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content={dark ? '#0e2f44' : '#f6f0e3'} />
+  <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} type="image/svg+xml" />
+  <script is:inline>document.documentElement.classList.replace('no-js', 'js')</script>
+  <script type="application/ld+json" set:html={JSON.stringify(org)} />
+  {jsonld.map((j) => <script type="application/ld+json" set:html={JSON.stringify(j)} />)}
+</head>
+<body class:list={[`p-${page}`, 'has-stick', overHero && 'over-hero', dark && 'body-dark']}>
+  <a class="skip" href="#main">{t('nav.skip')}</a>
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <header class:list={['hdr', overHero && 'hdr-over']} id="hdr">
+    <div class="wrap hdr-in">
+      <a class="hdr-logo" href={path(lang, 'home')} aria-label={t('nav.home')}>
+        <Logo variant="lockup" lang={lang} size={40} />
+      </a>
+      <nav class="hdr-nav" id="nav" aria-label="Main">
+        <ul>
+          {nav.map(([p, label]) => <li><a href={path(lang, p)} aria-current={p === page || (p === 'tours' && page === 'tour') || (p === 'stays' && page === 'stay') || (p === 'destinations' && page === 'destination') || (p === 'journal' && page === 'post') ? 'page' : undefined}>{label}</a></li>)}
+          <li class="nav-more">{more.map(([p, label]) => <a href={path(lang, p)} aria-current={p === page ? 'page' : undefined}>{label}</a>)}</li>
+          <li class="nav-lang"><a href={switchLang(lang, page, sub)} lang={other.hreflang} hreflang={other.hreflang} title={t('nav.langLabel')}>{t('nav.lang')}</a></li>
+        </ul>
+        <div class="nav-foot">
+          <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
+          <a class="btn btn-outline" href={telUrl}><Icon name="phone" /> {SITE.phoneDisplay}</a>
+        </div>
+      </nav>
+      <div class="hdr-actions">
+        <a class="hdr-lang" href={switchLang(lang, page, sub)} lang={other.hreflang} hreflang={other.hreflang} title={t('nav.langLabel')}>{t('nav.lang')}</a>
+        <a class="btn btn-gold hdr-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /><span>{t('nav.whatsapp')}</span></a>
+        <button class="hdr-burger" id="burger" aria-expanded="false" aria-controls="nav" aria-label={t('nav.menu')}>
+          <Icon name="menu" class="i-open" size={24} /><Icon name="close" class="i-close" size={24} />
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <slot />
+  </main>
+
+  <footer class="ftr on-dark">
+    <div class="wrap ftr-in">
+      <div class="ftr-brand">
+        <Logo variant="stack" lang={lang} size={64} />
+        <p class="muted small" style="margin-top:14px">{t('footer.madeWith')}</p>
+      </div>
+      <div class="ftr-col">
+        <p class="eyebrow">{t('footer.explore')}</p>
+        <ul class="ftr-nav">
+          {[...nav, ...more].map(([p, label]) => <li><a href={path(lang, p)}>{label}</a></li>)}
+        </ul>
+      </div>
+      <div class="ftr-col">
+        <p class="eyebrow">{t('footer.talk')}</p>
+        <p><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={16} /> {SITE.whatsappDisplay}</a></p>
+        <p><a href={`mailto:${SITE.email}`}><Icon name="mail" size={16} /> {SITE.email}</a></p>
+        <p class="muted small" style="margin-top:12px">{SITE.street[lang]}<br />{SITE.city[lang]}, {SITE.country[lang]}</p>
+      </div>
+      <div class="ftr-col">
+        <p class="eyebrow">{t('footer.follow')}</p>
+        <p><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> @{SITE.instagram.handle}</a></p>
+        <p><a href={SITE.instagramStay.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> @{SITE.instagramStay.handle}</a></p>
+        <p><a href={SITE.facebook.url} target="_blank" rel="noopener"><Icon name="facebook" size={16} /> Facebook</a></p>
+        <p style="margin-top:12px"><a href={switchLang(lang, page, sub)} lang={other.hreflang}><Icon name="globe" size={16} /> {t('nav.lang')}</a></p>
+      </div>
+    </div>
+    <div class="wrap ftr-base">
+      <span>© {new Date().getFullYear()} {t('footer.rights')}</span>
+      <svg class="ftr-mark" viewBox="0 0 64 44" width="40" aria-hidden="true"><circle cx="46" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 40 L18 14 L30 34 L38 22 L50 40 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 40 H62" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+  </footer>
+
+  <a class="fab" href={wa} target="_blank" rel="noopener" aria-label={t('nav.whatsapp')}><Icon name="whatsapp" /></a>
+  <div class="stick" id="stick">
+    <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
+    <a class="btn ic" href={telUrl} aria-label={t('common.callUs')}><Icon name="phone" /></a>
+  </div>
+
+  <script>
+    const hdr = document.getElementById('hdr')!;
+    const burger = document.getElementById('burger')!;
+    const nav = document.getElementById('nav')!;
+    const stick = document.getElementById('stick')!;
+    const bar = document.querySelector('.progress i') as HTMLElement;
+    const over = document.body.classList.contains('over-hero');
+    const onScroll = () => {
+      const y = window.scrollY;
+      hdr.classList.toggle('scrolled', y > 12);
+      if (over) hdr.classList.toggle('hdr-over', y < window.innerHeight * 0.55);
+      stick.classList.toggle('show', y > window.innerHeight * 0.7);
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.transform = `scaleX(${h > 0 ? Math.min(1, y / h) : 0})`;
+    };
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+    burger.addEventListener('click', () => {
+      const open = burger.getAttribute('aria-expanded') !== 'true';
+      burger.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('menu-open', open);
+      nav.classList.toggle('open', open);
+    });
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => { burger.setAttribute('aria-expanded', 'false'); document.body.classList.remove('menu-open'); nav.classList.remove('open'); }));
+    // reveal on scroll
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.rv, .stagger, .ribbon').forEach((el) => io.observe(el));
+    // count-ups
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cio = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; cio.unobserve(e.target);
+      const el = e.target as HTMLElement; const to = Number(el.dataset.count); const dec = Number(el.dataset.dec || 0); const suffix = el.dataset.suffix || '';
+      const ar = document.documentElement.lang === 'ar';
+      const fmt = (v: number) => { const s = v.toFixed(dec); return (ar ? s.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]) : s) + suffix; };
+      if (reduce) { el.textContent = fmt(to); return; }
+      const t0 = performance.now(), dur = 1400;
+      const step = (now: number) => { const p = Math.min(1, (now - t0) / dur); const ease = 1 - Math.pow(1 - p, 3); el.textContent = fmt(to * ease); if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }), { threshold: 0.4 });
+    document.querySelectorAll('[data-count]').forEach((el) => cio.observe(el));
+  </script>
+</body>
+</html>
+
+<style is:global>
+  .hdr { position: fixed; top: 0; inset-inline: 0; z-index: 70; height: var(--header-h); transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease), color 0.3s; color: var(--ink); }
+  .hdr.scrolled { background: rgba(246, 240, 227, 0.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--line); }
+  .hdr-over { color: var(--papyrus); }
+  .hdr-over .logo-name { color: var(--papyrus); } .hdr-over .logo-sub { color: var(--gold-light); }
+  .hdr-over.scrolled { color: var(--ink); }
+  .hdr-over.scrolled .logo-name { color: var(--ink); } .hdr-over.scrolled .logo-sub { color: var(--gold-text); }
+  .body-dark .hdr.scrolled { background: rgba(7, 32, 47, 0.9); color: var(--papyrus); box-shadow: 0 1px 0 var(--line-dark); }
+  .body-dark .hdr.scrolled .logo-name { color: var(--papyrus); } .body-dark .hdr.scrolled .logo-sub { color: var(--gold-light); }
+  .hdr-in { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .hdr-logo { text-decoration: none; display: inline-flex; }
+  .hdr-actions { display: flex; align-items: center; gap: 8px; }
+  .hdr-lang { font-weight: 700; text-decoration: none; padding: 8px 10px; font-size: 0.95rem; }
+  .hdr-wa { min-height: 42px; padding-inline: 14px; font-size: 0.92rem; }
+  /* phones: logo shrinks and drops its subline, WhatsApp becomes an icon button, so the bar fits 360px */
+  .hdr-wa span { display: none; }
+  .hdr-wa { width: 42px; padding: 0; }
+  .hdr-lang { padding-inline: 6px; display: none; }
+  @media (min-width: 400px) { .hdr-lang { display: inline; } }
+  .hdr-logo .logo-sub { display: none; }
+  .hdr-logo .logo-name { font-size: 17px; }
+  .hdr-logo .logo-mark { width: 30px; }
+  @media (min-width: 560px) { .hdr-logo .logo-sub { display: block; } .hdr-logo .logo-name { font-size: 20px; } .hdr-logo .logo-mark { width: 40px; } }
+  @media (min-width: 1100px) { .hdr-wa { width: auto; padding-inline: 14px; } .hdr-wa span { display: inline; } }
+  @media (min-width: 1024px) and (max-width: 1099px) { .hdr-nav ul { gap: 18px; } }
+  .hdr-burger { width: 44px; height: 44px; display: grid; place-items: center; background: none; border: 0; cursor: pointer; color: inherit; }
+  .hdr-burger .i-close, .hdr-burger[aria-expanded='true'] .i-open { display: none; }
+  .hdr-burger[aria-expanded='true'] .i-close { display: block; }
+  .hdr-nav { position: fixed; inset: 0; top: var(--header-h); background: var(--papyrus); padding: 24px var(--gutter) 40px; display: none; flex-direction: column; justify-content: space-between; overflow: auto; }
+  .hdr-nav.open { display: flex; }
+  html.no-js .hdr-nav { position: static; display: block; padding: 0; }
+  .hdr-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .hdr-nav li > a { display: block; font-family: var(--display); font-size: clamp(2rem, 7.5vw, 2.8rem); color: var(--ink); text-decoration: none; padding: 10px 0; border-bottom: 1px solid var(--line); font-variation-settings: 'opsz' 72, 'SOFT' 50; }
+  html[lang='ar'] .hdr-nav li > a { font-family: var(--sans); font-weight: 600; font-size: 1.7rem; font-variation-settings: normal; }
+  .hdr-nav li > a[aria-current='page'] { color: var(--gold-text); }
+  .nav-more { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 14px 0; }
+  .nav-more a { font-size: 1rem; font-weight: 600; color: var(--stone); text-decoration: none; }
+  .nav-foot { display: grid; gap: 10px; margin-top: 24px; }
+  body.menu-open { overflow: hidden; }
+  body.menu-open .hdr { background: var(--papyrus); color: var(--ink); }
+  body.menu-open .hdr .logo-name { color: var(--ink); } body.menu-open .hdr .logo-sub { color: var(--gold-text); }
+  @media (min-width: 1024px) {
+    .hdr-burger, .nav-foot, .nav-lang { display: none; }
+    .hdr-lang { display: inline; }
+    .hdr-nav { position: static; display: block; background: none; padding: 0; overflow: visible; }
+    .hdr-nav ul { display: flex; gap: 26px; align-items: center; }
+    .hdr-nav li > a { font-family: var(--sans); font-size: 0.95rem; font-weight: 700; padding: 6px 0; border: 0; color: inherit; position: relative; font-variation-settings: normal; }
+    html[lang='ar'] .hdr-nav li > a { font-size: 1.05rem; }
+    .hdr-nav li > a::after { content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 1.5px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s var(--ease); transform-origin: 0 50%; }
+    .hdr-nav li > a:hover::after, .hdr-nav li > a[aria-current='page']::after { transform: none; }
+    .nav-more { display: none; }
+  }
+
+  .ftr { background: var(--nile-deep); color: rgba(246, 240, 227, 0.78); padding-block: 64px 28px; margin-top: 0; position: relative; z-index: 1; }
+  .ftr .logo-stack .logo-name { color: var(--papyrus); } .ftr .logo-stack .logo-sub { color: var(--gold-light); }
+  .ftr-in { display: grid; gap: 36px; }
+  .ftr-col p { margin: 0 0 8px; }
+  .ftr-col a { color: var(--papyrus); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .ftr-col a:hover { color: var(--gold-light); }
+  .ftr .eyebrow { margin-bottom: 14px; }
+  .ftr-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; grid-template-columns: 1fr 1fr; }
+  .ftr-base { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; align-items: center; margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--line-dark); font-size: 0.9rem; }
+  .ftr-mark { color: var(--gold); opacity: 0.7; }
+  @media (min-width: 720px) { .ftr-in { grid-template-columns: 1.2fr 1fr 1fr 0.9fr; gap: 40px; } .ftr-nav { grid-template-columns: 1fr; } }
+</style>

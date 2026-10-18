@@ -1,0 +1,66 @@
+---
+import Layout from '../components/Layout.astro';
+import TourCard from '../components/TourCard.astro';
+import Icon from '../components/Icon.astro';
+import { useT, type Lang } from '../i18n';
+import { SITE } from '../data/site';
+import { TOURS } from '../data/tours';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const { t } = useT(lang);
+const regions = ['cairo', 'nile', 'redsea', 'desert'] as const;
+const styles = ['classic', 'spiritual', 'honeymoon', 'custom'] as const;
+const durations = ['short', 'mid', 'long'] as const;
+---
+<Layout lang={lang} page="tours" title={`${t('nav.tours')} · ${SITE.name[lang]}`} desc={t('tours.lead')}>
+  <section class="section ph">
+    <div class="wrap">
+      <div class="section-head rv">
+        <p class="eyebrow">{t('tours.eyebrow')}</p>
+        <h1>{t('tours.title')}</h1>
+        <p class="lead">{t('tours.lead')}</p>
+      </div>
+      <div class="filters rv" data-filters>
+        <div class="fgroup"><span class="flabel">{t('tours.duration')}</span><div class="fchips" data-group="nights"><button class="chip" aria-pressed="true" data-v="">{t('tours.all')}</button>{durations.map((d) => <button class="chip" aria-pressed="false" data-v={d}>{t(`tours.durations.${d}`)}</button>)}</div></div>
+        <div class="fgroup"><span class="flabel">{t('tours.region')}</span><div class="fchips" data-group="region"><button class="chip" aria-pressed="true" data-v="">{t('tours.all')}</button>{regions.map((r) => <button class="chip" aria-pressed="false" data-v={r}>{t(`tours.regions.${r}`)}</button>)}</div></div>
+        <div class="fgroup"><span class="flabel">{t('tours.style')}</span><div class="fchips" data-group="style"><button class="chip" aria-pressed="true" data-v="">{t('tours.all')}</button>{styles.map((s) => <button class="chip" aria-pressed="false" data-v={s}>{t(`tours.styles.${s}`)}</button>)}</div></div>
+      </div>
+      <div class="grid-3 tgrid stagger" data-grid>{TOURS.map((x) => <TourCard lang={lang} tour={x} />)}</div>
+      <p class="empty muted" data-empty hidden><Icon name="compass" /> {t('tours.empty')}</p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-filters]');
+  if (root) {
+    const grid = document.querySelector<HTMLElement>('[data-grid]')!; const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+    const state: Record<string, string> = { nights: '', region: '', style: '' };
+    const nightsOk = (n: number, v: string) => !v || (v === 'short' ? n <= 7 : v === 'mid' ? n >= 8 && n <= 15 : n >= 16);
+    const apply = () => {
+      let shown = 0;
+      grid.querySelectorAll<HTMLElement>('.tcard').forEach((c) => {
+        const n = Number(c.dataset.nights); const custom = c.dataset.style === 'custom';
+        const ok = (custom && !state.nights && (!state.style || state.style === 'custom')) || (nightsOk(n, state.nights) && (!state.region || c.dataset.region!.split(' ').includes(state.region)) && (!state.style || c.dataset.style === state.style) && !(custom && state.nights));
+        c.hidden = !ok; if (ok) shown++;
+      });
+      empty.hidden = shown > 0;
+    };
+    root.querySelectorAll<HTMLElement>('[data-group]').forEach((g) => g.querySelectorAll<HTMLButtonElement>('.chip').forEach((b) => b.addEventListener('click', () => {
+      g.querySelectorAll('.chip').forEach((x) => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true');
+      state[g.dataset.group!] = b.dataset.v || ''; apply();
+    })));
+  }
+</script>
+
+<style>
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .filters { display: grid; gap: 16px; margin-bottom: 36px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .fgroup { display: grid; gap: 8px; }
+  .flabel { font-size: 0.76rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--stone); }
+  html[lang='ar'] .flabel { letter-spacing: 0; font-size: 0.9rem; }
+  .fchips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tgrid :global(.tcard[hidden]) { display: none; }
+  .empty { display: flex; gap: 10px; align-items: center; padding: 40px 0; justify-content: center; }
+  @media (min-width: 960px) { .filters { grid-template-columns: repeat(3, auto); justify-content: start; gap: 40px; } }
+</style>

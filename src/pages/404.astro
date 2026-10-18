@@ -1,0 +1,25 @@
+---
+import Layout from '../components/Layout.astro';
+import EgyptMap from '../components/EgyptMap.astro';
+import { useT, path } from '../i18n';
+const { t } = useT('en');
+---
+<Layout lang="en" page="notfound" title={`${t('notfound.title')} · Rami's Insight Tours`} desc={t('notfound.text')} noindex dark>
+  <section class="section dark on-dark nf">
+    <div class="wrap nf-in">
+      <div>
+        <p class="eyebrow">404</p>
+        <h1>{t('notfound.title')}</h1>
+        <p class="lead">{t('notfound.text')}</p>
+        <p><a class="btn btn-gold" href={path('en', 'home')}>{t('notfound.cta')}</a> <a class="btn btn-outline" href={path('ar', 'home')} lang="ar">العربية</a></p>
+      </div>
+      <EgyptMap lang="en" compact links={false} />
+    </div>
+  </section>
+</Layout>
+<style>
+  .nf { min-height: 100vh; display: grid; align-items: center; padding-top: calc(var(--header-h) + 40px); }
+  .nf-in { display: grid; gap: 40px; align-items: center; }
+  .nf h1 { margin: 16px 0; }
+  @media (min-width: 960px) { .nf-in { grid-template-columns: 1fr 1fr; } }
+</style>

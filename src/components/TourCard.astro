@@ -1,0 +1,60 @@
+---
+import { useT, pick, digits, usd, path, type Lang } from '../i18n';
+import type { Tour } from '../data/tours';
+import { place } from '../data/places';
+import Img from './Img.astro';
+import Icon from './Icon.astro';
+interface Props { lang: Lang; tour: Tour; big?: boolean }
+const { lang, tour, big = false } = Astro.props;
+const { t } = useT(lang);
+const href = path(lang, 'tour', tour.id);
+const stops = [...new Set(tour.route)].slice(0, 4).map((id) => pick(place(id).name, lang).split(/ [&,]| و/)[0]);
+const custom = tour.style === 'custom';
+---
+<a class:list={['tcard card', big && 'tcard-big', custom && 'tcard-custom']} href={href} data-region={tour.regions.join(' ')} data-style={tour.style} data-nights={tour.nights}>
+  <div class="tcard-media">
+    <Img id={tour.hero} lang={lang} ratio="4/5" sizes={big ? '(min-width:960px) 50vw, 100vw' : '(min-width:960px) 30vw, (min-width:640px) 50vw, 100vw'} widths={[420, 640, 900]} />
+    <div class="tcard-top">
+      {!custom && <span class="pill"><Icon name="moon" size={14} /> {t('tours.nights', { n: digits(tour.nights, lang) })}</span>}
+      {tour.style === 'honeymoon' && <span class="pill"><Icon name="heart" size={14} /> {t('tours.styles.honeymoon')}</span>}
+      {tour.style === 'spiritual' && <span class="pill"><Icon name="sun" size={14} /> {t('tours.styles.spiritual')}</span>}
+      {custom && <span class="pill"><Icon name="route" size={14} /> {t('tours.styles.custom')}</span>}
+    </div>
+  </div>
+  <div class="tcard-body">
+    <h3>{pick(tour.name, lang)}</h3>
+    <p class="tcard-tag">{pick(tour.tagline, lang)}</p>
+    <div class="tcard-stops">{stops.map((s) => <span>{s}</span>)}</div>
+    <div class="tcard-foot">
+      {tour.price.onRequest ? <span class="cartouche"><small>{t('tours.onRequest')}</small></span>
+        : tour.price.couple ? <span class="cartouche"><b>{usd(tour.price.couple)}</b><small>{t('tours.couple')}</small></span>
+        : <span class="cartouche"><small>{t('tours.from')}</small><b>{usd(tour.price.from!)}</b><small>{t('tours.pp')}</small></span>}
+      <span class="tcard-go"><Icon name="arrowRight" class="rtl-flip" /></span>
+    </div>
+    <svg class="tcard-line" viewBox="0 0 400 6" preserveAspectRatio="none" aria-hidden="true"><path d="M0 3 C 50 0, 100 6, 150 3 S 250 0, 300 3 S 380 6, 400 3" /></svg>
+  </div>
+</a>
+<style>
+  .tcard { display: flex; flex-direction: column; text-decoration: none; color: inherit; position: relative; }
+  .tcard-media { position: relative; }
+  .tcard-media :global(.photo) { border-radius: 0; }
+  .tcard-media :global(img) { transition: transform 1.2s var(--ease-out); }
+  .tcard:hover .tcard-media :global(img) { transform: scale(1.05); }
+  .tcard-top { position: absolute; top: 12px; inset-inline: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tcard-top .pill { background: rgba(251, 247, 238, 0.92); backdrop-filter: blur(6px); border-color: transparent; }
+  .tcard-body { padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 10px; position: relative; flex: 1; }
+  .tcard h3 { font-size: clamp(1.4rem, 2.2vw, 1.75rem); }
+  .tcard-tag { margin: 0; color: var(--stone); font-size: 0.95rem; line-height: 1.45; }
+  .tcard-stops { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.8rem; font-weight: 700; color: var(--gold-text); letter-spacing: 0.04em; }
+  .tcard-stops span + span::before { content: '·'; margin-inline-end: 10px; color: var(--dune); }
+  .tcard-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 6px; }
+  .tcard-go { width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; color: var(--ink); transition: background 0.3s, color 0.3s, transform 0.4s var(--ease-out); }
+  .tcard:hover .tcard-go { background: var(--ink); color: var(--papyrus); transform: translateX(4px); }
+  html[dir='rtl'] .tcard:hover .tcard-go { transform: translateX(-4px); }
+  html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
+  .tcard-line { position: absolute; bottom: 0; inset-inline: 0; height: 6px; width: 100%; color: var(--gold); }
+  .tcard-line path { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-dasharray: 420; stroke-dashoffset: 420; transition: stroke-dashoffset 1.2s var(--ease-out); }
+  .tcard:hover .tcard-line path { stroke-dashoffset: 0; }
+  .tcard-custom .tcard-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14, 47, 68, 0.1), rgba(14, 47, 68, 0.55)); }
+  @media (min-width: 960px) { .tcard-big { flex-direction: row; } .tcard-big > * { flex: 1; } .tcard-big .tcard-media :global(.photo) { height: 100%; aspect-ratio: auto; } .tcard-big .tcard-body { padding: 32px; align-content: center; gap: 14px; } .tcard-big h3 { font-size: 2.2rem; } }
+</style>

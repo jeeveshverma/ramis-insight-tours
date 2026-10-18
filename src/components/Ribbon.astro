@@ -1,0 +1,8 @@
+---
+/** The Nile ribbon: one flowing stroke used as a section divider. Draws itself when scrolled into view. */
+interface Props { class?: string }
+const { class: cls = '' } = Astro.props;
+---
+<svg class={`ribbon rv ${cls}`} viewBox="0 0 1200 28" preserveAspectRatio="none" aria-hidden="true">
+  <path d="M0 14 C 100 2, 200 26, 300 14 S 500 2, 600 14 S 800 26, 900 14 S 1100 2, 1200 14" />
+</svg>
