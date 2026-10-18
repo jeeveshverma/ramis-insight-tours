@@ -9,7 +9,7 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 const { t } = useT(lang);
 const cats: Cat[] = ['giza', 'cairo', 'nile', 'alexandria', 'desert', 'stay', 'people', 'food'];
-const photos = PHOTOS.filter((p) => p.id !== 'logo-original' && p.id !== 'rami-door-small');
+const photos = PHOTOS.filter((p) => p.cat !== 'video' && p.id !== 'logo-original' && p.id !== 'rami-door-small' && !p.id.endsWith('-door'));
 ---
 <Layout lang={lang} page="gallery" title={`${t('nav.gallery')} · ${SITE.name[lang]}`} desc={t('gallery.lead')}>
   <section class="section ph">

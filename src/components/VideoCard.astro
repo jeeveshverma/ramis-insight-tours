@@ -1,0 +1,50 @@
+---
+/**
+ * A video poster that opens the shared player (VideoPlayer.astro, mounted once in Layout).
+ * Nothing downloads until the visitor presses play.
+ */
+import { pick, type Lang } from '../i18n';
+import type { Video } from '../data/reviews';
+import Img from './Img.astro';
+import Icon from './Icon.astro';
+interface Props { lang: Lang; video: Video; size?: 'sm' | 'lg' }
+const { lang, video: v, size = 'sm' } = Astro.props;
+const src = `${import.meta.env.BASE_URL}media/${v.file}`;
+const title = pick(v.title, lang);
+---
+<button type="button" class:list={['vcard', `vcard-${size}`]} data-video={src} data-title={title} aria-label={`${lang === 'ar' ? 'شاهد' : 'Play'}: ${title}`}>
+  <span class="vcard-media">
+    <Img id={v.poster} lang={lang} ratio="16/9" sizes={size === 'lg' ? '(min-width:960px) 60vw, 100vw' : '(min-width:960px) 30vw, 100vw'} widths={[420, 640, 960, 1280]} />
+    <span class="vcard-shade"></span>
+    <span class="vcard-play"><span class="vcard-ring"></span><Icon name="play" size={size === 'lg' ? 34 : 24} stroke={0} class="vcard-tri" /></span>
+    <span class="vcard-dur pill">{v.duration}</span>
+  </span>
+  <span class="vcard-body">
+    <span class="vcard-title">{title}</span>
+    <span class="vcard-place"><Icon name="pin" size={14} /> {pick(v.place, lang)}</span>
+  </span>
+</button>
+<style>
+  .vcard { display: grid; gap: 12px; padding: 0; border: 0; background: none; text-align: start; cursor: pointer; color: inherit; font: inherit; width: 100%; }
+  .vcard-media { position: relative; display: block; border-radius: 6px; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .vcard-media :global(.photo) { border-radius: 0; }
+  .vcard-media :global(img) { transition: transform 1.2s var(--ease-out), filter 0.6s; }
+  .vcard:hover .vcard-media :global(img) { transform: scale(1.05); }
+  .vcard-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.05), rgba(7, 32, 47, 0.55)); transition: background 0.4s; }
+  .vcard:hover .vcard-shade { background: linear-gradient(180deg, rgba(7, 32, 47, 0.15), rgba(7, 32, 47, 0.7)); }
+  .vcard-play { position: absolute; top: 50%; left: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: var(--gold); color: var(--ink); display: grid; place-items: center; transition: transform 0.4s var(--ease-out), background 0.3s; }
+  .vcard-lg .vcard-play { width: 92px; height: 92px; margin: -46px 0 0 -46px; }
+  .vcard-play :global(.vcard-tri) { fill: currentColor; margin-inline-start: 4px; }
+  .vcard-ring { position: absolute; inset: -8px; border-radius: 50%; border: 1.5px solid rgba(224, 185, 58, 0.8); animation: vring 2.6s ease-out infinite; }
+  @keyframes vring { 0% { transform: scale(0.85); opacity: 0.9; } 100% { transform: scale(1.45); opacity: 0; } }
+  .vcard:hover .vcard-play { transform: scale(1.08); background: var(--gold-light); }
+  .vcard-dur { position: absolute; bottom: 12px; inset-inline-end: 12px; background: rgba(7, 32, 47, 0.75); color: var(--papyrus); border-color: transparent; font-variant-numeric: tabular-nums; }
+  .vcard-body { display: grid; gap: 4px; }
+  .vcard-title { font-family: var(--display); font-size: 1.25rem; color: var(--ink); line-height: 1.2; font-variation-settings: 'opsz' 48, 'SOFT' 30; }
+  html[lang='ar'] .vcard-title { font-weight: 700; font-size: 1.15rem; font-variation-settings: normal; }
+  .vcard-lg .vcard-title { font-size: clamp(1.4rem, 2.4vw, 1.9rem); }
+  .vcard-place { display: inline-flex; gap: 6px; align-items: center; font-size: 0.88rem; color: var(--stone); }
+  :global(.on-dark) .vcard-title { color: var(--papyrus); } :global(.on-dark) .vcard-place { color: rgba(246, 240, 227, 0.65); }
+  .vcard:focus-visible { outline: none; } .vcard:focus-visible .vcard-media { outline: 2px solid var(--gold); outline-offset: 4px; }
+  @media (prefers-reduced-motion: reduce) { .vcard-ring { animation: none; opacity: 0.5; } }
+</style>

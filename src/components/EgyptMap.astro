@@ -33,8 +33,7 @@ const line = (pts: [number, number][]) => 'M' + pts.map(pt).join(' L');
 const visible = PLACES.filter((p) => !show || show.includes(p.id));
 // Short labels: "Saqqara, Dahshur & Memphis" → "Saqqara". Abusir sits on top of Giza at this scale, so its label is
 // dropped unless it is part of a route (the Sacred Egypt night) where it matters.
-const short = (s: string) => s.replace(/ \(.*\)/, '').split(/,| &| و|، /)[0].trim();
-const pins = visible.map((p, i) => ({ ...p, pos: P(p.at.lng, p.at.lat), i, minor: p.minor && !(show?.includes(p.id)) && !(route?.includes(p.id)), quiet: p.id === 'abusir' && !route?.includes('abusir'), label: short(pick(p.name, lang)) }));
+const pins = visible.map((p, i) => ({ ...p, pos: P(p.at.lng, p.at.lat), i, minor: p.minor && !(show?.includes(p.id)) && !(route?.includes(p.id)), quiet: p.id === 'abusir' && !route?.includes('abusir'), label: pick(p.short ?? p.name, lang) }));
 const routePts = route?.map((id) => { const p = PLACES.find((x) => x.id === id)!; return [p.at.lng, p.at.lat] as [number, number]; });
 const routeD = routePts && routePts.length > 1 ? 'M' + routePts.map(pt).join(' L') : '';
 const lblOff = (s?: string) => s === 'l' ? { x: -9, y: 3.5, a: 'end' } : s === 'u' ? { x: 0, y: -9, a: 'middle' } : s === 'd' ? { x: 0, y: 14, a: 'middle' } : { x: 9, y: 3.5, a: 'start' };

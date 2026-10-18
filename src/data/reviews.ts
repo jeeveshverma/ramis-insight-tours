@@ -23,9 +23,24 @@ export const REVIEWS: Review[] = [
     quote: { en: 'When you book with Rami’s Insight Tours, make sure you also spend time with Rania. I found myself forming a connection beyond the typical guide-guest relationship.', ar: 'حين تحجز مع رحلات رامي، احرص على قضاء وقت مع رانيا أيضاً. وجدت نفسي أكوّن صلة تتجاوز علاقة المرشد بالضيف المعتادة.' } },
 ];
 
-/** The three video testimonials embedded on the old home page. IDs still to be recovered from Wix. */
-export const VIDEOS: { id: string; title: Bi; src?: string }[] = [
-  { id: 'v1', title: { en: 'Why we came back', ar: 'لماذا عدنا' } },
-  { id: 'v2', title: { en: 'A week with Rami', ar: 'أسبوع مع رامي' } },
-  { id: 'v3', title: { en: 'From the rooftop', ar: 'من السطح' } },
+/**
+ * Videos recovered from the old Wix site (2026-10-18): the three guest testimonials from its home page
+ * and Rami's own 8-minute film. Files live in public/media/; posters are catalogue photos.
+ * Titles describe where each was filmed — we do not put words in guests' mouths.
+ */
+export interface Video { id: string; file: string; poster: string; title: Bi; place: Bi; duration: string; kind: 'guest' | 'film' }
+
+export const FILM: Video = {
+  id: 'meet-rami', file: 'meet-rami.mp4', poster: 'video-meet-rami', kind: 'film', duration: '8:07',
+  title: { en: 'Meet Rami: a film about how we travel', ar: 'تعرّف إلى رامي: فيلم عن طريقتنا في السفر' },
+  place: { en: 'Giza, Cairo, Luxor, Aswan, the Nile', ar: 'الجيزة والقاهرة والأقصر وأسوان والنيل' },
+};
+
+export const VIDEOS: Video[] = [
+  { id: 'rooftop', file: 'testimonial-rooftop.mp4', poster: 'video-rooftop', kind: 'guest', duration: '1:05',
+    title: { en: 'From our rooftop at sunset', ar: 'من سطحنا عند الغروب' }, place: { en: 'Pyramids Temple Guest House, Giza', ar: 'بيت ضيافة معبد الأهرامات، الجيزة' } },
+  { id: 'el-fishawy', file: 'testimonial-el-fishawy.mp4', poster: 'video-el-fishawy', kind: 'guest', duration: '2:06',
+    title: { en: 'Over tea at El Fishawy', ar: 'على الشاي في مقهى الفيشاوي' }, place: { en: 'Khan el-Khalili, Cairo', ar: 'خان الخليلي، القاهرة' } },
+  { id: 'islamic-cairo', file: 'testimonial-islamic-cairo.mp4', poster: 'video-islamic-cairo', kind: 'guest', duration: '1:21',
+    title: { en: 'Walking Islamic Cairo with Rami', ar: 'جولة في القاهرة الإسلامية مع رامي' }, place: { en: 'Al-Hussein Square, Cairo', ar: 'ميدان الحسين، القاهرة' } },
 ];

@@ -1,0 +1,53 @@
+---
+/** "Meet Rami": the 8-minute film as a cinematic feature block (letterbox frame, gold play, chapter list). */
+import { pick, digits, type Lang } from '../i18n';
+import { FILM } from '../data/reviews';
+import VideoCard from './VideoCard.astro';
+import Icon from './Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ar = lang === 'ar';
+// Chapter starts read off frames sampled from the film; each chapter opens the player at that second.
+const chapters: [string, string, number][] = [
+  ['camel', ar ? 'على الجمال إلى الأهرامات' : 'By camel to the pyramids', 19],
+  ['pyramid', ar ? 'داخل غرفة الملك في الهرم الأكبر' : "Inside the King's Chamber", 80],
+  ['temple', ar ? 'معابد الصعيد' : 'The temples of Upper Egypt', 142],
+  ['boat', ar ? 'رحلة النيل والقرى النوبية' : 'The Nile cruise and Nubia', 166],
+  ['sun', ar ? 'شروق أبو سمبل' : 'Sunrise at Abu Simbel', 298],
+  ['cooking', ar ? 'طعام بيتي ودروس طبخ' : 'Home cooking and lessons', 420],
+];
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+const src = `${import.meta.env.BASE_URL}media/${FILM.file}`;
+const title = pick(FILM.title, lang);
+---
+<section class="section film dark-deep on-dark">
+  <div class="film-grain" aria-hidden="true"></div>
+  <div class="wrap film-in">
+    <div class="film-text rv">
+      <p class="eyebrow">{ar ? 'فيلم' : 'Film'} · {digits(FILM.duration, lang)}</p>
+      <h2>{ar ? 'تعرّف إلى رامي' : 'Meet Rami'}</h2>
+      <p class="lead">{ar ? 'ثماني دقائق صوّرها رامي بنفسه مع ضيوفه: من السطح في الجيزة إلى معابد الصعيد، وما بينهما من شاي وجمال ومراكب وطعام بيتي.' : 'Eight minutes Rami filmed himself, with his guests: from the rooftop in Giza to the temples of Upper Egypt, and the tea, camels, boats and home cooking in between.'}</p>
+      <ol class="film-ch">{chapters.map(([icon, label, s]) => <li><button type="button" data-video={`${src}#t=${s}`} data-title={title}><Icon name={icon} size={18} /><span>{label}</span><span class="num">{digits(mmss(s), lang)}</span></button></li>)}</ol>
+    </div>
+    <div class="film-frame rv rv-d1">
+      <span class="film-bar" aria-hidden="true"></span>
+      <VideoCard lang={lang} video={FILM} size="lg" />
+      <span class="film-bar" aria-hidden="true"></span>
+    </div>
+  </div>
+</section>
+<style>
+  .film { overflow: hidden; }
+  .film-grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.07; background-image: radial-gradient(circle at 20% 20%, rgba(224, 185, 58, 0.6), transparent 40%), radial-gradient(circle at 80% 70%, rgba(111, 176, 224, 0.5), transparent 45%); }
+  .film-in { display: grid; gap: 40px; align-items: center; position: relative; }
+  .film h2 { margin: 14px 0 16px; }
+  .film-ch { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line-dark); }
+  .film-ch li { border-bottom: 1px solid var(--line-dark); }
+  .film-ch button { width: 100%; display: grid; grid-template-columns: 22px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; min-height: 48px; background: none; border: 0; color: inherit; font: inherit; text-align: start; cursor: pointer; transition: color 0.2s, padding 0.3s var(--ease-out); }
+  .film-ch button:hover { color: var(--gold-light); padding-inline-start: 6px; }
+  .film-ch svg { color: var(--gold-light); }
+  .film-ch .num { color: rgba(246, 240, 227, 0.55); font-size: 0.95rem; }
+  .film-frame { display: grid; gap: 10px; }
+  .film-bar { height: 10px; background: repeating-linear-gradient(90deg, rgba(246, 240, 227, 0.16) 0 14px, transparent 14px 24px); border-radius: 2px; }
+  @media (min-width: 960px) { .film-in { grid-template-columns: 0.85fr 1.15fr; gap: 72px; } }
+</style>

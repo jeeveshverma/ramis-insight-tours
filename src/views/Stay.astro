@@ -11,7 +11,8 @@ import { useT, path, pick, digits, usd, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { stay as getStay, type StayId } from '../data/stays';
 import { TOURS } from '../data/tours';
-import { REVIEWS } from '../data/reviews';
+import { REVIEWS, VIDEOS } from '../data/reviews';
+import VideoCard from '../components/VideoCard.astro';
 import { waUrl, mailUrl } from '../lib/wa';
 interface Props { lang: Lang; id: string }
 const { lang, id } = Astro.props;
@@ -172,6 +173,7 @@ const jsonld = soon ? [] : [{
             </div>
             <p class="muted small">{t('stay.ratingBooking')} · {t('stay.reviews', { n: digits(scores.count, lang) })}</p>
             <a class="btn btn-outline" href={SITE.bookingUrl} target="_blank" rel="noopener">{t('stay.ctaBooking')} <Icon name="arrowUpRight" size={16} /></a>
+            <div class="rev-video"><VideoCard lang={lang} video={VIDEOS[0]} /></div>
           </div>
           <div class="grid-2 stagger">{reviews.slice(0, 4).map((r) => <ReviewCard lang={lang} review={r} />)}</div>
         </div>
@@ -280,6 +282,7 @@ const jsonld = soon ? [] : [{
   .sgal { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } .sgal-big { grid-column: 1 / -1; }
   @media (min-width: 960px) { .sgal { grid-template-columns: repeat(3, 1fr); } .sgal-big { grid-column: span 2; grid-row: span 2; } .sgal-big :global(.photo) { height: 100%; aspect-ratio: auto !important; } }
 
+  .rev-video { margin-top: 32px; }
   .rev-in { display: grid; gap: 36px; align-items: start; } .rev-in h2 { margin: 12px 0 20px; }
   .scores { display: grid; gap: 12px; margin-bottom: 14px; max-width: 420px; }
   .score { display: grid; grid-template-columns: 90px 1fr 36px; gap: 12px; align-items: center; font-size: 0.9rem; } .score b { font-family: var(--display); font-size: 1.2rem; color: var(--gold-light); text-align: end; }

@@ -11,7 +11,7 @@ const { t } = useT(lang);
   <blockquote><p>{pick(r.quote, lang)}</p></blockquote>
   <figcaption>
     <span class="rcard-name">{r.name}</span>
-    <span class="rcard-from muted">{pick(r.from, lang)}</span>
+    {pick(r.from, lang) !== t(`reviews.source.${r.source}`) && <span class="rcard-from muted">{pick(r.from, lang)}</span>}
     <span class="rcard-src pill">{r.source === 'google' && <Icon name="starFill" size={12} />}{t(`reviews.source.${r.source}`)}</span>
     {r.url && <a class="rcard-link" href={r.url} target="_blank" rel="noopener">{t('reviews.read')} <Icon name="arrowUpRight" size={14} /></a>}
   </figcaption>

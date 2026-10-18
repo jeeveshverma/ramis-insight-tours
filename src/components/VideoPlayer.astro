@@ -1,0 +1,49 @@
+---
+/**
+ * The one shared video player: a full-screen <dialog> that plays whatever [data-video] button was pressed.
+ * The <video> has no src until then, so no page pays for video it does not watch.
+ */
+import Icon from './Icon.astro';
+interface Props { closeLabel: string }
+const { closeLabel } = Astro.props;
+---
+<dialog class="vp" id="vp" aria-label="Video">
+  <div class="vp-in">
+    <div class="vp-head"><p class="vp-title" data-vp-title></p><button type="button" class="vp-x" data-vp-close aria-label={closeLabel}><Icon name="close" size={22} /></button></div>
+    <video class="vp-video" data-vp-video controls playsinline preload="none"></video>
+  </div>
+</dialog>
+
+<script>
+  const dlg = document.getElementById('vp') as HTMLDialogElement | null;
+  if (dlg) {
+    const video = dlg.querySelector<HTMLVideoElement>('[data-vp-video]')!;
+    const title = dlg.querySelector<HTMLElement>('[data-vp-title]')!;
+    const close = () => { video.pause(); video.removeAttribute('src'); video.load(); dlg.close(); };
+    document.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('[data-video]');
+      if (!b) return;
+      e.preventDefault();
+      title.textContent = b.dataset.title || '';
+      video.src = b.dataset.video!;
+      dlg.showModal();
+      video.play().catch((err) => console.error('[video] could not start playback', err));
+    });
+    video.addEventListener('error', () => { title.textContent = (title.textContent || '') + ' — the video could not load. Please try again or watch on our Facebook page.'; });
+    dlg.querySelector('[data-vp-close]')!.addEventListener('click', close);
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) close(); });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); close(); });
+  }
+</script>
+
+<style>
+  .vp { border: 0; padding: 0; background: transparent; width: min(1100px, 100vw); max-width: 100vw; max-height: 100vh; margin: auto; }
+  .vp::backdrop { background: rgba(7, 32, 47, 0.94); backdrop-filter: blur(6px); }
+  .vp-in { display: grid; gap: 12px; padding: 16px; }
+  .vp-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: var(--papyrus); }
+  .vp-title { margin: 0; font-family: var(--display); font-size: clamp(1.1rem, 2.4vw, 1.5rem); }
+  html[lang='ar'] .vp-title { font-weight: 700; }
+  .vp-x { width: 48px; height: 48px; border-radius: 50%; border: 1px solid rgba(246, 240, 227, 0.3); background: rgba(246, 240, 227, 0.08); color: var(--papyrus); display: grid; place-items: center; cursor: pointer; flex: none; }
+  .vp-x:hover { background: rgba(246, 240, 227, 0.18); }
+  .vp-video { width: 100%; max-height: calc(100vh - 110px); background: #000; border-radius: 6px; aspect-ratio: 16/9; }
+</style>

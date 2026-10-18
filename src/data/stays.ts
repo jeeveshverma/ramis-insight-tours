@@ -100,7 +100,7 @@ export const STAYS: Stay[] = [
     place: { en: 'Luxor', ar: 'الأقصر' },
     tagline: { en: 'Coming soon', ar: 'قريباً' },
     intro: { en: 'A quiet retreat on the Nile at Luxor, from the family behind Pyramids Temple Guest House. We are still building it; leave your details and we will tell you when the first rooms open.', ar: 'منتجع هادئ على النيل في الأقصر، من العائلة صاحبة بيت ضيافة معبد الأهرامات. ما زلنا نبنيه؛ اترك بياناتك وسنخبرك حين تفتح أول الغرف.' },
-    hero: 'nile-bank-picnic', photos: [], rooms: [], amenities: [], rules: [], why: [],
+    hero: 'film-luxor-temple-dusk', photos: [], rooms: [], amenities: [], rules: [], why: [],
   },
 ];
 

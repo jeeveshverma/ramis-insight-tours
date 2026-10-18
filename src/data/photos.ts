@@ -2,7 +2,7 @@
  * Photo catalogue. Files live in src/assets/photos/ under these ids (jpg or webp); they are the
  * 33 originals pulled from the old Wix site at full resolution. `cat` groups the gallery.
  */
-export type Cat = 'giza' | 'cairo' | 'nile' | 'alexandria' | 'desert' | 'stay' | 'people' | 'food';
+export type Cat = 'giza' | 'cairo' | 'nile' | 'alexandria' | 'desert' | 'stay' | 'people' | 'food' | 'video';
 
 export interface Photo { id: string; cat: Cat; alt: { en: string; ar: string }; w: number; h: number; pos?: string }
 
@@ -60,6 +60,20 @@ export const PHOTOS: Photo[] = [
   { id: 'guesthouse-kitchen', cat: 'stay', w: 1185, h: 1008, alt: { en: 'The shared kitchen', ar: 'المطبخ المشترك' } },
   { id: 'guests-cafe', cat: 'people', w: 1269, h: 952, alt: { en: 'Rami and guests with fresh juice at a café', ar: 'رامي وضيوف مع عصير طازج في مقهى' } },
   { id: 'rami-saqqara-group', cat: 'people', w: 1568, h: 703, alt: { en: 'Rami with a group at Saqqara', ar: 'رامي مع مجموعة في سقارة' } },
+  // Stills from Rami's own film (recovered from the old site), 1280x720.
+  { id: 'film-luxor-temple-dusk', cat: 'nile', w: 1280, h: 720, alt: { en: 'Luxor Temple lit at dusk, the colossi of Ramses II in gold', ar: 'معبد الأقصر مضاءً عند الغسق، وتماثيل رمسيس الثاني بلون ذهبي' } },
+  { id: 'film-dendera-columns', cat: 'nile', w: 1280, h: 720, alt: { en: 'The Hathor columns and painted ceiling at Dendera', ar: 'أعمدة حتحور والسقف الملون في دندرة' } },
+  { id: 'film-philae-kiosk', cat: 'nile', w: 1280, h: 720, alt: { en: "Trajan's Kiosk on Philae island, Aswan", ar: 'كشك تراجان في جزيرة فيلة، أسوان' } },
+  { id: 'film-edfu-courtyard', cat: 'nile', w: 1280, h: 720, alt: { en: 'The great courtyard of the Temple of Horus at Edfu', ar: 'الفناء الكبير لمعبد حورس في إدفو' } },
+  { id: 'film-camels-dunes', cat: 'giza', w: 1280, h: 720, alt: { en: 'A camel caravan setting out across the Giza dunes', ar: 'قافلة جمال تنطلق عبر كثبان الجيزة' } },
+  { id: 'film-camel-rider', cat: 'desert', w: 1280, h: 720, alt: { en: 'Guests riding camels across the open desert', ar: 'ضيوف يركبون الجمال في الصحراء المفتوحة' } },
+  { id: 'film-nubian-village', cat: 'nile', w: 1280, h: 720, alt: { en: 'Painted houses of a Nubian village above the Nile', ar: 'بيوت ملونة في قرية نوبية فوق النيل' } },
+  // Video posters (frames from the recovered videos); kept out of the gallery via cat 'video'.
+  { id: 'video-meet-rami', cat: 'video', w: 1280, h: 720, alt: { en: 'Rami, arms raised, inside a temple', ar: 'رامي رافعاً ذراعيه داخل معبد' } },
+  { id: 'video-rami-rooftop', cat: 'video', w: 1280, h: 720, alt: { en: 'Rami on his rooftop with the pyramids behind', ar: 'رامي على سطحه والأهرامات خلفه' } },
+  { id: 'video-rooftop', cat: 'video', w: 848, h: 480, alt: { en: 'A guest speaking on the guest-house rooftop at sunset', ar: 'ضيف يتحدث على سطح بيت الضيافة عند الغروب' } },
+  { id: 'video-el-fishawy', cat: 'video', w: 640, h: 352, alt: { en: 'Two guests at El Fishawy café', ar: 'ضيفان في مقهى الفيشاوي' } },
+  { id: 'video-islamic-cairo', cat: 'video', w: 640, h: 352, alt: { en: 'A guest with Rami in front of Al-Hussein Mosque', ar: 'ضيف مع رامي أمام مسجد الحسين' } },
 ];
 
 const BY = Object.fromEntries(PHOTOS.map((p) => [p.id, p]));

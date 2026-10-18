@@ -12,6 +12,7 @@ import { SITE } from '../data/site';
 import { waUrl, telUrl } from '../lib/wa';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import VideoPlayer from './VideoPlayer.astro';
 
 interface Props { lang: Lang; page: PageKey; sub?: string; title: string; desc: string; overHero?: boolean; jsonld?: object[]; noindex?: boolean; ogImage?: string; dark?: boolean }
 const { lang, page, sub = '', title, desc, overHero = false, jsonld = [], noindex = false, ogImage, dark = false } = Astro.props;
@@ -128,6 +129,7 @@ const org = {
     </div>
   </footer>
 
+  <VideoPlayer closeLabel={t('gallery.close')} />
   <a class="fab" href={wa} target="_blank" rel="noopener" aria-label={t('nav.whatsapp')}><Icon name="whatsapp" /></a>
   <div class="stick" id="stick">
     <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
@@ -231,7 +233,9 @@ const org = {
     .nav-more { display: none; }
   }
 
-  .ftr { background: var(--nile-deep); color: rgba(246, 240, 227, 0.78); padding-block: 64px 28px; margin-top: 0; position: relative; z-index: 1; }
+  /* a gold hairline so the footer never merges with a dark section above it */
+  .ftr { background: var(--nile-deep); color: rgba(246, 240, 227, 0.78); padding-block: 64px 28px; margin-top: 0; position: relative; z-index: 1; border-top: 1px solid rgba(201, 162, 39, 0.45); }
+  .ftr-col a { align-items: flex-start; overflow-wrap: anywhere; } .ftr-col a svg { margin-top: 4px; flex: none; }
   .ftr .logo-stack .logo-name { color: var(--papyrus); } .ftr .logo-stack .logo-sub { color: var(--gold-light); }
   .ftr-in { display: grid; gap: 36px; }
   .ftr-col p { margin: 0 0 8px; }

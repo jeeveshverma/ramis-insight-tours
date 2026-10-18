@@ -2,7 +2,9 @@
 import Layout from '../components/Layout.astro';
 import Icon from '../components/Icon.astro';
 import ReviewCard from '../components/ReviewCard.astro';
-import { useT, digits, pick, type Lang } from '../i18n';
+import VideoCard from '../components/VideoCard.astro';
+import FilmFeature from '../components/FilmFeature.astro';
+import { useT, digits, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { REVIEWS, VIDEOS } from '../data/reviews';
 interface Props { lang: Lang }
@@ -21,12 +23,13 @@ const { t } = useT(lang);
       <div class="grid-3 stagger" style="margin-top:36px">{REVIEWS.map((r) => <ReviewCard lang={lang} review={r} />)}</div>
     </div>
   </section>
-  <section class="section dark on-dark">
+  <section class="section dark on-dark pattern">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('reviews.videos')}</p><p class="lead">{t('reviews.videoSoon')}</p></div>
-      <div class="grid-3 stagger">{VIDEOS.map((v) => <div class="vid pattern"><Icon name="play" size={40} /><span>{pick(v.title, lang)}</span></div>)}</div>
+      <div class="section-head rv"><p class="eyebrow">{t('reviews.videos')}</p><h2>{t('reviews.videosTitle')}</h2><p class="lead">{t('reviews.videosText')}</p></div>
+      <div class="grid-3 stagger">{VIDEOS.map((v) => <VideoCard lang={lang} video={v} />)}</div>
     </div>
   </section>
+  <FilmFeature lang={lang} />
 </Layout>
 <style>
   .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
@@ -34,5 +37,4 @@ const { t } = useT(lang);
   .badge { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 18px 20px; text-decoration: none; color: inherit; }
   .badge b { font-family: var(--display); font-size: 2.2rem; color: var(--gold-text); display: inline-flex; align-items: center; gap: 4px; line-height: 1; } .badge span { font-weight: 700; color: var(--ink); line-height: 1.3; } .badge small { font-weight: 500; }
   @media (min-width: 720px) { .badges { grid-template-columns: repeat(3, 1fr); } }
-  .vid { aspect-ratio: 16/9; border: 1px solid var(--line-dark); border-radius: var(--radius); display: grid; place-content: center; justify-items: center; gap: 10px; color: var(--gold-light); background: rgba(246, 240, 227, 0.03); } .vid span { color: var(--papyrus); font-weight: 600; }
 </style>

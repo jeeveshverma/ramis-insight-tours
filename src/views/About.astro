@@ -3,6 +3,7 @@ import Layout from '../components/Layout.astro';
 import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import Ribbon from '../components/Ribbon.astro';
+import FilmFeature from '../components/FilmFeature.astro';
 import { useT, path, digits, type Lang } from '../i18n';
 import en from '../i18n/en.json';
 import ar from '../i18n/ar.json';
@@ -33,6 +34,7 @@ const icons = ['tip', 'breakfast', 'plane', 'route'];
       <p>{t('about.p4')}</p>
     </div>
   </section>
+  <FilmFeature lang={lang} />
   <section class="section-tight">
     <div class="wrap"><div class="frame rv"><Img id="nile-bank-picnic" lang={lang} ratio="21/9" sizes="100vw" widths={[640, 960, 1280, 1600]} /></div><p class="caption ital muted" style="margin-top:14px">{lang === 'ar' ? 'نزهة الغروب على ضفة النيل، مع العائلة والضيوف' : 'Sunset picnic on the Nile bank, family and guests together'}</p></div>
   </section>
@@ -66,7 +68,7 @@ const icons = ['tip', 'breakfast', 'plane', 'route'];
 </Layout>
 <style>
   html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
-  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
+  .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); padding-bottom: clamp(24px, 4vw, 48px); }
   .about-hero { display: grid; gap: 36px; align-items: center; } .about-hero h1 { margin-top: 14px; }
   .about-photos { position: relative; padding-inline-end: 18%; padding-bottom: 40px; max-width: 520px; }
   .about-gf { position: absolute; bottom: 0; inset-inline-end: 0; width: 36%; background: var(--papyrus); box-shadow: var(--shadow); }

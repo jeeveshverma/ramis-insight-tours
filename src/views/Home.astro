@@ -7,11 +7,13 @@ import EgyptMap from '../components/EgyptMap.astro';
 import TourCard from '../components/TourCard.astro';
 import ReviewCard from '../components/ReviewCard.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
+import VideoCard from '../components/VideoCard.astro';
+import FilmFeature from '../components/FilmFeature.astro';
 import { useT, path, pick, digits, usd, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { FEATURED, TOURS } from '../data/tours';
 import { GUEST_HOUSE } from '../data/stays';
-import { REVIEWS } from '../data/reviews';
+import { REVIEWS, VIDEOS } from '../data/reviews';
 import { POSTS } from '../data/posts';
 import { waUrl } from '../lib/wa';
 interface Props { lang: Lang }
@@ -32,6 +34,8 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   <section class="hero">
     <div class="hero-media">
       <Img id="pyramids-golden-hour" lang={lang} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} class="hero-img" position="50% 60%" />
+      <!-- Silent loop cut from Rami's film; src is set by script only when motion and data allow, then it fades in over the photo. -->
+      <video class="hero-video" data-hero-video data-src={`${import.meta.env.BASE_URL}media/hero-loop.mp4`} muted loop playsinline preload="none" aria-hidden="true"></video>
       <div class="hero-shade"></div>
     </div>
     <div class="wrap hero-in on-dark">
@@ -168,12 +172,16 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
     </div>
   </section>
 
-  <!-- REVIEWS MARQUEE -->
+  <FilmFeature lang={lang} />
+
+  <!-- GUEST VIDEOS + REVIEWS MARQUEE -->
   <section class="section-tight reviews sand-bg">
     <div class="wrap section-head rv" style="margin-bottom:28px">
       <p class="eyebrow">{t('home.reviewsEyebrow')}</p>
       <h2>{t('home.reviewsTitle')}</h2>
+      <p class="lead">{t('reviews.videosText')}</p>
     </div>
+    <div class="wrap grid-3 stagger home-videos">{VIDEOS.map((v) => <VideoCard lang={lang} video={v} />)}</div>
     <div class="marquee" data-marquee>
       <div class="marquee-track">
         {[...REVIEWS, ...REVIEWS].map((r) => <div class="marquee-item"><ReviewCard lang={lang} review={r} /></div>)}
@@ -214,6 +222,19 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
 </Layout>
 
 <script>
+  // Hero loop: only when the visitor allows motion and is not on Data Saver / a 2G link. Fades in once it is really playing,
+  // and pauses when the hero scrolls out of view so it never costs battery off-screen.
+  const hv = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  if (hv) {
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    const ok = !matchMedia('(prefers-reduced-motion: reduce)').matches && !conn?.saveData && !/(^|-)2g$/.test(conn?.effectiveType || '');
+    if (ok) {
+      hv.src = hv.dataset.src!;
+      hv.addEventListener('playing', () => hv.classList.add('on'), { once: true });
+      hv.play().catch(() => { /* autoplay refused: the photo stays, which is the intended fallback */ });
+      new IntersectionObserver(([e]) => { if (e.isIntersecting) hv.play().catch(() => {}); else hv.pause(); }).observe(hv);
+    }
+  }
   // pause marquee on hover/touch; speed from item count
   document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((m) => {
     const track = m.querySelector<HTMLElement>('.marquee-track')!;
@@ -229,7 +250,10 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   .hero-media :global(.photo) { position: absolute; inset: 0; border-radius: 0; height: 100%; }
   .hero-media :global(img) { animation: kb 28s var(--ease) infinite alternate; transform-origin: 60% 60%; }
   @keyframes kb { from { transform: scale(1); } to { transform: scale(1.1) translate(-1.5%, 1%); } }
-  .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.35) 0%, rgba(7, 32, 47, 0) 30%, rgba(7, 32, 47, 0.3) 60%, rgba(7, 32, 47, 0.9) 100%); }
+  .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.6s var(--ease); }
+  .hero-video.on { opacity: 1; }
+  .hero-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.5) 0%, rgba(7, 32, 47, 0.05) 30%, rgba(7, 32, 47, 0.35) 60%, rgba(7, 32, 47, 0.92) 100%); }
+  .home-videos { margin-bottom: 40px; }
   .hero-in { position: relative; padding-bottom: clamp(72px, 12vh, 140px); display: grid; gap: 18px; max-width: var(--container); }
   .hero-eyebrow { opacity: 0; animation: up 0.9s var(--ease-out) 0.2s forwards; color: var(--papyrus) !important; text-shadow: 0 1px 12px rgba(7, 32, 47, 0.6); }
   .hero-eyebrow::before { background: var(--papyrus) !important; }
@@ -266,6 +290,8 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   .way { position: relative; display: grid; gap: 14px; }
   .way-photo { position: relative; }
   .way .marker { position: absolute; top: -18px; inset-inline-start: -6px; z-index: 1; }
+  /* phones: the numeral would sit on the photo, so it flows in line above the title instead */
+  @media (max-width: 719px) { .way .marker { position: static; font-size: 2.6rem; margin-bottom: -6px; } }
   .way-body { display: grid; gap: 8px; }
   .way-icon { color: var(--gold-text); }
   .way-body p { margin: 0; color: var(--body); }
