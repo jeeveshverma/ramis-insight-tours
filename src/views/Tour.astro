@@ -290,13 +290,16 @@ const jsonld = custom ? [] : [{
 
   .stays-grid { display: grid; gap: 20px; }
   .stay-card { display: grid; text-decoration: none; color: inherit; }
-  .stay-card-body { padding: 18px 20px 22px; display: grid; gap: 8px; }
+  .stay-card-body { padding: 18px 20px 22px; display: grid; gap: 8px; align-content: start; }
+  .stay-card .pill { justify-self: start; }
   .stay-card h3 { font-size: 1.3rem; } .stay-card p { margin: 0; }
   .stay-go { font-weight: 700; color: var(--gold-text); display: inline-flex; gap: 6px; align-items: center; margin-top: 6px; }
   .stay-plain { grid-template-columns: 48px 1fr; gap: 16px; padding: 22px; align-items: start; }
   .stay-icon { color: var(--gold-text); margin-top: 6px; }
   .stay-plain div { display: grid; gap: 8px; }
-  @media (min-width: 720px) { .stays-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } .stay-gh { grid-column: span 2; grid-template-columns: 1fr 1fr; } .stay-gh :global(.photo) { height: 100%; aspect-ratio: auto; } }
+  @media (min-width: 720px) { .stays-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } .stay-gh { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .stay-gh > * { min-width: 0; } .stay-gh :global(.photo) { height: 100%; width: 100%; aspect-ratio: auto !important; } }
+  /* Two traps here: a plain 1fr column won't shrink below the photo's intrinsic width (hence minmax(0, …)), and Img
+     sets aspect-ratio inline, which beats this stylesheet unless !important — otherwise height:100% widens the photo over the text. */
 
   .price-in { display: grid; gap: 36px; align-items: start; }
   .price-in h2 { margin: 12px 0 20px; font-size: clamp(1.6rem, 3vw, 2.4rem); }

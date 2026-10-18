@@ -56,5 +56,5 @@ const custom = tour.style === 'custom';
   .tcard-line path { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-dasharray: 420; stroke-dashoffset: 420; transition: stroke-dashoffset 1.2s var(--ease-out); }
   .tcard:hover .tcard-line path { stroke-dashoffset: 0; }
   .tcard-custom .tcard-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14, 47, 68, 0.1), rgba(14, 47, 68, 0.55)); }
-  @media (min-width: 960px) { .tcard-big { flex-direction: row; } .tcard-big > * { flex: 1; } .tcard-big .tcard-media :global(.photo) { height: 100%; aspect-ratio: auto; } .tcard-big .tcard-body { padding: 32px; align-content: center; gap: 14px; } .tcard-big h3 { font-size: 2.2rem; } }
+  @media (min-width: 960px) { .tcard-big { flex-direction: row; } .tcard-big > * { flex: 1; min-width: 0; } .tcard-big .tcard-media :global(.photo) { height: 100%; width: 100%; aspect-ratio: auto !important; } .tcard-big .tcard-body { padding: 32px; align-content: center; gap: 14px; } .tcard-big h3 { font-size: 2.2rem; } }
 </style>

@@ -32,5 +32,5 @@ const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(lang ===
   @media (min-width: 640px) { .plist { grid-template-columns: repeat(2, 1fr); } .pitem-big { grid-column: 1 / -1; } }
   /* one feature + four below: four columns on wide screens so nothing is left orphaned */
   @media (min-width: 1100px) { .plist { grid-template-columns: repeat(4, 1fr); } .pbody h2 { font-size: 1.25rem; } }
-  @media (min-width: 960px) { .pitem-big { grid-column: 1 / -1; grid-template-columns: 1.4fr 1fr; } .pitem-big :global(.photo) { height: 100%; aspect-ratio: auto !important; } .pitem-big .pbody { padding: 36px; align-content: center; } .pitem-big h2 { font-size: 2.2rem; } }
+  @media (min-width: 960px) { .pitem-big { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); } .pitem-big > * { min-width: 0; } .pitem-big :global(.photo) { height: 100%; aspect-ratio: auto !important; } .pitem-big .pbody { padding: 36px; align-content: center; } .pitem-big h2 { font-size: 2.2rem; } }
 </style>

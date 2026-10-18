@@ -57,5 +57,5 @@ const { t } = useT(lang);
   .scard-soon .scard-badge { background: var(--gold); color: var(--ink); border-color: var(--gold); }
   .scard-soon :global(.soon-img img) { filter: saturate(0.5) brightness(0.7); }
   html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
-  @media (min-width: 960px) { .scard { grid-template-columns: 1.3fr 1fr; } .scard :global(.photo) { height: 100%; aspect-ratio: auto; } .scard-body { padding: 36px; align-content: center; } .scard-soon { grid-template-columns: 1fr 1.3fr; } }
+  @media (min-width: 960px) { .scard { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); } .scard > * { min-width: 0; } .scard :global(.photo) { height: 100%; width: 100%; aspect-ratio: auto !important; } .scard-body { padding: 36px; align-content: center; } .scard-soon { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); } }
 </style>
