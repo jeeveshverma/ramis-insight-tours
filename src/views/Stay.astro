@@ -103,8 +103,14 @@ const jsonld = soon ? [] : [{
           <div class="rooms stagger">
             {s.rooms.map((r) => (
               <article class="room card">
-                <div class="room-tile pattern"><span class="room-m2"><b>{digits(r.m2, lang)}</b><small>{t('stay.m2')}</small></span><Icon name="bed" size={26} class="room-ic" /></div>
+                <div class="room-media" data-carousel>
+                  <div class="room-track">{r.photos.map((ph, j) => <Img id={ph} lang={lang} ratio="4/3" sizes="(min-width:1100px) 25vw, (min-width:640px) 50vw, 100vw" widths={[420, 640, 900]} />)}</div>
+                  <span class="room-m2"><b>{digits(r.m2, lang)}</b> {t('stay.m2')}</span>
+                  {r.photos.length > 1 && <span class="room-dots" aria-hidden="true">{r.photos.map((_, j) => <i class:list={[j === 0 && 'on']}></i>)}</span>}
+                  {r.photos.length > 1 && <button class="room-nav room-next" type="button" aria-label={t('gallery.next')}><Icon name="arrowRight" size={18} class="rtl-flip" /></button>}
+                </div>
                 <div class="room-body">
+                  {r.door && <span class="room-door"><svg viewBox="0 0 20 18" width="16" aria-hidden="true"><path d="M10 1 L19 17 H1 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>{lang === 'ar' ? 'الغرفة' : 'Room'} {digits(r.door.n, lang)} · {pick(r.door.name, lang)}</span>}
                   <h3>{pick(r.name, lang)}</h3>
                   <ul class="room-facts"><li><Icon name="bed" size={15} /> {pick(r.beds, lang)}</li><li><Icon name="users" size={15} /> {t('stay.guests', { n: digits(r.guests, lang) })}</li><li><Icon name="terrace" size={15} /> {t('stay.terrace')}</li></ul>
                   {r.note && <p class="muted small">{pick(r.note, lang)}</p>}
@@ -198,6 +204,15 @@ const jsonld = soon ? [] : [{
   )}
 </Layout>
 
+<script>
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((c) => {
+    const track = c.querySelector<HTMLElement>('.room-track')!; const dots = [...c.querySelectorAll('.room-dots i')]; const next = c.querySelector('.room-next');
+    const idx = () => Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
+    track.addEventListener('scroll', () => { const i = idx(); dots.forEach((d, j) => d.classList.toggle('on', j === i)); }, { passive: true });
+    next?.addEventListener('click', () => { const n = (idx() + 1) % dots.length; const dir = document.documentElement.dir === 'rtl' ? -1 : 1; track.scrollTo({ left: dir * n * track.clientWidth, behavior: 'smooth' }); });
+  });
+</script>
+
 <style>
   html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
   .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
@@ -207,7 +222,9 @@ const jsonld = soon ? [] : [{
   @keyframes kb { from { transform: scale(1); } to { transform: scale(1.08) translate(1%, -1%); } }
   .sh-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 28% 22% at 70% 34%, rgba(224, 185, 58, 0.5), transparent 70%); mix-blend-mode: screen; animation: glow 6s ease-in-out infinite alternate; }
   @keyframes glow { from { opacity: 0.25; } to { opacity: 0.85; } }
-  .sh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.4), rgba(7, 32, 47, 0) 30%, rgba(7, 32, 47, 0.94) 100%); }
+  /* the sunset sky is near-white at the top, so the header needs a darker band there to stay readable */
+  .sh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.72), rgba(7, 32, 47, 0.15) 26%, rgba(7, 32, 47, 0.1) 45%, rgba(7, 32, 47, 0.94) 100%); }
+  .sh-in .eyebrow { color: var(--papyrus); } .sh-in .eyebrow::before { background: var(--papyrus); }
   .sh-in { position: relative; padding-bottom: clamp(40px, 7vh, 80px); display: grid; gap: 14px; }
   .sh h1 { font-size: clamp(2.4rem, 7vw, 5.2rem); max-width: 12em; }
   .sh-ratings { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; margin-top: 6px; }
@@ -225,15 +242,28 @@ const jsonld = soon ? [] : [{
 
   .why-list { display: grid; gap: 48px; }
   .why-item { display: grid; gap: 24px; align-items: center; }
-  .why-text { position: relative; display: grid; gap: 10px; } .why-text .marker { position: absolute; top: -40px; inset-inline-start: -4px; }
+  .why-text { position: relative; display: grid; gap: 10px; } .why-text .marker { position: absolute; top: -62px; inset-inline-start: -4px; }
+  .why-text { padding-top: 24px; }
   .why-text h2 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); } .why-text .lead { margin: 0; }
   @media (min-width: 960px) { .why-item { grid-template-columns: 1fr 1fr; gap: 64px; } .why-flip .frame { order: 2; } .why-list { gap: 72px; } }
 
   .rooms { display: grid; gap: 20px; }
   .room { display: grid; }
-  .room-tile { aspect-ratio: 16/9; background: var(--sand); display: grid; place-items: center; position: relative; }
-  .room-m2 { display: inline-flex; align-items: baseline; gap: 4px; font-family: var(--display); color: var(--ink); z-index: 1; } .room-m2 b { font-size: 3.4rem; font-weight: 500; line-height: 1; } .room-m2 small { font-family: var(--sans); color: var(--stone); font-weight: 600; }
-  .room-ic { position: absolute; top: 14px; inset-inline-end: 14px; color: var(--gold-text); opacity: 0.7; }
+  /* room photo carousel: native scroll-snap, swipe on phones, arrow on desktop, dots follow the scroll */
+  .room-media { position: relative; }
+  .room-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .room-track::-webkit-scrollbar { display: none; }
+  .room-track > :global(.photo) { flex: 0 0 100%; scroll-snap-align: start; border-radius: 0; }
+  .room-m2 { position: absolute; bottom: 12px; inset-inline-start: 12px; background: rgba(7, 32, 47, 0.78); color: var(--papyrus); backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; }
+  .room-m2 b { font-family: var(--display); font-size: 1.15rem; font-weight: 500; }
+  .room-dots { position: absolute; bottom: 18px; inset-inline-end: 14px; display: flex; gap: 5px; }
+  .room-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(246, 240, 227, 0.55); transition: background 0.3s, transform 0.3s; }
+  .room-dots i.on { background: var(--gold-light); transform: scale(1.3); }
+  .room-nav { position: absolute; top: 50%; inset-inline-end: 10px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(251, 247, 238, 0.92); color: var(--ink); display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity 0.3s; box-shadow: var(--shadow-sm); }
+  .room:hover .room-nav, .room-nav:focus-visible { opacity: 1; }
+  @media (hover: none) { .room-nav { display: none; } }
+  .room-door { display: inline-flex; gap: 6px; align-items: center; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-text); }
+  html[lang='ar'] .room-door { letter-spacing: 0; font-size: 0.9rem; }
   .room-body { padding: 18px 20px 22px; display: grid; gap: 10px; }
   .room-body h3 { font-size: 1.3rem; }
   .room-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 0.92rem; } .room-facts li { display: flex; gap: 8px; align-items: center; } .room-facts svg { color: var(--gold-text); }

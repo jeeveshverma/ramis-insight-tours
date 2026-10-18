@@ -66,7 +66,7 @@ try {
         const W = document.documentElement.clientWidth, out = { overflow: [], textClip: [], smallTap: [], brokenImg: [], noAlt: 0, emptyH: [] };
         const name = (e) => (e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/).slice(0, 2).join('.') : e.tagName.toLowerCase());
         document.querySelectorAll('body *').forEach((e) => {
-          if (e.closest('svg, .marquee, .maplibregl-map, dialog:not([open]), .sr-only, .skip, .hdr-nav:not(.open), [hidden]')) return;
+          if (e.closest('svg, .marquee, .room-track, .maplibregl-map, dialog:not([open]), .sr-only, .skip, .hdr-nav:not(.open), [hidden]')) return;
           const b = e.getBoundingClientRect(); if (!b.width) return;
           if (b.right > W + 1 || b.left < -1) out.overflow.push(`${name(e)} [${Math.round(b.left)}..${Math.round(b.right)}]`);
           const cs = getComputedStyle(e);

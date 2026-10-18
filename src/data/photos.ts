@@ -40,6 +40,26 @@ export const PHOTOS: Photo[] = [
   { id: 'rami-door-small', cat: 'people', w: 286, h: 354, alt: { en: 'Rami in a headscarf at a wooden door', ar: 'رامي بالشماغ عند باب خشبي' } },
   { id: 'grandfather-1964', cat: 'people', w: 286, h: 354, alt: { en: "Rami's grandfather, a government tour guide in 1964", ar: 'جد رامي، مرشد سياحي حكومي عام 1964' } },
   { id: 'logo-original', cat: 'people', w: 720, h: 718, alt: { en: 'The original Eye of Horus logo', ar: 'الشعار الأصلي بعين حورس' } },
+  // From the guest house's own Booking.com listing (captured 2026-10-18), mapped to rooms by the listing's room tags.
+  { id: 'rooftop-sunset-sign', cat: 'stay', w: 1345, h: 896, alt: { en: 'The three pyramids at sunset from the rooftop, with the Pyramids Temple Guest House sign', ar: 'الأهرامات الثلاثة عند الغروب من السطح، ولافتة بيت ضيافة معبد الأهرامات' } },
+  { id: 'rooftop-night-pyramids', cat: 'stay', w: 1345, h: 896, alt: { en: 'The pyramids lit for the sound and light show, seen from the rooftop at night', ar: 'الأهرامات مضاءة لعرض الصوت والضوء، من السطح ليلاً' } },
+  { id: 'room-cheops-door', cat: 'stay', w: 1568, h: 706, alt: { en: 'Door sign of Room 1, Cheops Pyramids', ar: 'لافتة باب الغرفة 1، هرم خوفو' } },
+  { id: 'room-kitchenette', cat: 'stay', w: 1269, h: 952, alt: { en: 'Room kitchenette with hob, kettle, fridge and sink', ar: 'مطبخ الغرفة الصغير بموقد وغلاية وثلاجة وحوض' } },
+  { id: 'room-queen', cat: 'stay', w: 1343, h: 896, alt: { en: 'Queen Room with wall TV, air conditioning and wardrobe', ar: 'غرفة كوين بتلفاز وتكييف وخزانة' } },
+  { id: 'room-red-door', cat: 'stay', w: 1568, h: 704, alt: { en: 'Door sign of Room 4, Red Pyramids', ar: 'لافتة باب الغرفة 4، الهرم الأحمر' } },
+  { id: 'room-red-bed', cat: 'stay', w: 1288, h: 945, alt: { en: 'Room 4: bed, table for two and a Sphinx painting', ar: 'الغرفة 4: سرير وطاولة لشخصين ولوحة لأبو الهول' } },
+  { id: 'room-bathroom-shower', cat: 'stay', w: 952, h: 1271, alt: { en: 'Private bathroom with towels embroidered with the guest house name', ar: 'حمام خاص بمناشف مطرزة باسم بيت الضيافة' } },
+  { id: 'room-saqqara-door', cat: 'stay', w: 1568, h: 704, alt: { en: 'Door sign of Room 5, Saqqara Pyramids', ar: 'لافتة باب الغرفة 5، أهرامات سقارة' } },
+  { id: 'room-saqqara', cat: 'stay', w: 1345, h: 896, alt: { en: 'Room 5, Saqqara Pyramids: TV, air conditioning and heater', ar: 'الغرفة 5، أهرامات سقارة: تلفاز وتكييف ومدفأة' } },
+  { id: 'room-deluxe-queen-bed', cat: 'stay', w: 952, h: 1271, alt: { en: 'Deluxe Queen Room bed with a mandala curtain and fresh towels', ar: 'سرير غرفة كوين ديلوكس بستارة ماندالا ومناشف نظيفة' } },
+  { id: 'room-deluxe-queen', cat: 'stay', w: 1316, h: 908, alt: { en: 'Deluxe Queen Room with towel radiator, wardrobe and TV', ar: 'غرفة كوين ديلوكس بمدفأة مناشف وخزانة وتلفاز' } },
+  { id: 'room-black-door', cat: 'stay', w: 1568, h: 704, alt: { en: 'Door sign of Room 6, Black Pyramids', ar: 'لافتة باب الغرفة 6، الهرم الأسود' } },
+  { id: 'room-triple-beds', cat: 'stay', w: 1345, h: 896, alt: { en: 'Triple Room with three beds and an en-suite bathroom', ar: 'غرفة ثلاثية بثلاثة أسرّة وحمام داخلي' } },
+  { id: 'room-bathtub', cat: 'stay', w: 1345, h: 896, alt: { en: 'Bathroom with a tiled bathtub', ar: 'حمام بحوض استحمام مبلط' } },
+  { id: 'guesthouse-corridor', cat: 'stay', w: 703, h: 1568, alt: { en: 'The corridor, with postcards from past guests on the wall', ar: 'الممر وعلى جداره بطاقات من ضيوف سابقين' } },
+  { id: 'guesthouse-kitchen', cat: 'stay', w: 1185, h: 1008, alt: { en: 'The shared kitchen', ar: 'المطبخ المشترك' } },
+  { id: 'guests-cafe', cat: 'people', w: 1269, h: 952, alt: { en: 'Rami and guests with fresh juice at a café', ar: 'رامي وضيوف مع عصير طازج في مقهى' } },
+  { id: 'rami-saqqara-group', cat: 'people', w: 1568, h: 703, alt: { en: 'Rami with a group at Saqqara', ar: 'رامي مع مجموعة في سقارة' } },
 ];
 
 const BY = Object.fromEntries(PHOTOS.map((p) => [p.id, p]));

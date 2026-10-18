@@ -6,7 +6,8 @@ import type { Bi } from '../i18n';
  */
 export type StayId = 'pyramids-temple-guest-house' | 'amarna-guest-house-retreat-luxor';
 
-export interface Room { id: string; name: Bi; m2: number; beds: Bi; guests: number; child?: boolean; note?: Bi }
+/** `door` is the pyramid each room is named after on its door sign (where the listing shows it). */
+export interface Room { id: string; name: Bi; m2: number; beds: Bi; guests: number; child?: boolean; note?: Bi; door?: { n: number; name: Bi }; photos: string[] }
 export interface AmenityGroup { id: string; title: Bi; items: { icon: string; label: Bi; paid?: boolean }[] }
 
 export interface Stay {
@@ -35,20 +36,20 @@ export const STAYS: Stay[] = [
     place: { en: 'Giza', ar: 'الجيزة' },
     tagline: { en: 'Sleep 800 metres from the Sphinx', ar: 'نَم على بعد 800 متر من أبو الهول' },
     intro: { en: 'Our family home in Al Haram, on a quiet street a five-minute walk from the Sphinx. Seven rooms, each with its own bathroom and terrace, a rooftop that looks straight at the pyramids, and breakfast cooked by my mother every morning. It is where every one of our tours begins and ends.', ar: 'بيت عائلتنا في الهرم، في شارع هادئ على بعد خمس دقائق سيراً من أبو الهول. سبع غرف لكل منها حمامها وشرفتها، وسطح يطل مباشرة على الأهرامات، وإفطار تطهوه أمي كل صباح. هنا تبدأ كل رحلاتنا وتنتهي.' },
-    hero: 'rooftop-terrace-day',
-    photos: ['rooftop-terrace-day', 'rooftop-breakfast', 'rooftop-majlis', 'rooftop-panorama', 'family-food-spread', 'guesthouse-entrance', 'guesthouse-bathroom', 'nile-bank-picnic'],
+    hero: 'rooftop-sunset-sign',
+    photos: ['rooftop-night-pyramids', 'rooftop-terrace-day', 'room-red-bed', 'room-deluxe-queen-bed', 'room-triple-beds', 'rooftop-breakfast', 'rooftop-majlis', 'guesthouse-kitchen', 'room-bathtub', 'guesthouse-corridor', 'guesthouse-entrance', 'family-food-spread'],
     geo: { lat: 29.975098, lng: 31.143436 },
     address: { en: 'Sayed Gabir Street, Al Haram, Giza 12557', ar: 'شارع سيد جابر، الهرم، الجيزة 12557' },
     from: 35,
     instagram: 'pyramids_temple_guest_house',
     rooms: [
-      { id: 'king-balcony', name: { en: 'King Room with Balcony', ar: 'غرفة كينج بشرفة' }, m2: 16, beds: { en: '1 king bed', ar: 'سرير كينج' }, guests: 2 },
-      { id: 'queen', name: { en: 'Queen Room', ar: 'غرفة كوين' }, m2: 16, beds: { en: '1 queen bed', ar: 'سرير كوين' }, guests: 2 },
-      { id: 'deluxe-queen', name: { en: 'Deluxe Queen Room', ar: 'غرفة كوين ديلوكس' }, m2: 16, beds: { en: '1 queen bed', ar: 'سرير كوين' }, guests: 2 },
-      { id: 'deluxe-family', name: { en: 'Deluxe Room', ar: 'غرفة ديلوكس' }, m2: 20, beds: { en: '1 double bed and 1 single', ar: 'سرير مزدوج وسرير فردي' }, guests: 3, child: true, note: { en: 'Two adults and a child', ar: 'بالغان وطفل' } },
-      { id: 'classic-triple', name: { en: 'Classic Triple Room', ar: 'غرفة ثلاثية كلاسيك' }, m2: 20, beds: { en: '3 single beds', ar: 'ثلاثة أسرّة فردية' }, guests: 3 },
-      { id: 'triple', name: { en: 'Triple Room', ar: 'غرفة ثلاثية' }, m2: 36, beds: { en: '1 double bed and 1 single', ar: 'سرير مزدوج وسرير فردي' }, guests: 3 },
-      { id: 'family', name: { en: 'Family Room', ar: 'غرفة عائلية' }, m2: 32, beds: { en: '2 double beds', ar: 'سريران مزدوجان' }, guests: 4 },
+      { id: 'king-balcony', name: { en: 'King Room with Balcony', ar: 'غرفة كينج بشرفة' }, m2: 16, beds: { en: '1 king bed', ar: 'سرير كينج' }, guests: 2, door: { n: 1, name: { en: 'Cheops Pyramids', ar: 'هرم خوفو' } }, photos: ['room-cheops-door', 'room-kitchenette', 'room-bathroom-shower'] },
+      { id: 'queen', name: { en: 'Queen Room', ar: 'غرفة كوين' }, m2: 16, beds: { en: '1 queen bed', ar: 'سرير كوين' }, guests: 2, photos: ['room-queen', 'room-bathroom-shower', 'rooftop-sunset-sign'] },
+      { id: 'deluxe-queen', name: { en: 'Deluxe Queen Room', ar: 'غرفة كوين ديلوكس' }, m2: 16, beds: { en: '1 queen bed', ar: 'سرير كوين' }, guests: 2, photos: ['room-deluxe-queen-bed', 'room-deluxe-queen', 'guesthouse-corridor'] },
+      { id: 'deluxe-family', name: { en: 'Deluxe Room', ar: 'غرفة ديلوكس' }, m2: 20, beds: { en: '1 double bed and 1 single', ar: 'سرير مزدوج وسرير فردي' }, guests: 3, child: true, note: { en: 'Two adults and a child', ar: 'بالغان وطفل' }, door: { n: 5, name: { en: 'Saqqara Pyramids', ar: 'أهرامات سقارة' } }, photos: ['room-saqqara', 'room-saqqara-door'] },
+      { id: 'classic-triple', name: { en: 'Classic Triple Room', ar: 'غرفة ثلاثية كلاسيك' }, m2: 20, beds: { en: '3 single beds', ar: 'ثلاثة أسرّة فردية' }, guests: 3, door: { n: 4, name: { en: 'Red Pyramids', ar: 'الهرم الأحمر' } }, photos: ['room-red-bed', 'room-red-door', 'room-bathroom-shower', 'rooftop-night-pyramids'] },
+      { id: 'triple', name: { en: 'Triple Room', ar: 'غرفة ثلاثية' }, m2: 36, beds: { en: '1 double bed and 1 single', ar: 'سرير مزدوج وسرير فردي' }, guests: 3, photos: ['room-triple-beds', 'room-bathtub'] },
+      { id: 'family', name: { en: 'Family Room', ar: 'غرفة عائلية' }, m2: 32, beds: { en: '2 double beds', ar: 'سريران مزدوجان' }, guests: 4, door: { n: 6, name: { en: 'Black Pyramids', ar: 'الهرم الأسود' } }, photos: ['room-black-door', 'guesthouse-kitchen', 'room-bathtub'] },
     ],
     amenities: [
       { id: 'room', title: { en: 'In every room', ar: 'في كل غرفة' }, items: [
@@ -88,7 +89,7 @@ export const STAYS: Stay[] = [
       { label: { en: 'Smoking', ar: 'التدخين' }, value: { en: 'Rooftop and terraces only', ar: 'في السطح والشرفات فقط' } },
     ],
     why: [
-      { title: { en: 'The rooftop', ar: 'السطح' }, text: { en: 'Breakfast faces the pyramids. At night the sound-and-light show plays on them while you sit under a blanket by the fire. Guests tell us it is the best seat in Giza, and it is free.', ar: 'الإفطار في مواجهة الأهرامات. وفي الليل يُعرض الصوت والضوء عليها وأنت جالس تحت بطانية بجوار النار. يقول ضيوفنا إنه أفضل مقعد في الجيزة، وهو مجاني.' }, photo: 'rooftop-terrace-day' },
+      { title: { en: 'The rooftop', ar: 'السطح' }, text: { en: 'Breakfast faces the pyramids. At night the sound-and-light show plays on them while you sit under a blanket by the fire. Guests tell us it is the best seat in Giza, and it is free.', ar: 'الإفطار في مواجهة الأهرامات. وفي الليل يُعرض الصوت والضوء عليها وأنت جالس تحت بطانية بجوار النار. يقول ضيوفنا إنه أفضل مقعد في الجيزة، وهو مجاني.' }, photo: 'rooftop-night-pyramids' },
       { title: { en: 'The family table', ar: 'مائدة العائلة' }, text: { en: 'My mother cooks breakfast every morning: ful, taameya, fresh bread, eggs, white cheese, tomatoes and whatever is in season. Tea and coffee all day. Ask her for a cooking lesson and you will go home with the eggplant recipe everyone writes about.', ar: 'أمي تطهو الإفطار كل صباح: فول وطعمية وخبز طازج وبيض وجبنة بيضاء وطماطم وما هو في موسمه. شاي وقهوة طوال اليوم. اطلب منها درس طبخ وستعود بوصفة الباذنجان التي يكتب عنها الجميع.' }, photo: 'rooftop-breakfast' },
       { title: { en: 'The base for everything', ar: 'نقطة الانطلاق لكل شيء' }, text: { en: 'Every tour on this site leaves from the front door. Rami, Rania and the team are here, so a change of plan is a conversation over tea, not a phone call to an office.', ar: 'كل رحلة على هذا الموقع تنطلق من الباب. رامي ورانيا والفريق هنا، فتغيير الخطة حديث على الشاي لا مكالمة لمكتب.' }, photo: 'rooftop-majlis' },
     ],
