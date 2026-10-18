@@ -90,7 +90,8 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
     )}
     {focusP && <circle class="focus-ring" cx={P(focusP.at.lng, focusP.at.lat).x} cy={P(focusP.at.lng, focusP.at.lat).y} r="14" />}
     <g class="north" transform={`translate(${W - 22} 24)`}><path d="M0 -10 L5 5 L0 1 L-5 5 Z" /><text y="18" text-anchor="middle">N</text></g>
-    <g class="scale" transform={`translate(18 ${H - 22})`}><path d={`M0 0 H ${K * COS * 2}`} /><path d="M0 -3 V3" /><path d={`M${K * COS * 2} -3 V3`} /><text x={K * COS} y="12" text-anchor="middle">200 km</text></g>
+    <!-- scale bar under the north arrow, in the empty corner outside Egypt (the bottom edge is the southern border) -->
+    <g class="scale" transform={`translate(${W - 18 - K * COS * 2} 54)`}><path d={`M0 0 H ${K * COS * 2}`} /><path d="M0 -3 V3" /><path d={`M${K * COS * 2} -3 V3`} /><text x={K * COS} y="13" text-anchor="middle">{lang === 'ar' ? '٢٠٠ كم' : '200 km'}</text></g>
   </svg>
   {!compact && <figcaption class="emap-cap"><Icon name="compass" size={14} /> {lang === 'ar' ? 'اضغط على دبوس لفتح صفحة الوجهة' : 'Tap a pin to open the destination'}</figcaption>}
 </figure>
@@ -149,7 +150,9 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
   @keyframes ring { 0% { r: 8; opacity: 0.9; } 100% { r: 22; opacity: 0; } }
   .north path { fill: var(--gold); } .north text, .scale text { font-size: 7.5px; fill: currentColor; opacity: 0.7; }
   .scale path { stroke: currentColor; stroke-width: 0.8; opacity: 0.7; }
-  .emap-cap { position: absolute; bottom: 10px; inset-inline-start: 14px; font-size: 0.78rem; display: inline-flex; gap: 6px; align-items: center; opacity: 0.7; color: currentColor; }
+  /* the caption sits in its own strip under the map; laid over the map it collided with the scale bar */
+  .emap-cap { display: flex; gap: 6px; align-items: center; padding: 10px 14px; font-size: 0.8rem; color: currentColor; opacity: 0.75; border-top: 1px solid rgba(201, 162, 39, 0.25); }
+  .emap-light .emap-cap { color: var(--stone); opacity: 1; border-top-color: var(--line); }
   @media (max-width: 640px) { .pin-minor .lbl { display: none; } .pin .lbl { font-size: 10px; } .sea-label { font-size: 9.5px; } .emap-cap { display: none; } }
   /* draw-in */
   .draw { stroke-dasharray: 2600; stroke-dashoffset: 2600; }
