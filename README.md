@@ -1,43 +1,40 @@
-# Astro Starter Kit: Minimal
+# Rami's Insight Tours
 
-```sh
-npm create astro@latest -- --template minimal
+The rebuild of ramisinsighttours.com (was Wix). Astro 5 static site, English + Arabic (RTL, under `/ar/`),
+no backend: every enquiry opens WhatsApp to Rami with a structured message.
+
+```
+npm install
+npm run dev        # http://127.0.0.1:4321/ramis-insight-tours/
+npm run build      # 91 pages into dist/
+npm run deploy     # dist/ -> gh-pages (gh auth switch -u jeeveshverma first)
+node scripts/qa.mjs audit / /ar/ --width 360     # overflow, broken images, console errors, 404s
+node scripts/qa.mjs shots / 390 /tmp/shots --device iphone
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Where things live
 
-## 🚀 Project Structure
+| What | File |
+|---|---|
+| Business facts (phone, address, ratings) | `src/data/site.ts` |
+| The 9 tours, prices, day-by-day | `src/data/tours.ts` |
+| Pyramids Temple Guest House (rooms, amenities, rules) and Amarna (coming soon) | `src/data/stays.ts` |
+| Destinations + map coordinates | `src/data/places.ts` |
+| Reviews, travel tips, journal posts | `src/data/reviews.ts`, `tips.ts`, `posts.ts` |
+| Photo catalogue (alt text, gallery category) | `src/data/photos.ts` + `src/assets/photos/` |
+| UI strings | `src/i18n/en.json`, `src/i18n/ar.json` |
 
-Inside of your Astro project, you'll see the following folders and files:
+## Opening Amarna Guest House Retreat, Luxor
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+Fill in its entry in `src/data/stays.ts` (rooms, amenities, rules, why, photos, geo, from) and change
+`status: 'coming_soon'` to `'open'`. The guest-house template takes over; nothing else changes.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Still needed from Rami
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Names of the 3-star hotels used outside Cairo, the Nile cruise and felucca operators
+- Roles and portraits for Rania, Kelly, Ehab
+- Room-by-room photos and confirmed nightly prices (site shows "from $35", Booking.com's indicative rate)
+- The three video testimonials from the old home page (source files or YouTube links)
+- High-resolution originals (the Wix copies top out at 920-1680 px), plus a rooftop-at-dusk shot
+- Approval of the new tour names (Cairo Essentials, Pharaohs' Trail, Grand Egypt, ...)
+- Cancellation policy and maximum group size
