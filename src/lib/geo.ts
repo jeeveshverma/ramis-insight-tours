@@ -20,7 +20,7 @@ export function fromHouse(to: { lat: number; lng: number }, mode: 'foot' | 'car'
 
 export const fmtKm = (d: number, lang: Lang) => {
   const s = isMetres(d) ? `${Math.round(d * 100) * 10}` : d < 10 ? d.toFixed(1) : String(Math.round(d));
-  return lang === 'ar' ? s.replace(/\d/g, (c) => '٠١٢٣٤٥٦٧٨٩'[Number(c)]) : s;
+  return lang === 'ar' ? s.replace(/\d/g, (c) => '٠١٢٣٤٥٦٧٨٩'[Number(c)]).replace(/(?<=[٠-٩])\.(?=[٠-٩])/g, '٫') : s;
 };
 /** Under 950 m we show metres; from there "1.0 km" reads better than "1000 m". */
 export const isMetres = (d: number) => d < 0.95;

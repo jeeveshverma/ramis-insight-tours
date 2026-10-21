@@ -14,13 +14,17 @@ import NightSky from './NightSky.astro';
   </svg>
   <svg class="sk-layer sk-mid" data-depth="0.5" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice">
     <!-- Citadel of Saladin: Muhammad Ali mosque dome, half domes and two pencil minarets -->
+    <g class="sk-cit">
     <path d="M120 220 V170 H140 V150 C140 128 170 114 200 114 C230 114 260 128 260 150 V170 H290 V220 Z M150 150 C150 140 160 134 168 134 C176 134 186 140 186 150 Z M214 150 C214 140 224 134 232 134 C240 134 250 140 250 150 Z" />
     <path d="M196 114 V104 L200 96 L204 104 V114 Z" />
     <path d="M110 220 V96 L114 72 L118 96 V220 Z M106 132 H122 V136 H106 Z" />
     <path d="M292 220 V96 L296 72 L300 96 V220 Z M288 132 H304 V136 H288 Z" />
+    </g>
     <!-- palms -->
+    <g class="sk-palms">
     <path d="M1180 220 V150 M1180 150 C1166 140 1150 142 1140 150 C1154 144 1168 146 1180 150 C1170 134 1156 128 1146 130 C1160 132 1172 140 1180 150 C1186 134 1200 128 1214 130 C1200 134 1190 142 1180 150 C1194 142 1210 142 1222 150 C1208 146 1192 146 1180 150 Z" class="sk-palm" />
     <path d="M1250 220 V164 M1250 164 C1240 156 1228 158 1220 164 C1232 160 1242 160 1250 164 C1244 152 1234 148 1226 150 C1236 152 1246 158 1250 164 C1256 152 1266 148 1276 150 C1266 152 1256 158 1250 164 C1260 158 1272 158 1280 164 C1270 160 1260 160 1250 164 Z" class="sk-palm" />
+    </g>
     <path d="M0 220 V188 C 200 176, 380 190, 560 182 C 760 174, 960 188, 1140 180 C 1260 176, 1360 182, 1440 178 V220 Z" />
   </svg>
   <svg class="sk-layer sk-near" data-depth="0.8" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice">
@@ -57,4 +61,6 @@ import NightSky from './NightSky.astro';
   .sk-near .sk-line { fill: none; stroke: var(--nile-deep); stroke-width: 1.6; }
   .sk-near .sk-sail { fill: var(--nile-deep); }
   .skyline :global(.sky) { height: 70%; }
+  /* phones only show the middle ~700 units of the 1440-wide scene: bring the Citadel and palms into it */
+  @media (max-width: 720px) { .sk-cit { transform: translateX(240px); } .sk-palms { transform: translateX(-160px); } }
 </style>

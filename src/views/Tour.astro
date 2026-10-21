@@ -3,7 +3,6 @@ import Layout from '../components/Layout.astro';
 import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import Ribbon from '../components/Ribbon.astro';
-import ArabicMark from '../components/ArabicMark.astro';
 import Khayamiya from '../components/Khayamiya.astro';
 
 import EgyptMap from '../components/EgyptMap.astro';
@@ -37,13 +36,23 @@ const groundMode = (d: Day) => {
   if (place(d.place).region === 'desert' || d.icon === 'camel' || d.night === 'camp' || d.night === 'tent') return 'camel';
   return 'car';
 };
-let lastV = 0;
+// Map route = the itinerary's places in day order. A flight leg between two places outside Cairo (Luxor → Sharm)
+// really changes planes in Cairo, so the route goes through Giza there instead of a straight line across the desert.
+const viaCairo = (a: Day, b: Day) => [...a.items.slice(-1), ...b.items.slice(0, 1)].some((it) => /flight/i.test(it.en) && /cairo/i.test(it.en));
+const CAIRO = new Set(['giza', 'cairo', 'saqqara', 'abusir']);
+const mapRoute: string[] = [];
 const legs = x.itinerary.map((d, i) => {
-  const v = x.route.indexOf(d.place); lastV = v >= 0 ? v : lastV;
+  const prev = x.itinerary[i - 1];
+  const last = mapRoute[mapRoute.length - 1];
+  if (d.place !== last) {
+    if (prev && last && !CAIRO.has(last) && !CAIRO.has(d.place) && viaCairo(prev, d)) mapRoute.push('giza');
+    mapRoute.push(d.place);
+  }
   const next = x.itinerary[i + 1];
   const m = next && (isFlight(next.items[0]) || isFlight(d.items[d.items.length - 1])) ? 'plane' : next ? groundMode(next) : groundMode(d);
-  return { v: lastV, s: groundMode(d), m };
+  return { v: mapRoute.length - 1, s: groundMode(d), m };
 });
+const routeIds = (mapRoute.length ? mapRoute : x.route) as typeof x.route;
 const stayIcon: Record<string, string> = { guesthouse: 'rooftop', hotel: 'bed', hotel5: 'star', cruise: 'boat', felucca: 'felucca', tent: 'tent', camp: 'fire' };
 const jsonld = custom ? [] : [{
   '@context': 'https://schema.org', '@type': 'TouristTrip', name: x.name.en, description: x.intro.en, touristType: x.style, provider: { '@id': `${SITE.url}/#org` },
@@ -54,7 +63,6 @@ const jsonld = custom ? [] : [{
 <Layout lang={lang} page="tour" sub={x.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(x.tagline, lang)} overHero jsonld={jsonld}>
   <!-- HERO -->
   <section class="th">
-    <ArabicMark word={x.name.ar} tone="dark" class="page-mark" />
     <div class="th-media"><Img id={x.hero} lang={lang} vt={`tour-${x.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="th-shade"></div></div>
     <div class="wrap th-in on-dark">
       <a class="th-back" href={path(lang, 'tours')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.tours')}</a>
@@ -64,6 +72,7 @@ const jsonld = custom ? [] : [{
         {x.flights.length > 0 && <span class="pill"><Icon name="plane" size={14} /> {x.flights.length === 1 ? t('tours.flight') : t('tours.flights', { n: digits(x.flights.length, lang) })}</span>}
       </div>
       <h1>{name}</h1>
+      {lang !== 'ar' && <p class="h-ar" lang="ar">{x.name.ar}</p>}
       <p class="lead">{pick(x.tagline, lang)}</p>
       <div class="th-row">
         {x.price.onRequest ? <span class="cartouche"><small>{t('tours.onRequest')}</small></span>
@@ -110,7 +119,7 @@ const jsonld = custom ? [] : [{
         <div class="wrap">
           <div class="section-head rv"><p class="eyebrow">{t('tour.itinerary')}</p><h2>{t('tour.route')}</h2><p class="lead">{t('tour.itineraryText')}</p></div>
           <div class="itin-in">
-            <div class="itin-map rv"><EgyptMap lang={lang} show={x.route} route={x.route} compact links={false} traveller /></div>
+            <div class="itin-map rv"><EgyptMap lang={lang} show={[...new Set(routeIds)]} route={routeIds} compact links={false} traveller /></div>
             <ol class="days" data-days data-legs={JSON.stringify(legs)}>
               <span class="spine" aria-hidden="true"><i data-spine></i></span>
               {x.itinerary.map((d) => (
@@ -150,7 +159,7 @@ const jsonld = custom ? [] : [{
       <section class="section sand-bg">
         <div class="wrap">
           <div class="section-head rv"><p class="eyebrow">{t('tour.stay')}</p><h2>{t('tour.stay')}</h2><p class="lead">{t('tour.staysText')}</p></div>
-          <div class="stays-grid stagger">
+          <div class="stays-grid stagger" style={`--n:${Math.max(1, Math.min(3, x.stays.filter((s) => s.kind !== 'guesthouse').length))}`}>
             {x.stays.map((s) => s.kind === 'guesthouse' ? (
               <a class="stay-card card stay-gh" href={path(lang, 'stay', GUEST_HOUSE.id)}>
                 <Img id="rooftop-breakfast" lang={lang} ratio="16/9" sizes="(min-width:960px) 40vw, 100vw" />
@@ -248,10 +257,10 @@ const jsonld = custom ? [] : [{
 <style>
   .th { position: relative; min-height: 78svh; display: grid; align-items: end; padding-top: var(--header-h); background: var(--nile-deep); overflow: hidden; }
   .th-media { position: absolute; inset: 0; } .th-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
-  .th-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.4), rgba(7, 32, 47, 0) 35%, rgba(7, 32, 47, 0.92) 100%); }
+  .th-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.6), rgba(7, 32, 47, 0.05) 32%, rgba(7, 32, 47, 0.2) 55%, rgba(7, 32, 47, 0.94) 100%); }
   .th-in { position: relative; padding-bottom: clamp(40px, 7vh, 80px); display: grid; gap: 14px; }
-  .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
-  .th-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .th-back { display: flex; width: fit-content; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
+  .th-pills { display: flex; flex-wrap: wrap; gap: 8px; } .th-pills :global(.pill) { background: rgba(7, 32, 47, 0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-color: rgba(246, 240, 227, 0.25); }
   .th h1 { font-size: clamp(2.4rem, 7vw, 5rem); max-width: 14em; }
   .th-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 8px; }
   :global(.rtl-flip) { } html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
@@ -259,10 +268,10 @@ const jsonld = custom ? [] : [{
   .glance { border-bottom: 1px solid var(--line); background: var(--paper); }
   .glance-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 16px; padding-block: 22px; }
   .glance-in > div { display: grid; grid-template-columns: 24px 1fr; grid-template-rows: auto auto; gap: 2px 10px; align-items: center; }
-  .glance-in svg { grid-row: 1 / 3; color: var(--gold-text); }
+  .glance-in :global(svg) { grid-row: 1 / 3; align-self: start; margin-top: 2px; color: var(--gold-text); }
   .glance-l { font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--stone); font-weight: 700; }
   html[lang='ar'] .glance-l { letter-spacing: 0; font-size: 0.85rem; }
-  .glance-in strong { font-family: var(--display); font-size: 1.4rem; color: var(--ink); line-height: 1.1; }
+  .glance-in strong { grid-column: 2; font-family: var(--display); font-size: 1.4rem; color: var(--ink); line-height: 1.1; }
   .glance-in strong.glance-s { font-family: var(--sans); font-size: 0.95rem; font-weight: 600; }
   @media (min-width: 720px) { .glance-in { grid-template-columns: repeat(5, auto); justify-content: space-between; } }
   .intro-lead { font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.5; color: var(--ink); }
@@ -302,7 +311,7 @@ const jsonld = custom ? [] : [{
   .stay-plain { grid-template-columns: 48px 1fr; gap: 16px; padding: 22px; align-items: start; }
   .stay-icon { color: var(--gold-text); margin-top: 6px; }
   .stay-plain div { display: grid; gap: 8px; }
-  @media (min-width: 720px) { .stays-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); } .stay-gh { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .stay-gh > * { min-width: 0; } .stay-gh :global(.photo) { height: 100%; width: 100%; aspect-ratio: auto !important; } }
+  @media (min-width: 720px) { .stays-grid { grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); } .stay-gh { grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .stay-gh > * { min-width: 0; } .stay-gh :global(.photo) { height: 100%; width: 100%; aspect-ratio: auto !important; } }
   /* Two traps here: a plain 1fr column won't shrink below the photo's intrinsic width (hence minmax(0, …)), and Img
      sets aspect-ratio inline, which beats this stylesheet unless !important — otherwise height:100% widens the photo over the text. */
 
@@ -317,7 +326,7 @@ const jsonld = custom ? [] : [{
   .cartouche.big { font-size: 1.4rem; padding: 10px 24px; margin-bottom: 18px; }
   .kids { display: flex; gap: 8px; align-items: center; }
   .steps { list-style: none; margin: 20px 0 32px; padding: 0; display: grid; gap: 20px; }
-  .steps li { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: center; } .steps li p { margin: 0; font-size: 1.1rem; color: var(--ink); }
+  .steps li { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; } .steps :global(.marker) { font-size: 3.4rem; } .steps li p { margin: 0; font-size: 1.1rem; color: var(--ink); }
   .custom-in { display: grid; gap: 40px; align-items: start; }
   @media (min-width: 960px) { .price-in, .custom-in { grid-template-columns: 1fr 1fr; gap: 72px; } }
 </style>

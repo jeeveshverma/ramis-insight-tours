@@ -108,13 +108,13 @@ const INCLUDED: Bi[] = [
   { en: 'Domestic flights where the itinerary lists them', ar: 'الرحلات الداخلية حيثما وردت في البرنامج' },
 ];
 const EXCLUDED: Bi[] = [
-  { en: 'Egyptian entry visa (on arrival, about $25)', ar: 'تأشيرة دخول مصر (عند الوصول، نحو 25 دولاراً)' },
+  { en: 'Egyptian entry visa (on arrival, about $25)', ar: 'تأشيرة دخول مصر (عند الوصول، نحو ٢٥ دولاراً)' },
   { en: 'Dinner, except the dinners named in the itinerary', ar: 'العشاء، عدا العشاء المذكور في البرنامج' },
   { en: 'International flights', ar: 'الطيران الدولي' },
   { en: 'Drinks', ar: 'المشروبات' },
   { en: 'Tips for the tour team', ar: 'إكراميات فريق الرحلة' },
 ];
-const SUN_FEST = { name: { en: 'Abu Simbel Sun Festival', ar: 'مهرجان تعامد الشمس بأبو سمبل' }, price: 125, note: { en: 'Only on 22 February and 22 October', ar: 'في 22 فبراير و22 أكتوبر فقط' } };
+const SUN_FEST = { name: { en: 'Abu Simbel Sun Festival', ar: 'مهرجان تعامد الشمس بأبو سمبل' }, price: 125, note: { en: 'Only on 22 February and 22 October', ar: 'في ٢٢ فبراير و٢٢ أكتوبر فقط' } };
 const BALLOON = { name: { en: 'Sunrise hot-air balloon over Luxor', ar: 'منطاد عند الشروق فوق الأقصر' }, note: { en: 'Priced at the time of booking', ar: 'يحدد السعر عند الحجز' } };
 const BUGGY = { name: { en: 'Beach buggy in the Sinai mountains and/or mountain dinner', ar: 'عربة صحراوية في جبال سيناء و/أو عشاء في الجبل' }, note: { en: 'Priced at the time of booking', ar: 'يحدد السعر عند الحجز' } };
 
@@ -150,7 +150,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Four days, every must-see, and a rooftop with the pyramids in it', ar: 'أربعة أيام، كل ما يجب رؤيته، وسطح يطل على الأهرامات' },
     intro: { en: 'The short version of Egypt done properly: the pyramids inside and out, the museum, both old Cairos, the bazaar at night, dinner on the Nile and a morning at Saqqara. You sleep at our guest house, ten minutes from the Sphinx.', ar: 'النسخة القصيرة من مصر كما ينبغي: الأهرامات من الداخل والخارج، والمتحف، والقاهرتان القديمتان، والخان ليلاً، وعشاء على النيل، وصباح في سقارة. تبيت في بيت ضيافتنا، على بعد عشر دقائق من أبو الهول.' },
     hero: 'pyramids-golden-hour', photos: ['pyramids-golden-hour', 'khan-el-khalili-lamps', 'mosque-courtyard', 'rooftop-breakfast', 'great-pyramid-guests'],
-    price: { from: 850, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من 1 إلى 6 مسافرين' }, adult: 850, student: 575 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 850, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من ١ إلى ٦ مسافرين' }, adult: 850, student: 575 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [], flights: [], route: ['giza', 'cairo', 'saqqara'],
     itinerary: [
       CAIRO_DAYS()[0], CAIRO_DAYS()[1],
@@ -166,7 +166,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'A week around the capital, with Alexandria and the Fayoum desert', ar: 'أسبوع حول العاصمة، مع الإسكندرية وصحراء الفيوم' },
     intro: { en: 'Everything in Cairo Essentials at an easier pace, plus a Sufi night, a day on the Mediterranean in Alexandria, a day of waterfalls and whale fossils in Fayoum, and a picnic over the old city.', ar: 'كل ما في أساسيات القاهرة بإيقاع أهدأ، مع ليلة صوفية، ويوم على المتوسط في الإسكندرية، ويوم بين الشلالات وحفريات الحيتان في الفيوم، ونزهة فوق المدينة القديمة.' },
     hero: 'qaitbay-citadel', photos: ['qaitbay-citadel', 'plateau-sunset-watch', 'mosque-courtyard', 'khan-el-khalili-lamps', 'nile-bank-picnic'],
-    price: { from: 1315, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من 1 إلى 6 مسافرين' }, adult: 1315, student: 1075 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 1315, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من ١ إلى ٦ مسافرين' }, adult: 1315, student: 1075 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [], flights: [], route: ['giza', 'cairo', 'saqqara', 'alexandria', 'fayoum'],
     itinerary: [
       ...CAIRO_DAYS(),
@@ -183,7 +183,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Cairo, the coast, and three nights in Luxor', ar: 'القاهرة والساحل وثلاث ليالٍ في الأقصر' },
     intro: { en: 'Cairo & the Coast, then south to Luxor for the Valleys of the Kings and Queens, Karnak at dawn and, if you like, a balloon over the west bank.', ar: 'القاهرة والساحل، ثم جنوباً إلى الأقصر لوادي الملوك والملكات، والكرنك عند الفجر، ومنطاد فوق البر الغربي إن أحببت.' },
     hero: 'film-luxor-temple-dusk', photos: ['karnak-group', 'luxor-group-white', 'temple-light-shaft', 'pyramids-golden-hour', 'qaitbay-citadel'],
-    price: { from: 2020, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من 1 إلى 6 مسافرين' }, adult: 2020, student: 1630 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 2020, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من ١ إلى ٦ مسافرين' }, adult: 2020, student: 1630 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [BALLOON], flights: [{ en: 'Cairo to Luxor and back', ar: 'القاهرة إلى الأقصر والعودة' }], route: ['giza', 'cairo', 'saqqara', 'alexandria', 'fayoum', 'luxor'],
     itinerary: [
       ...CAIRO_DAYS(),
@@ -203,7 +203,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Two weeks: Cairo, Upper Egypt and the Sinai coast', ar: 'أسبوعان: القاهرة وصعيد مصر وساحل سيناء' },
     intro: { en: 'Four days in Cairo, then Aswan, Abu Simbel at sunrise, Luxor and the temples between them, then a flight to the Red Sea for Tiran Island, Ras Mohamed and the Blue Hole.', ar: 'أربعة أيام في القاهرة، ثم أسوان وأبو سمبل عند الشروق والأقصر والمعابد بينهما، ثم طيران إلى البحر الأحمر لجزيرة تيران ورأس محمد والبلو هول.' },
     hero: 'luxor-group-white', photos: ['temple-light-shaft', 'couple-dusk', 'karnak-group', 'pyramids-friends-backs', 'nile-bank-picnic'],
-    price: { from: 2660, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من 1 إلى 6 مسافرين' }, adult: 2660, student: 2305 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 2660, tiers: [{ label: { en: '1 to 6 travellers', ar: 'من ١ إلى ٦ مسافرين' }, adult: 2660, student: 2305 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [SUN_FEST, BUGGY], flights: [{ en: 'Cairo to Aswan', ar: 'القاهرة إلى أسوان' }, { en: 'Luxor to Cairo', ar: 'الأقصر إلى القاهرة' }, { en: 'Cairo to Sharm El Sheikh', ar: 'القاهرة إلى شرم الشيخ' }],
     route: ['giza', 'cairo', 'saqqara', 'aswan', 'abu-simbel', 'edfu', 'luxor', 'dendera', 'sharm', 'dahab'],
     itinerary: [...CAIRO_DAYS().slice(0, 4), { ...CAIRO_DAYS()[4], n: 5 }, ...UPPER_EGYPT(6, false).slice(0, 5), { ...UPPER_EGYPT(6, false)[5], n: 11, items: [...LUXOR_EAST, { en: 'Flight Luxor to Cairo, then Cairo to Sharm El Sheikh', ar: 'طيران من الأقصر إلى القاهرة ثم إلى شرم الشيخ' }], night: 'hotel', title: { en: 'Karnak, then the Red Sea', ar: 'الكرنك، ثم البحر الأحمر' } },
@@ -220,7 +220,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Cairo, a Nile cruise, a Nubian village and a week by the Red Sea', ar: 'القاهرة ورحلة نيلية وقرية نوبية وأسبوع على البحر الأحمر' },
     intro: { en: 'Our most complete classic itinerary. Four days in Cairo, Abu Simbel at sunrise, three nights on a Nile cruise from Aswan to Luxor with Kom Ombo, Edfu, Dendera and Abydos, a Nubian village by boat, then six days in Sinai.', ar: 'أكثر برامجنا الكلاسيكية اكتمالاً. أربعة أيام في القاهرة، وأبو سمبل عند الشروق، وثلاث ليالٍ في رحلة نيلية من أسوان إلى الأقصر مع كوم أمبو وإدفو ودندرة وأبيدوس، وقرية نوبية بالقارب، ثم ستة أيام في سيناء.' },
     hero: 'nile-bank-picnic', photos: ['nile-bank-picnic', 'luxor-group-white', 'temple-selfie', 'couple-dusk', 'pyramids-golden-hour'],
-    price: { from: 2705, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من 1 إلى 3 مسافرين' }, adult: 3205, student: 2600 }, { label: { en: '4 or more', ar: '4 فأكثر' }, adult: 2705, student: 2285 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 2705, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من ١ إلى ٣ مسافرين' }, adult: 3205, student: 2600 }, { label: { en: '4 or more', ar: '٤ فأكثر' }, adult: 2705, student: 2285 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [SUN_FEST, BUGGY], flights: [{ en: 'Cairo to Aswan', ar: 'القاهرة إلى أسوان' }, { en: 'Luxor to Cairo', ar: 'الأقصر إلى القاهرة' }, { en: 'Cairo to Sharm El Sheikh', ar: 'القاهرة إلى شرم الشيخ' }, { en: 'Sharm El Sheikh to Cairo', ar: 'شرم الشيخ إلى القاهرة' }],
     route: ['giza', 'cairo', 'saqqara', 'aswan', 'abu-simbel', 'kom-ombo', 'edfu', 'luxor', 'dendera', 'abydos', 'sharm', 'dahab'],
     itinerary: [...CAIRO_DAYS().slice(0, 5), ...UPPER_EGYPT(6, true), ...SINAI(12).slice(0, 4), { ...SINAI(12)[4], items: [...DAHAB[2], { en: 'Evening flight to Cairo', ar: 'طيران مسائي إلى القاهرة' }], night: 'guesthouse' }],
@@ -233,7 +233,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Seventeen days through the temples, with a night under the stars at Abusir', ar: 'سبعة عشر يوماً بين المعابد، وليلة تحت النجوم في أبوصير' },
     intro: { en: 'For travellers who come for the temples rather than the beaches. Cairo and Giza, then Aswan, Abu Simbel, Philae, Luxor’s two banks, Abydos, Dendera, Edfu, Kom Ombo and Akhenaten’s Amarna, ending with a night around the fire with our Bedouin hosts at Abusir and the sun temple of Abu Gorab at dawn.', ar: 'لمن يأتون من أجل المعابد لا الشواطئ. القاهرة والجيزة، ثم أسوان وأبو سمبل وفيلة وضفتا الأقصر وأبيدوس ودندرة وإدفو وكوم أمبو وعمارنة إخناتون، وختاماً ليلة حول النار مع مضيفينا البدو في أبوصير ومعبد الشمس في أبو غراب عند الفجر.' },
     hero: 'temple-light-shaft', photos: ['temple-light-shaft', 'film-dendera-columns', 'film-edfu-courtyard', 'temple-selfie', 'film-luxor-temple-dusk'],
-    price: { from: 3155, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من 1 إلى 3 مسافرين' }, adult: 4505, student: 4105 }, { label: { en: '4 or more', ar: '4 فأكثر' }, adult: 3155, student: 2990 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 3155, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من ١ إلى ٣ مسافرين' }, adult: 4505, student: 4105 }, { label: { en: '4 or more', ar: '٤ فأكثر' }, adult: 3155, student: 2990 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [SUN_FEST, BALLOON], flights: [{ en: 'Cairo to Aswan', ar: 'القاهرة إلى أسوان' }, { en: 'Luxor to Cairo', ar: 'الأقصر إلى القاهرة' }],
     route: ['giza', 'cairo', 'saqqara', 'aswan', 'abu-simbel', 'kom-ombo', 'edfu', 'luxor', 'dendera', 'abydos', 'amarna', 'abusir'],
     itinerary: [
@@ -262,7 +262,7 @@ export const TOURS: Tour[] = [
     tagline: { en: 'Three weeks, from the Nile to the Red Sea to the White Desert', ar: 'ثلاثة أسابيع، من النيل إلى البحر الأحمر إلى الصحراء البيضاء' },
     intro: { en: 'Grand Egypt and then the desert: a free day in Cairo, a 4x4 to Bahariya, two nights camping in the White and Black Deserts with our Bedouin hosts, all meals around the fire.', ar: 'مصر الكبرى ثم الصحراء: يوم حر في القاهرة، ودفع رباعي إلى الواحات البحرية، وليلتان من التخييم في الصحراء البيضاء والسوداء مع مضيفينا البدو، وكل الوجبات حول النار.' },
     hero: 'film-camel-rider', photos: ['desert-sunset-arms', 'nile-bank-picnic', 'temple-light-shaft', 'couple-dusk', 'pyramids-golden-hour', 'plateau-sunset-watch'],
-    price: { from: 3280, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من 1 إلى 3 مسافرين' }, adult: 4185, student: 3885 }, { label: { en: '4 or more', ar: '4 فأكثر' }, adult: 3280, student: 3050 }], kidsUnder5: 50, kidsOver5: 25 },
+    price: { from: 3280, tiers: [{ label: { en: '1 to 3 travellers', ar: 'من ١ إلى ٣ مسافرين' }, adult: 4185, student: 3885 }, { label: { en: '4 or more', ar: '٤ فأكثر' }, adult: 3280, student: 3050 }], kidsUnder5: 50, kidsOver5: 25 },
     addons: [SUN_FEST, BUGGY], flights: [{ en: 'Cairo to Aswan', ar: 'القاهرة إلى أسوان' }, { en: 'Luxor to Cairo', ar: 'الأقصر إلى القاهرة' }, { en: 'Cairo to Sharm El Sheikh', ar: 'القاهرة إلى شرم الشيخ' }, { en: 'Sharm El Sheikh to Cairo', ar: 'شرم الشيخ إلى القاهرة' }],
     route: ['giza', 'cairo', 'saqqara', 'aswan', 'abu-simbel', 'kom-ombo', 'edfu', 'luxor', 'dendera', 'abydos', 'sharm', 'dahab', 'bahariya', 'white-desert'],
     itinerary: [

@@ -83,7 +83,7 @@ const org = {
         </ul>
         <div class="nav-foot">
           <a class="btn btn-wa" href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
-          <a class="btn btn-outline" href={telUrl}><Icon name="phone" /> {SITE.phoneDisplay}</a>
+          <a class="btn btn-outline" href={telUrl}><Icon name="phone" /> <bdi dir="ltr">{SITE.phoneDisplay}</bdi></a>
         </div>
       </nav>
       <div class="hdr-actions">
@@ -116,14 +116,14 @@ const org = {
       </div>
       <div class="ftr-col">
         <p class="eyebrow">{t('footer.talk')}</p>
-        <p><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={16} /> {SITE.whatsappDisplay}</a></p>
-        <p><a href={`mailto:${SITE.email}`}><Icon name="mail" size={16} /> {SITE.email}</a></p>
-        <p class="muted small" style="margin-top:12px">{SITE.street[lang]}<br />{SITE.city[lang]}, {SITE.country[lang]}</p>
+        <p><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" size={16} /> <bdi dir="ltr">{SITE.whatsappDisplay}</bdi></a></p>
+        <p><a href={`mailto:${SITE.email}`}><Icon name="mail" size={16} /> <bdi dir="ltr">{SITE.email}</bdi></a></p>
+        <p class="muted small" style="margin-top:12px">{SITE.street[lang]}<br />{SITE.city[lang]}{lang === 'ar' ? '، ' : ', '}{SITE.country[lang]}</p>
       </div>
       <div class="ftr-col">
         <p class="eyebrow">{t('footer.follow')}</p>
-        <p><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> @{SITE.instagram.handle}</a></p>
-        <p><a href={SITE.instagramStay.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> @{SITE.instagramStay.handle}</a></p>
+        <p><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> <bdi dir="ltr" class="nowrap">@{SITE.instagram.handle}</bdi></a></p>
+        <p><a href={SITE.instagramStay.url} target="_blank" rel="noopener"><Icon name="instagram" size={16} /> <bdi dir="ltr" class="nowrap">@{SITE.instagramStay.handle}</bdi></a></p>
         <p><a href={SITE.facebook.url} target="_blank" rel="noopener"><Icon name="facebook" size={16} /> Facebook</a></p>
         <p style="margin-top:12px"><a href={switchLang(lang, page, sub)} lang={other.hreflang}><Icon name="globe" size={16} /> {t('nav.lang')}</a></p>
       </div>
@@ -174,7 +174,7 @@ const org = {
       if (!e.isIntersecting) return; cio.unobserve(e.target);
       const el = e.target as HTMLElement; const to = Number(el.dataset.count); const dec = Number(el.dataset.dec || 0); const suffix = el.dataset.suffix || '';
       const ar = document.documentElement.lang === 'ar';
-      const fmt = (v: number) => { const s = v.toFixed(dec); return (ar ? s.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]) : s) + suffix; };
+      const fmt = (v: number) => { const s = v.toFixed(dec); return (ar ? s.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]).replace('.', '٫') : s) + suffix; };
       if (reduce) { el.textContent = fmt(to); return; }
       const t0 = performance.now(), dur = 1400;
       const step = (now: number) => { const p = Math.min(1, (now - t0) / dur); const ease = 1 - Math.pow(1 - p, 3); el.textContent = fmt(to * ease); if (p < 1) requestAnimationFrame(step); };
@@ -193,14 +193,17 @@ const org = {
      ::before layer behind the header content, a bonus where the browser paints it. */
   .hdr::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; }
   .hdr-in { position: relative; z-index: 1; }
-  .hdr.scrolled { background: rgba(246, 240, 227, 0.94); box-shadow: 0 1px 0 var(--line); }
+  .hdr.scrolled { background: rgba(246, 240, 227, 0.98); box-shadow: 0 1px 0 var(--line); }
   .hdr.scrolled::before { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
   .hdr-over { color: var(--papyrus); }
   .hdr-over .logo-name { color: var(--papyrus); } .hdr-over .logo-sub { color: var(--gold-light); }
   .hdr-over.scrolled { color: var(--ink); }
   .hdr-over.scrolled .logo-name { color: var(--ink); } .hdr-over.scrolled .logo-sub { color: var(--gold-text); }
-  .body-dark .hdr.scrolled { background: rgba(7, 32, 47, 0.94); color: var(--papyrus); box-shadow: 0 1px 0 var(--line-dark); }
-  .body-dark .hdr.scrolled .logo-name { color: var(--papyrus); } .body-dark .hdr.scrolled .logo-sub { color: var(--gold-light); }
+  /* dark pages (404, Amarna): light header text at all times, not only once scrolled */
+  .body-dark .hdr { color: var(--papyrus); }
+  .body-dark .hdr .logo-name { color: var(--papyrus); } .body-dark .hdr .logo-sub { color: var(--gold-light); }
+  .body-dark .hdr.scrolled { background: rgba(7, 32, 47, 0.98); box-shadow: 0 1px 0 var(--line-dark); }
+  body.body-dark.menu-open .hdr { color: var(--ink); } body.body-dark.menu-open .hdr .logo-name { color: var(--ink); }
   .hdr-in { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .hdr-logo { text-decoration: none; display: inline-flex; }
   .hdr-actions { display: flex; align-items: center; gap: 8px; }
@@ -225,7 +228,7 @@ const org = {
   html.no-js .hdr-nav { position: static; display: block; padding: 0; }
   .hdr-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
   .hdr-nav li > a { display: block; font-family: var(--display); font-size: clamp(2rem, 7.5vw, 2.8rem); color: var(--ink); text-decoration: none; padding: 10px 0; border-bottom: 1px solid var(--line); font-variation-settings: 'opsz' 72, 'SOFT' 50; }
-  html[lang='ar'] .hdr-nav li > a { font-family: var(--sans); font-weight: 600; font-size: 1.7rem; font-variation-settings: normal; }
+  html[lang='ar'] .hdr-nav li > a { font-family: var(--display); font-weight: 700; font-size: 1.8rem; font-variation-settings: normal; }
   .hdr-nav li > a[aria-current='page'] { color: var(--gold-text); }
   .nav-more { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 14px 0; }
   .nav-more a { font-size: 1rem; font-weight: 600; color: var(--stone); text-decoration: none; }
@@ -261,5 +264,8 @@ const org = {
   .ftr-nav { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; grid-template-columns: 1fr 1fr; }
   .ftr-base { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; align-items: center; margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--line-dark); font-size: 0.9rem; }
   .ftr-mark { color: var(--gold); opacity: 0.7; }
-  @media (min-width: 720px) { .ftr-in { grid-template-columns: 1.2fr 1fr 1fr 0.9fr; gap: 40px; } .ftr-nav { grid-template-columns: 1fr; } }
+  /* two columns on tablets (handles and emails broke mid-word in four narrow ones), four from 1100px */
+  @media (min-width: 720px) { .ftr-in { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; } }
+  @media (min-width: 1100px) { .ftr-in { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.2fr); } .ftr-nav { grid-template-columns: 1fr; } }
+  .ftr-col a { overflow-wrap: normal; word-break: normal; } .ftr-col a span, .ftr-col a { white-space: normal; }
 </style>

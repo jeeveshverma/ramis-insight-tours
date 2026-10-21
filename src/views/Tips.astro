@@ -25,13 +25,13 @@ const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
         <div class="wstrip" role="img" aria-label={t('tips.weatherTitle')}>
           {WEATHER.map((w, i) => (
             <div class="wm" style={`--c:${color(w.score)}; --h:${(w.cairo - 15) / 30 * 100}%; --l:${(w.luxor - 15) / 30 * 100}%`}>
-              <span class="wtemps"><b title={t('tips.luxor')}>{digits(w.luxor, lang)}°</b><small title={t('tips.cairo')}>{digits(w.cairo, lang)}°</small></span>
+              <span class="wtemps" title={`${t('tips.luxor')} / ${t('tips.cairo')}`}><b>{digits(w.luxor, lang)}°</b><small title={t('tips.cairo')}>{digits(w.cairo, lang)}°</small></span>
               <span class="wbars"><i class="wl"></i><i class="wc"></i></span>
               <span class="wlabel">{months[i]}</span>
             </div>
           ))}
         </div>
-        <p class="wkey small muted"><span><i style="background:var(--gold-text)"></i> {t('tips.cairo')}</span><span><i style="background:var(--terracotta)"></i> {t('tips.luxor')}</span></p>
+        <p class="wkey small muted"><span><i class="k-solid"></i> {t('tips.luxor')}</span><span><i class="k-pale"></i> {t('tips.cairo')}</span><span class="k-sep"></span><span><i style="background:#4f8a5a"></i> {t('tips.kComfy')}</span><span><i style="background:#c9a227"></i> {t('tips.kWarm')}</span><span><i style="background:#b5542e"></i> {t('tips.kHot')}</span></p>
       </div>
       <div class="faq rv">
         {TIPS.map((x) => (
@@ -57,7 +57,7 @@ const faq = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: 
   .wl { height: var(--l); background: var(--c); } .wc { height: var(--h); background: var(--c); opacity: 0.55; }
   @keyframes grow { from { transform: scaleY(0); } }
   .wlabel { font-size: 0.7rem; font-weight: 700; color: var(--stone); letter-spacing: 0.04em; }
-  .wkey { display: flex; gap: 18px; margin: 14px 0 0; } .wkey span { display: inline-flex; gap: 6px; align-items: center; } .wkey i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+  .wkey { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 0; } .k-solid { background: var(--stone); } .k-pale { background: var(--stone); opacity: 0.45; } .k-sep { width: 1px; height: 14px; background: var(--line); } .wkey span { display: inline-flex; gap: 6px; align-items: center; } .wkey i { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
   @media (max-width: 640px) { .weather { padding: 18px 14px; } .wstrip { gap: 2px; } .wm { min-width: 0; } .wtemps small { display: none; } .wtemps b { font-size: 0.78rem; } .wlabel { font-size: 0.58rem; letter-spacing: 0; } }
   .faq { max-width: 860px; }
 </style>

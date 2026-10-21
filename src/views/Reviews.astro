@@ -3,7 +3,6 @@ import Layout from '../components/Layout.astro';
 import Icon from '../components/Icon.astro';
 import ReviewCard from '../components/ReviewCard.astro';
 import VideoCard from '../components/VideoCard.astro';
-import FilmFeature from '../components/FilmFeature.astro';
 import { useT, digits, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { REVIEWS, VIDEOS } from '../data/reviews';
@@ -20,7 +19,7 @@ const { t } = useT(lang);
         <a class="badge card" href={SITE.mapsSearchUrl} target="_blank" rel="noopener"><b>{SITE.ratings.google.score}<Icon name="starFill" size={18} /></b><span>Google<br /><small class="muted">{t('stay.reviews', { n: digits(SITE.ratings.google.count, lang) })}</small></span><Icon name="arrowUpRight" size={16} /></a>
         <a class="badge card" href={SITE.instagram.url} target="_blank" rel="noopener"><b><Icon name="instagram" size={26} /></b><span>{t('reviews.instagram')}<br /><small class="muted">@{SITE.instagram.handle}</small></span><Icon name="arrowUpRight" size={16} /></a>
       </div>
-      <div class="grid-3 stagger" style="margin-top:36px">{REVIEWS.map((r) => <ReviewCard lang={lang} review={r} />)}</div>
+      <div class="rcols" style="margin-top:36px">{REVIEWS.map((r) => <div class="rcol rv"><ReviewCard lang={lang} review={r} /></div>)}</div>
     </div>
   </section>
   <section class="section dark on-dark pattern">
@@ -29,9 +28,10 @@ const { t } = useT(lang);
       <div class="grid-3 stagger">{VIDEOS.map((v) => <VideoCard lang={lang} video={v} />)}</div>
     </div>
   </section>
-  <FilmFeature lang={lang} />
 </Layout>
 <style>
+  .rcols { columns: 1; column-gap: 24px; } .rcol { break-inside: avoid; margin-bottom: 24px; }
+  @media (min-width: 720px) { .rcols { columns: 2; } } @media (min-width: 1100px) { .rcols { columns: 3; } }
   .ph { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); }
   .badges { display: grid; gap: 14px; }
   .badge { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 18px 20px; text-decoration: none; color: inherit; }

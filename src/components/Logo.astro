@@ -8,7 +8,7 @@ import type { Lang } from '../i18n';
 interface Props { variant?: 'lockup' | 'stack' | 'mark'; lang: Lang; size?: number; class?: string }
 const { variant = 'lockup', lang, size = 40, class: cls = '' } = Astro.props;
 const name = SITE.name[lang];
-const sub = lang === 'ar' ? 'الجيزة · منذ 2014' : 'Giza · since 2014';
+const sub = lang === 'ar' ? 'الجيزة · منذ ٢٠١٤' : 'Giza · since 2014';
 ---
 <span class:list={['logo', `logo-${variant}`, cls]} style={`--s:${size}px`}>
   <svg class="logo-mark" viewBox="0 0 64 44" width={size} height={size * 0.69} aria-hidden="true">

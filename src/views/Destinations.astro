@@ -3,7 +3,7 @@ import Layout from '../components/Layout.astro';
 import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import EgyptMap from '../components/EgyptMap.astro';
-import { useT, path, pick, type Lang } from '../i18n';
+import { useT, path, pick, digits, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { PLACES } from '../data/places';
 import { TOURS } from '../data/tours';
@@ -23,7 +23,7 @@ const count = (id: string) => TOURS.filter((x) => x.route.includes(id as any) &&
         {main.map((p) => (
           <a class="dcard card" href={path(lang, 'destination', p.id)}>
             {p.photo ? <Img id={p.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 30vw, 100vw" vt={`dest-${p.id}`} /> : <div class="dcard-tile pattern"><Icon name="pin" size={32} /></div>}
-            <div class="dcard-body"><span class="eyebrow">{t(`tours.regions.${p.region === 'coast' ? 'cairo' : p.region}`)}</span><h2>{pick(p.name, lang)}</h2><p class="muted">{pick(p.blurb, lang)}</p><span class="pill"><Icon name="route" size={13} /> {count(p.id)} {t('dest.tours').toLowerCase()}</span></div>
+            <div class="dcard-body"><span class="eyebrow">{t(`tours.regions.${p.region === 'coast' ? 'cairo' : p.region}`)}</span><h2>{pick(p.name, lang)}</h2><p class="muted">{pick(p.blurb, lang)}</p><span class="pill"><Icon name="route" size={13} /> {digits(count(p.id), lang)} {t('dest.tours').toLowerCase()}</span></div>
           </a>
         ))}
       </div>

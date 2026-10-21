@@ -51,9 +51,19 @@ const SEA = lang === 'ar' ? 'البحر المتوسط' : 'Mediterranean Sea';
 const RED = lang === 'ar' ? 'البحر الأحمر' : 'Red Sea';
 const NILE_L = lang === 'ar' ? 'النيل' : 'The Nile';
 const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
+// A route that never leaves the north (Cairo, Alexandria, Fayoum) is a dot on the national map: zoom to it.
+const routePlaces = route ? route.map((id) => PLACES.find((p) => p.id === id)!) : [];
+const zoom = routePlaces.length > 1 && routePlaces.every((p) => p.at.lat > 28.9);
+let VB = `0 0 ${W} ${H}`;
+if (zoom) {
+  const xs = routePlaces.map((p) => P(p.at.lng, p.at.lat).x), ys = routePlaces.map((p) => P(p.at.lng, p.at.lat).y);
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const w = Math.max(220, (Math.max(...xs) - Math.min(...xs)) * 1.6), h = w * (H / W);
+  VB = `${(cx - w / 2).toFixed(1)} ${(cy - h / 2).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
+}
 ---
 <figure class:list={['emap', compact && 'emap-compact', dark ? 'emap-dark' : 'emap-light']} data-egypt-map>
-  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={lang === 'ar' ? 'خريطة مصر' : 'Map of Egypt'} dir="ltr">
+  <svg viewBox={VB} class:list={[zoom && 'emap-zoom']} role="img" aria-label={lang === 'ar' ? 'خريطة مصر' : 'Map of Egypt'} dir="ltr">
     <defs>
       <linearGradient id="emap-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".18" /><stop offset="1" stop-color="currentColor" stop-opacity=".05" /></linearGradient>
       <filter id="emap-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" /></filter>
@@ -75,6 +85,7 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
     {pins.map((p) => {
       const o = lblOff(p.lbl); const inner = (
         <g class:list={['pin', p.minor && 'pin-minor', focus === p.id && 'active']} data-place={p.id} style={`--i:${p.i}`} tabindex={links ? undefined : 0}>
+          <circle class="hit" cx={p.pos.x} cy={p.pos.y} r="16" />
           <circle class="halo" cx={p.pos.x} cy={p.pos.y} r="9" />
           <circle class="dot" cx={p.pos.x} cy={p.pos.y} r={p.minor ? 2.2 : 3.4} />
           {!p.quiet && <text class="lbl" x={p.pos.x + o.x} y={p.pos.y + o.y} text-anchor={o.a}>{p.label}</text>}
@@ -83,9 +94,12 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
     })}
     {routeD && traveller && (
       <g class="trav" data-trav data-cum={JSON.stringify(cum.map((c) => +c.toFixed(2)))} transform={`translate(${routeXY[0].x} ${routeXY[0].y})`}>
-        <circle class="trav-pulse" r="12" />
-        <circle class="trav-bg" r="11" />
-        {Object.entries(TRAV).map(([k, d]) => <path class:list={['trav-ico', k === 'car' && 'on']} data-mode={k} d={d} transform="translate(-7.2 -7.2) scale(0.6)" />)}
+        <line class="trav-stem" x1="0" y1="0" x2="0" y2="-9" />
+        <g transform="translate(0 -21)">
+          <circle class="trav-pulse" r="12" />
+          <circle class="trav-bg" r="11" />
+          {Object.entries(TRAV).map(([k, d]) => <path class:list={['trav-ico', k === 'car' && 'on']} data-mode={k} d={d} transform="translate(-7.2 -7.2) scale(0.6)" />)}
+        </g>
       </g>
     )}
     {focusP && <circle class="focus-ring" cx={P(focusP.at.lng, focusP.at.lat).x} cy={P(focusP.at.lng, focusP.at.lat).y} r="14" />}
@@ -127,6 +141,7 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
   .pin .dot { fill: var(--gold); stroke: var(--nile-deep); stroke-width: 1.2; transition: r 0.3s var(--ease); }
   .emap-light .pin .dot { stroke: var(--paper); }
   .pin .halo { fill: var(--gold); opacity: 0; }
+  .pin .hit { fill: transparent; }
   .pin .lbl { font-size: 8.6px; font-weight: 700; fill: currentColor; paint-order: stroke; stroke: var(--nile-deep); stroke-width: 3px; stroke-linejoin: round; }
   .emap-light .pin .lbl { stroke: var(--paper); }
   html[lang='ar'] .pin .lbl { font-size: 9.5px; }
@@ -139,6 +154,7 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
   .route-done { fill: none; stroke: var(--gold-light); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 0 99999; }
   .trav { opacity: 0; transition: opacity 0.6s var(--ease); }
   .emap.in .trav { opacity: 1; transition-delay: 2.6s; }
+  .trav-stem { stroke: var(--gold); stroke-width: 1.6; }
   .trav-bg { fill: var(--gold); stroke: var(--nile-deep); stroke-width: 1.4; }
   .emap-light .trav-bg { stroke: var(--paper); }
   .trav-pulse { fill: none; stroke: var(--gold-light); stroke-width: 1; animation: travpulse 2s ease-out infinite; }
@@ -146,6 +162,8 @@ const focusP = focus ? PLACES.find((p) => p.id === focus) : undefined;
   .trav-ico { fill: none; stroke: var(--nile-deep); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity 0.25s; }
   .trav-ico.on { opacity: 1; }
   @media (prefers-reduced-motion: reduce) { .trav-pulse { animation: none; opacity: 0; } .emap.in .trav { transition-delay: 0s; } }
+  /* zoomed maps: keep labels and pins at their usual on-screen size */
+  .emap-zoom :is(.lbl, .sea-label, .nile-label) { font-size: 5px !important; } .emap-zoom .pin .dot { r: 2.2; } .emap-zoom .north, .emap-zoom .scale { display: none; }
   .focus-ring { fill: none; stroke: var(--gold); stroke-width: 1.2; opacity: 0.8; animation: ring 2.4s ease-out infinite; }
   @keyframes ring { 0% { r: 8; opacity: 0.9; } 100% { r: 22; opacity: 0; } }
   .north path { fill: var(--gold); } .north text, .scale text { font-size: 7.5px; fill: currentColor; opacity: 0.7; }

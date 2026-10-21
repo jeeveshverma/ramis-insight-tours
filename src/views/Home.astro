@@ -52,7 +52,7 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
           <a class="btn btn-gold btn-lg" href={path(lang, 'tours')}>{t('hero.cta')} <Icon name="arrowRight" class="rtl-flip" /></a>
           <a class="btn btn-outline btn-lg" href={path(lang, 'stay', GUEST_HOUSE.id)}>{t('hero.cta2')}</a>
         </div>
-        <p class="hero-proof"><Icon name="starFill" size={14} /> {SITE.ratings.google.score} Google <span>·</span> {SITE.ratings.booking.score} Booking.com <span>·</span> {lang === 'ar' ? 'منذ' : 'since'} {digits(SITE.founded, lang)}</p>
+        <p class="hero-proof"><Icon name="starFill" size={14} /> {digits(SITE.ratings.google.score, lang)} Google <span>·</span> {digits(SITE.ratings.booking.score, lang)} Booking.com <span>·</span> {lang === 'ar' ? 'منذ' : 'since'} {digits(SITE.founded, lang)}</p>
       </div>
       <div class="hero-window">
         <Fanous class="hero-fanous" chain={64} id="hero-fanous" />
@@ -105,12 +105,12 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   <!-- THREE WAYS -->
   <section class="section ways">
     <div class="wrap">
-      <div class="section-head rv" data-ar="طريقنا"><p class="eyebrow">{t('home.waysEyebrow')}</p></div>
+      <div class="section-head rv" data-ar="طريقنا"><p class="eyebrow">{t('home.waysEyebrow')}</p><h2>{t('home.waysTitle')}</h2></div>
       <div class="ways-grid">
         {ways.map((w, i) => (
           <article class="way">
             <Arch class="way-photo" ratio="3/4"><Img id={w.photo} lang={lang} sizes="(min-width:960px) 30vw, 100vw" /></Arch>
-            <span class="marker way-n" lang="ar" aria-hidden="true">{'١٢٣'[i]}</span>
+            <span class="way-n" lang="ar" aria-hidden="true">{'١٢٣'[i]}</span>
             <div class="way-body">
               <Icon name={w.icon} size={28} class="way-icon" />
               <h3>{t(`home.ways.${w.k}.title`)}</h3>
@@ -296,8 +296,7 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.6s var(--ease); }
   .hero-video.on { opacity: 1; }
   /* the lantern hangs beside the arch's shoulder; its chain runs up out of the hero */
-  .hero-window :global(.hero-fanous) { position: absolute; inset-inline-start: -46px; top: -30px; transform: scale(0.62); transform-origin: top center; z-index: 3;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 46px); mask-image: linear-gradient(180deg, transparent 0, #000 46px); }
+  .hero-window :global(.hero-fanous) { position: absolute; inset-inline-start: -46px; top: -30px; transform: scale(0.62); transform-origin: top center; z-index: 3; }
   .hero-cap { display: flex; gap: 10px; align-items: baseline; justify-content: center; margin: 18px 0 0; font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(246, 240, 227, 0.6); }
   .hero-cap-ar { font-family: 'Aref Ruqaa', 'Amiri', serif; font-size: 1.35rem; letter-spacing: 0; text-transform: none; color: var(--gold-light); }
   html[lang='ar'] .hero-cap { letter-spacing: 0; text-transform: none; }
@@ -305,7 +304,7 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
     .hero { padding-bottom: 72px; }
     .hero-grid { grid-template-columns: 1.1fr 0.9fr; gap: 64px; }
     .hero-window { width: min(34vw, 460px); margin-top: 0; }
-    .hero-window :global(.hero-fanous) { inset-inline-start: -104px; top: -20px; transform: none; }
+    .hero-window :global(.hero-fanous) { inset-inline-start: -88px; top: -36px; transform: scale(0.9); }
   }
   @media (max-width: 959px) { .hero-copy :global(.hero-mark) { top: -0.3em; } }
   @media (prefers-reduced-motion: reduce) { .hero-glow, .hero-window :global(img) { animation: none; } .hero-title .w, .hero-eyebrow, .hero-sub, .hero-cta, .hero-proof { animation: none; opacity: 1; transform: none; } }
@@ -316,7 +315,7 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   .stats-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px 16px; }
   .stat { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: baseline; position: relative; }
   .stat-n { font-size: clamp(2.1rem, 4.4vw, 3.2rem); color: var(--ink); line-height: 1; font-variation-settings: 'opsz' 144, 'SOFT' 50; }
-  .stat-ar { font-family: 'Reem Kufi', 'Amiri', serif; font-weight: 700; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold); opacity: 0.85; }
+  .stat-ar { font-family: 'Amiri', serif; font-weight: 700; font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--gold); opacity: 0.85; }
   .stat-l { grid-column: 1 / -1; margin-top: 6px; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--stone); display: inline-flex; gap: 6px; align-items: center; font-weight: 600; }
   .stat-l :global(svg) { color: var(--gold); }
   html[lang='ar'] .stat-l { letter-spacing: 0; text-transform: none; font-size: 0.95rem; }
@@ -324,13 +323,14 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
 
   /* INTRO — sunlight through a mashrabiya on the wall; a fanous hangs between the columns */
   .intro { overflow: hidden; }
-  .intro :global(.intro-fanous) { position: absolute; top: 0; inset-inline-start: calc(50% - 40px); z-index: 2; display: none; }
+  .intro :global(.intro-fanous) { position: absolute; top: 0; inset-inline-start: calc(47% - 40px); z-index: 2; display: none; }
   @media (min-width: 960px) { .intro :global(.intro-fanous) { display: block; } }
   .intro-in { display: grid; gap: 40px; align-items: center; position: relative; z-index: 1; }
   .intro-text { margin-bottom: 0; }
   .intro-text h2 { margin: 14px 0 18px; }
+  .intro-text .btn-ghost { justify-self: start; padding-inline: 0; }
   .intro-photos { position: relative; padding-bottom: 60px; }
-  .intro-small { position: absolute; bottom: 0; inset-inline-end: 8%; width: 32%; box-shadow: var(--shadow); background: var(--papyrus); }
+  .intro-small { position: absolute; bottom: 0; inset-inline-end: -4%; width: 27%; box-shadow: var(--shadow); background: var(--papyrus); }
   .intro-caption { position: absolute; bottom: 10px; inset-inline-start: 0; color: var(--stone); font-size: 1.05rem; }
   @media (min-width: 960px) { .intro-in { grid-template-columns: 1fr 1.1fr; gap: 72px; } }
 
@@ -338,12 +338,13 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   .ways-grid { display: grid; gap: 44px; }
   .way { position: relative; display: grid; gap: 18px; }
   .way :global(.way-photo) { width: 100%; }
-  .way .way-n { position: absolute; top: 46%; inset-inline-start: -14px; z-index: 2; font-family: 'Reem Kufi', 'Amiri', serif; font-style: normal; font-weight: 700; font-size: 4.4rem; color: var(--gold); opacity: 1; line-height: 1;
-    -webkit-text-stroke: 0; text-shadow: 0 2px 0 var(--papyrus), 0 0 18px rgba(246, 240, 227, 0.9); font-variation-settings: normal; }
+  .way .way-n { position: static; justify-self: center; margin-top: -6px; font-family: 'Amiri', serif; font-style: normal; font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--gold); opacity: 1; font-variation-settings: normal; }
   .way-body { display: grid; gap: 8px; text-align: center; justify-items: center; }
   .way-icon { color: var(--gold-text); }
   .way-body p { margin: 0; color: var(--body); max-width: 28em; }
-  @media (min-width: 720px) { .ways-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
+  .way { align-content: start; }
+  @media (min-width: 720px) and (max-width: 959px) { .ways-grid { grid-template-columns: 1fr 1fr; } .way:last-child { grid-column: 1 / -1; max-width: 50%; justify-self: center; } }
+  @media (min-width: 960px) { .ways-grid { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
 
   .mapsec-in { display: grid; gap: 36px; align-items: center; }
   .mapsec h2 { margin: 14px 0 16px; }
@@ -389,8 +390,8 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، أود التخطيط 
   @keyframes scroll-rtl { to { transform: translateX(calc(50% + 10px)); } }
   @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; flex-wrap: wrap; width: auto; } .marquee { mask-image: none; } }
 
-  .post-card { display: grid; text-decoration: none; color: inherit; }
-  .post-body { padding: 18px 20px 22px; display: grid; gap: 8px; }
+  .post-card { display: grid; grid-template-rows: auto 1fr; align-content: start; text-decoration: none; color: inherit; }
+  .post-body { padding: 18px 20px 22px; display: grid; gap: 8px; align-content: start; }
   .post-body h3 { font-size: 1.3rem; }
   .post-body p { margin: 0; font-size: 0.95rem; }
 

@@ -4,8 +4,9 @@ import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import EgyptMap from '../components/EgyptMap.astro';
 import TourCard from '../components/TourCard.astro';
-import ArabicMark from '../components/ArabicMark.astro';
 import Khayamiya from '../components/Khayamiya.astro';
+import NightSky from '../components/NightSky.astro';
+import Mashrabiya from '../components/Mashrabiya.astro';
 
 import { useT, path, pick, type Lang } from '../i18n';
 import { SITE } from '../data/site';
@@ -18,18 +19,24 @@ const p = getPlace(id as PlaceId);
 const name = pick(p.name, lang);
 const tours = TOURS.filter((x) => x.route.includes(p.id) && x.style !== 'custom');
 ---
-<Layout lang={lang} page="destination" sub={p.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(p.blurb, lang)} overHero={!!p.photo}>
+<Layout lang={lang} page="destination" sub={p.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(p.blurb, lang)} overHero={!!p.photo} dark={!p.photo}>
   {p.photo ? (
     <>
     <section class="dh">
-      <ArabicMark word={p.name.ar} tone="dark" class="page-mark" />
       <div class="dh-media"><Img id={p.photo} lang={lang} vt={`dest-${p.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="dh-shade"></div></div>
-      <div class="wrap dh-in on-dark"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1></div>
+      <div class="wrap dh-in on-dark"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1>{lang !== 'ar' && <p class="h-ar" lang="ar">{p.name.ar}</p>}</div>
     </section>
     <Khayamiya />
     </>
   ) : (
-    <section class="dh-plain"><div class="wrap"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1></div></section>
+    <>
+    <section class="dh-plain dark-deep on-dark has-sky">
+      <NightSky count={60} seed={21} moon />
+      <Mashrabiya variant="screen" fade="left" id="dh-lattice" />
+      <div class="wrap dh-plain-in"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1>{lang !== 'ar' && <p class="h-ar" lang="ar">{p.name.ar}</p>}</div>
+    </section>
+    <Khayamiya />
+    </>
   )}
   <section class="section">
     <div class="wrap d-in">
@@ -51,12 +58,13 @@ const tours = TOURS.filter((x) => x.route.includes(p.id) && x.style !== 'custom'
 </Layout>
 <style>
   html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
-  .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
+  .th-back { display: flex; width: fit-content; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
   .dh { position: relative; min-height: 64svh; display: grid; align-items: end; padding-top: var(--header-h); background: var(--nile-deep); overflow: hidden; }
   .dh-media { position: absolute; inset: 0; } .dh-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
   .dh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.4), rgba(7, 32, 47, 0) 35%, rgba(7, 32, 47, 0.92) 100%); }
   .dh-in { position: relative; padding-bottom: clamp(36px, 6vh, 72px); display: grid; gap: 10px; }
-  .dh-plain { padding-top: calc(var(--header-h) + clamp(32px, 6vw, 72px)); } .dh-plain h1 { margin-top: 10px; }
+  .dh-plain { padding: calc(var(--header-h) + clamp(40px, 7vw, 90px)) 0 clamp(40px, 6vw, 72px); } .dh-plain h1 { margin-top: 10px; }
+  .dh-plain-in { display: grid; gap: 8px; justify-items: start; }
   .intro-lead { font-size: clamp(1.1rem, 1.8vw, 1.4rem); line-height: 1.5; color: var(--ink); margin-bottom: 28px; }
   .rows dt { display: flex; gap: 8px; align-items: center; } .rows dt svg { color: var(--gold-text); }
   .d-in { display: grid; gap: 40px; align-items: start; } @media (min-width: 960px) { .d-in { grid-template-columns: 1.1fr 0.9fr; gap: 64px; } }

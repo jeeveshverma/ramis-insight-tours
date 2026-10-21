@@ -23,7 +23,7 @@ const payload = { house: SITE.geo, houseName: SITE.name[lang], places: places.ma
     {places.map((p) => (
       <li data-poi={p.id}>
         <span class="smap-n">{p.nText}</span>
-        <div><strong>{p.label}</strong><span class="muted small">{isMetres(p.km) ? `${p.kmText} m` : t('stay.km', { km: p.kmText })} · {p.mins}</span></div>
+        <div><strong>{p.label}</strong><span class="muted small">{isMetres(p.km) ? `${p.kmText} ${lang === 'ar' ? 'م' : 'm'}` : t('stay.km', { km: p.kmText })} · {p.mins}</span></div>
         <a href={p.dirs} target="_blank" rel="noopener" aria-label={`${t('stay.directions')}: ${p.label}`}><Icon name="arrowUpRight" size={16} /></a>
       </li>
     ))}
@@ -55,7 +55,7 @@ const payload = { house: SITE.geo, houseName: SITE.name[lang], places: places.ma
           map.addSource('rings', { type: 'geojson', data: { type: 'FeatureCollection', features: [circle(data.house, walk(10)), circle(data.house, walk(5))] } });
           map.addLayer({ id: 'rings-fill', type: 'fill', source: 'rings', paint: { 'fill-color': '#c9a227', 'fill-opacity': 0.08 } });
           map.addLayer({ id: 'rings-line', type: 'line', source: 'rings', paint: { 'line-color': '#c9a227', 'line-width': 1.2, 'line-dasharray': [3, 2] } });
-          const house = document.createElement('div'); house.className = 'smap-house'; house.innerHTML = '<i></i><b></b>';
+          const house = document.createElement('div'); house.className = 'smap-house'; house.innerHTML = '<i></i><b></b><span class="smap-house-lbl"></span>'; house.querySelector('.smap-house-lbl')!.textContent = data.rtl ? 'بيتنا' : 'Our house';
           new maplibregl.Marker({ element: house, anchor: 'center' }).setLngLat([data.house.lng, data.house.lat]).setPopup(new maplibregl.Popup({ offset: 14 }).setText(data.houseName)).addTo(map);
           data.places.forEach((p: any) => {
             const el = document.createElement('div'); el.className = 'smap-pin'; el.textContent = p.n; el.dataset.poi = p.id;
@@ -66,7 +66,9 @@ const payload = { house: SITE.geo, houseName: SITE.name[lang], places: places.ma
           // ring labels
           [5, 10].forEach((min, i) => { const r = walk(min); const el = document.createElement('div'); el.className = 'smap-ring-lbl'; el.textContent = data.rings[i]; new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([data.house.lng, data.house.lat + r / 110.57]).addTo(map); });
           // settle between the house and the Great Pyramid (west of it) so the plateau is in frame
-          const settle = { center: [data.house.lng - 0.0045, data.house.lat + 0.0015] as [number, number], zoom: 14.9 };
+          map.getStyle().layers.filter((l: any) => l.type === 'fill-extrusion').forEach((l: any) => map.removeLayer(l.id));
+          const narrow = canvas.clientWidth < 520;
+          const settle = narrow ? { center: [data.house.lng - 0.002, data.house.lat + 0.0005] as [number, number], zoom: 14.1 } : { center: [data.house.lng - 0.0045, data.house.lat + 0.0015] as [number, number], zoom: 14.9 };
           if (reduce) map.jumpTo(settle); else setTimeout(() => map.flyTo({ ...settle, duration: 2600, essential: true }), 300);
           canvas.classList.add('ready');
         });
@@ -88,6 +90,7 @@ const payload = { house: SITE.geo, houseName: SITE.name[lang], places: places.ma
   .smap-fallback { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; color: var(--stone); text-align: center; padding: 20px; }
   .smap-canvas.ready .smap-fallback { display: none; }
   .smap-house { width: 22px; height: 22px; position: relative; }
+  .smap-house-lbl { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); white-space: nowrap; font: 700 12px/1 var(--sans); color: var(--ink); background: var(--gold); padding: 5px 9px; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,.25); }
   .smap-house b { position: absolute; inset: 4px; border-radius: 50%; background: var(--terracotta); border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
   .smap-house i { position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--terracotta); animation: housepulse 2.2s ease-out infinite; }
   @keyframes housepulse { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }

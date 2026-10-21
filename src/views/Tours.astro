@@ -26,7 +26,7 @@ const durations = ['short', 'mid', 'long'] as const;
         <div class="fgroup"><span class="flabel">{t('tours.style')}</span><div class="fchips" data-group="style"><button class="chip" aria-pressed="true" data-v="">{t('tours.all')}</button>{styles.map((s) => <button class="chip" aria-pressed="false" data-v={s}>{t(`tours.styles.${s}`)}</button>)}</div></div>
       </div>
       <div class="grid-3 tgrid stagger" data-grid>{TOURS.map((x) => <TourCard lang={lang} tour={x} />)}</div>
-      <p class="empty muted" data-empty hidden><Icon name="compass" /> {t('tours.empty')}</p>
+      <p class="empty muted" data-empty hidden><Icon name="compass" /> {t('tours.empty')} <button type="button" class="btn btn-sm btn-outline" data-clear>{t('tours.all')}</button></p>
     </div>
   </section>
 </Layout>
@@ -50,6 +50,11 @@ const durations = ['short', 'mid', 'long'] as const;
       g.querySelectorAll('.chip').forEach((x) => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true');
       state[g.dataset.group!] = b.dataset.v || ''; apply();
     })));
+    document.querySelector('[data-clear]')?.addEventListener('click', () => {
+      root.querySelectorAll<HTMLElement>('[data-group]').forEach((g) => g.querySelectorAll<HTMLButtonElement>('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === 0))));
+      for (const k in state) state[k] = '';
+      apply();
+    });
   }
 </script>
 

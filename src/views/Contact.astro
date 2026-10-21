@@ -19,11 +19,11 @@ const wa = waUrl(lang === 'ar' ? 'مرحباً رامي، ' : 'Hi Rami, ');
         <h1>{t('contact.title')}</h1>
         <p class="lead">{t('contact.lead')}</p>
         <ul class="clist">
-          <li><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /><span><b>{t('contact.wa')}</b><br />{SITE.whatsappDisplay}</span></a></li>
-          <li><a href={telUrl}><Icon name="phone" /><span><b>{t('common.callUs')}</b><br />{SITE.phoneDisplay}</span></a></li>
-          <li><a href={`mailto:${SITE.email}`}><Icon name="mail" /><span><b>{t('contact.email')}</b><br />{SITE.email}</span></a></li>
-          <li><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" /><span><b>{t('contact.instagram')}</b><br />@{SITE.instagram.handle} · @{SITE.instagramStay.handle}</span></a></li>
-          <li><a href={SITE.facebook.url} target="_blank" rel="noopener"><Icon name="facebook" /><span><b>{t('contact.facebook')}</b><br />/ramisinsighttours</span></a></li>
+          <li><a href={wa} target="_blank" rel="noopener"><Icon name="whatsapp" /><span><b>{t('contact.wa')}</b><br /><bdi dir="ltr">{SITE.whatsappDisplay}</bdi></span></a></li>
+          <li><a href={telUrl}><Icon name="phone" /><span><b>{t('common.callUs')}</b><br /><bdi dir="ltr">{SITE.phoneDisplay}</bdi></span></a></li>
+          <li><a href={`mailto:${SITE.email}`}><Icon name="mail" /><span><b>{t('contact.email')}</b><br /><bdi dir="ltr">{SITE.email}</bdi></span></a></li>
+          <li><a href={SITE.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" /><span><b>{t('contact.instagram')}</b><br /><bdi dir="ltr">@{SITE.instagram.handle}</bdi> · <bdi dir="ltr">@{SITE.instagramStay.handle}</bdi></span></a></li>
+          <li><a href={SITE.facebook.url} target="_blank" rel="noopener"><Icon name="facebook" /><span><b>{t('contact.facebook')}</b><br /><bdi dir="ltr">/ramisinsighttours</bdi></span></a></li>
           <li><a href={SITE.mapsSearchUrl} target="_blank" rel="noopener"><Icon name="pin" /><span><b>{t('contact.address')}</b><br />{SITE.street[lang]}, {SITE.city[lang]} {SITE.postal}</span></a></li>
         </ul>
         <p class="muted small"><Icon name="clock" size={14} /> {t('contact.hours')}</p>

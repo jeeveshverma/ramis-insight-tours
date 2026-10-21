@@ -18,7 +18,7 @@ export const PHOTOS: Photo[] = [
   { id: 'rami-guests-selfie', cat: 'people', w: 1280, h: 958, alt: { en: 'Rami with two guests, pyramid behind', ar: 'رامي مع ضيفين والهرم خلفهم' } },
   { id: 'plateau-sunset-watch', cat: 'desert', w: 920, h: 360, alt: { en: 'Watching the sun set over the pyramids from the desert', ar: 'مشاهدة الغروب فوق الأهرامات من الصحراء' } },
   { id: 'desert-sunset-arms', cat: 'desert', w: 920, h: 360, alt: { en: 'Arms wide at sunset over the Saqqara desert', ar: 'ذراعان مفتوحتان عند غروب سقارة' } },
-  { id: 'couple-dusk', cat: 'people', w: 720, h: 1600, alt: { en: 'A couple at dusk with the pyramids in the distance', ar: 'زوجان عند الغسق والأهرامات في الأفق' } },
+  { id: 'couple-dusk', cat: 'people', w: 720, h: 1600, pos: '50% 30%', alt: { en: 'A couple at dusk with the pyramids in the distance', ar: 'زوجان عند الغسق والأهرامات في الأفق' } },
   { id: 'karnak-group', cat: 'nile', w: 1280, h: 576, alt: { en: 'A group in white at Karnak Temple, Luxor', ar: 'مجموعة بالأبيض في معبد الكرنك بالأقصر' } },
   { id: 'luxor-group-white', cat: 'nile', w: 576, h: 1280, alt: { en: 'Guests in white linen before the obelisk at Karnak', ar: 'ضيوف بالكتان الأبيض أمام مسلة الكرنك' } },
   { id: 'temple-selfie', cat: 'nile', w: 960, h: 1280, alt: { en: 'Group selfie inside a temple hall', ar: 'صورة جماعية داخل قاعة معبد' } },

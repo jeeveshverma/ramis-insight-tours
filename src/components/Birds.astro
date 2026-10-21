@@ -26,5 +26,7 @@ const birds = [
   :global(html[dir='rtl']) .bird { left: auto; right: -40px; animation-name: fly-rtl; }
   :global(html[dir='rtl']) .bird svg { transform: scaleX(-1); }
   @keyframes fly-rtl { 0% { transform: translate(0, 0); opacity: 0; } 4% { opacity: 1; } 50% { transform: translate(-55vw, -3vh); } 96% { opacity: 1; } 100% { transform: translate(-110vw, 2vh); opacity: 0; } }
+  /* phones: keep them in the sky band above the headline */
+  @media (max-width: 719px) { .birds { bottom: auto; height: 16%; top: var(--header-h); } }
   @media (prefers-reduced-motion: reduce) { .birds { display: none; } }
 </style>

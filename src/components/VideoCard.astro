@@ -3,7 +3,7 @@
  * A video poster that opens the shared player (VideoPlayer.astro, mounted once in Layout).
  * Nothing downloads until the visitor presses play.
  */
-import { pick, type Lang } from '../i18n';
+import { pick, digits, type Lang } from '../i18n';
 import type { Video } from '../data/reviews';
 import Img from './Img.astro';
 import Icon from './Icon.astro';
@@ -17,7 +17,7 @@ const title = pick(v.title, lang);
     <Img id={v.poster} lang={lang} ratio="16/9" sizes={size === 'lg' ? '(min-width:960px) 60vw, 100vw' : '(min-width:960px) 30vw, 100vw'} widths={[420, 640, 960, 1280]} />
     <span class="vcard-shade"></span>
     <span class="vcard-play"><span class="vcard-ring"></span><Icon name="play" size={size === 'lg' ? 34 : 24} stroke={0} class="vcard-tri" /></span>
-    <span class="vcard-dur pill">{v.duration}</span>
+    <span class="vcard-dur pill">{digits(v.duration, lang)}</span>
   </span>
   <span class="vcard-body">
     <span class="vcard-title">{title}</span>

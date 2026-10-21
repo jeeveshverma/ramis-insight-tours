@@ -22,7 +22,7 @@ const jsonld = [{ '@context': 'https://schema.org', '@type': 'Article', headline
       <h1>{title}</h1>
       <p class="lead dek">{pick(p.dek, lang)}</p>
     </div>
-    <div class="wrap" style="margin-top:28px"><div class="frame rv"><Img id={p.hero} lang={lang} ratio="21/9" sizes="100vw" widths={[640, 960, 1280, 1600]} priority /></div></div>
+    <div class="wrap" style="margin-top:28px"><div class="frame rv"><Img id={p.hero} lang={lang} ratio="21/9" sizes="100vw" widths={[640, 960, 1280, 1600]} priority position="50% 78%" /></div></div>
     <div class="wrap wrap-narrow body rv">{p.body.map((b, i) => <p class:list={[i === 0 && 'drop']}>{pick(b, lang)}</p>)}
       <p class="byline"><span class="num">—</span> {SITE.founder[lang]}, {SITE.city[lang]}</p>
     </div>
@@ -41,7 +41,7 @@ const jsonld = [{ '@context': 'https://schema.org', '@type': 'Article', headline
   .dek { font-size: 1.25rem; color: var(--stone); }
   .body { margin-top: 36px; } .body p { font-size: 1.15rem; line-height: 1.75; }
   .drop::first-letter { font-family: var(--display); font-size: 4.2em; float: inline-start; line-height: 0.8; margin: 0.08em 0.12em 0 0; color: var(--gold-text); }
-  html[dir='rtl'] .drop::first-letter { margin: 0.08em 0 0 0.12em; }
+  html[dir='rtl'] .drop::first-letter { all: unset; }
   .byline { margin-top: 32px; font-family: var(--display); font-style: italic; color: var(--stone); } html[lang='ar'] .byline { font-style: normal; }
   .mcard { display: grid; text-decoration: none; color: inherit; } .mbody { padding: 16px 18px 20px; } .mbody h3 { font-size: 1.15rem; }
 </style>

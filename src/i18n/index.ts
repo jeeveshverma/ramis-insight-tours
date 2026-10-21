@@ -56,7 +56,7 @@ export const pick = (b: Bi, lang: Lang) => b[lang] || b.en;
 /** Arabic-Indic digits for display numbers in Arabic (section numbers, counters). Prices stay Western. */
 export function digits(n: number | string, lang: Lang): string {
   const s = String(n);
-  return lang === 'ar' ? s.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]) : s;
+  return lang === 'ar' ? s.replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]).replace(/(?<=[٠-٩])\.(?=[٠-٩])/g, '٫') : s;
 }
 
 export const usd = (n: number) => `$${n.toLocaleString('en-US')}`;

@@ -6,10 +6,10 @@ export interface Post { id: string; date: string; title: Bi; dek: Bi; hero: stri
 export const POSTS: Post[] = [
   { id: 'visa-on-arrival', date: '2026-10-01', minutes: 3, hero: 'pyramid-blocks',
     title: { en: 'Visa on arrival at Cairo, step by step', ar: 'تأشيرة الوصول في القاهرة، خطوة بخطوة' },
-    dek: { en: 'Ten minutes, about $25, and one sticker. Here is the order to do things in.', ar: 'عشر دقائق ونحو 25 دولاراً وملصق واحد. هذا هو ترتيب الخطوات.' },
+    dek: { en: 'Ten minutes, about $25, and one sticker. Here is the order to do things in.', ar: 'عشر دقائق ونحو ٢٥ دولاراً وملصق واحد. هذا هو ترتيب الخطوات.' },
     body: [
       { en: 'You will be handed an arrival card on the plane. Fill it in before you land; the only question people get stuck on is the address in Egypt. Write "Pyramids Temple Guest House, Sayed Gabir St, Al Haram, Giza".', ar: 'ستُعطى بطاقة وصول في الطائرة. املأها قبل الهبوط؛ السؤال الوحيد الذي يتعثر فيه الناس هو العنوان في مصر. اكتب "Pyramids Temple Guest House, Sayed Gabir St, Al Haram, Giza".' },
-      { en: 'In the arrivals hall, before passport control, there is a row of bank windows. Hand over about $25 (or the equivalent in euros or pounds sterling) in cash and you get a visa sticker. Do not join the passport queue first; you will be sent back.', ar: 'في صالة الوصول، قبل الجوازات، صف من شبابيك البنوك. ادفع نحو 25 دولاراً نقداً (أو ما يعادلها باليورو أو الجنيه الإسترليني) وستحصل على ملصق التأشيرة. لا تقف في طابور الجوازات أولاً؛ سيعيدونك.' },
+      { en: 'In the arrivals hall, before passport control, there is a row of bank windows. Hand over about $25 (or the equivalent in euros or pounds sterling) in cash and you get a visa sticker. Do not join the passport queue first; you will be sent back.', ar: 'في صالة الوصول، قبل الجوازات، صف من شبابيك البنوك. ادفع نحو ٢٥ دولاراً نقداً (أو ما يعادلها باليورو أو الجنيه الإسترليني) وستحصل على ملصق التأشيرة. لا تقف في طابور الجوازات أولاً؛ سيعيدونك.' },
       { en: 'Stick it on an empty page, go to passport control, and your passport is stamped. Collect your bag, walk out, and look for your name on our sign. The whole thing is usually under half an hour.', ar: 'ألصقه على صفحة فارغة، وتوجه إلى الجوازات ليُختم جوازك. خذ حقيبتك واخرج وابحث عن اسمك على لافتتنا. كل ذلك عادة أقل من نصف ساعة.' },
       { en: 'Some passports need approval in advance. Check your government’s advice before booking flights, and ask us if you are not sure.', ar: 'بعض الجوازات تحتاج موافقة مسبقة. راجع إرشادات حكومتك قبل حجز الطيران، واسألنا إن لم تكن متأكداً.' },
     ] },
@@ -23,12 +23,12 @@ export const POSTS: Post[] = [
       { en: 'Desert nights from December to February go close to zero. Bring a real jacket for Abusir and the White Desert; we provide blankets, not coats.', ar: 'ليالي الصحراء من ديسمبر إلى فبراير تقترب من الصفر. أحضر جاكيتاً حقيقياً لأبوصير والصحراء البيضاء؛ نحن نوفر البطانيات لا المعاطف.' },
     ] },
   { id: 'sun-festival', date: '2026-09-05', minutes: 3, hero: 'temple-light-shaft',
-    title: { en: 'The Abu Simbel Sun Festival: 22 February and 22 October', ar: 'مهرجان تعامد الشمس في أبو سمبل: 22 فبراير و22 أكتوبر' },
-    dek: { en: 'Twice a year the sun reaches 60 metres into the mountain and lights three of the four gods. Here is how to be there.', ar: 'مرتين في السنة تصل الشمس 60 متراً داخل الجبل وتضيء ثلاثة من الآلهة الأربعة. هكذا تكون هناك.' },
+    title: { en: 'The Abu Simbel Sun Festival: 22 February and 22 October', ar: 'مهرجان تعامد الشمس في أبو سمبل: ٢٢ فبراير و٢٢ أكتوبر' },
+    dek: { en: 'Twice a year the sun reaches 60 metres into the mountain and lights three of the four gods. Here is how to be there.', ar: 'مرتين في السنة تصل الشمس ٦٠ متراً داخل الجبل وتضيء ثلاثة من الآلهة الأربعة. هكذا تكون هناك.' },
     body: [
       { en: 'Ramses II aligned his temple so that on two mornings a year the first sun crosses the whole hall and falls on the statues at the back: Ra, Amun and Ramses himself. Ptah, god of the underworld, stays in shadow. The dates are believed to be the king’s birthday and coronation.', ar: 'وجّه رمسيس الثاني معبده بحيث تعبر أول أشعة الشمس القاعة كلها في صباحين من كل عام وتسقط على التماثيل في العمق: رع وآمون ورمسيس نفسه. أما بتاح، إله العالم السفلي، فيبقى في الظل. يُعتقد أن التاريخين هما ميلاد الملك وتتويجه.' },
       { en: 'The crowd gathers before 5 a.m. There is music and dancing outside while you wait, and the moment itself lasts about twenty minutes. Nubian families bring breakfast; so do we.', ar: 'يتجمع الحشد قبل الخامسة صباحاً. موسيقى ورقص في الخارج أثناء الانتظار، واللحظة نفسها تدوم نحو عشرين دقيقة. العائلات النوبية تحضر الإفطار؛ ونحن أيضاً.' },
-      { en: 'On our Upper Egypt itineraries the festival is a $125 add-on per person, which covers the special access and the earlier start from Aswan. Book several months ahead; Aswan hotels fill.', ar: 'في برامج الصعيد لدينا المهرجان إضافة بـ125 دولاراً للفرد، تغطي الدخول الخاص والانطلاق المبكر من أسوان. احجز قبلها بأشهر؛ فنادق أسوان تمتلئ.' },
+      { en: 'On our Upper Egypt itineraries the festival is a $125 add-on per person, which covers the special access and the earlier start from Aswan. Book several months ahead; Aswan hotels fill.', ar: 'في برامج الصعيد لدينا المهرجان إضافة بـ١٢٥ دولاراً للفرد، تغطي الدخول الخاص والانطلاق المبكر من أسوان. احجز قبلها بأشهر؛ فنادق أسوان تمتلئ.' },
     ] },
   { id: 'bedouin-night-abusir', date: '2026-08-18', minutes: 4, hero: 'plateau-sunset-watch',
     title: { en: 'A night with the Bedouin at Abusir', ar: 'ليلة مع البدو في أبوصير' },

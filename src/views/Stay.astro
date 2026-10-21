@@ -47,7 +47,7 @@ const jsonld = soon ? [] : [{
       <ArabicMark word="الأقصر" tone="dark" class="soon-mark" />
       <div class="wrap soon-in">
         <svg class="soon-ribbon" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 C 50 4, 100 36, 150 20 S 250 4, 300 20 S 400 36, 450 20 S 550 4, 600 20" /></svg>
-        <p class="eyebrow">{t('stay.soonEyebrow')} · {pick(s.place, lang)}</p>
+        <p class="eyebrow">{pick(s.place, lang)}</p>
         <h1>{name}</h1>
         <p class="soon-title ital">{t('stay.soonTitle')}</p>
         <p class="lead">{pick(s.intro, lang)}</p>
@@ -63,15 +63,15 @@ const jsonld = soon ? [] : [{
     <>
       <!-- HERO -->
       <section class="sh">
-        <ArabicMark word={s.name.ar} tone="dark" class="page-mark" />
         <div class="sh-media"><Img id={s.hero} lang={lang} vt={`stay-${s.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} /><div class="sh-glow" aria-hidden="true"></div><div class="sh-shade"></div></div>
         <div class="wrap sh-in on-dark">
           <a class="th-back" href={path(lang, 'stays')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.stays')}</a>
           <p class="eyebrow">{name} · {pick(s.place, lang)}</p>
           <h1>{pick(s.tagline, lang)}</h1>
+          {lang !== 'ar' && <p class="h-ar" lang="ar">{s.name.ar}</p>}
           <div class="sh-ratings">
-            <span class="rating"><b>{scores.score}</b><span>{t('stay.ratingBooking')}<br /><small>{t('stay.reviews', { n: digits(scores.count, lang) })}</small></span></span>
-            <span class="rating"><b>{SITE.ratings.google.score}<Icon name="starFill" size={16} /></b><span>{t('stay.ratingGoogle')}<br /><small>{t('stay.reviews', { n: digits(SITE.ratings.google.count, lang) })}</small></span></span>
+            <span class="rating"><b>{digits(scores.score, lang)}</b><span>{t('stay.ratingBooking')}<br /><small>{t('stay.reviews', { n: digits(scores.count, lang) })}</small></span></span>
+            <span class="rating"><b>{digits(SITE.ratings.google.score, lang)}<Icon name="starFill" size={16} /></b><span>{t('stay.ratingGoogle')}<br /><small>{t('stay.reviews', { n: digits(SITE.ratings.google.count, lang) })}</small></span></span>
             <span class="cartouche"><small>{t('common.from')}</small><b>{usd(s.from!)}</b><small>/ {t('common.night')}</small></span>
           </div>
           <div class="sh-cta">
@@ -97,7 +97,7 @@ const jsonld = soon ? [] : [{
           <div class="why-list">
             {s.why.map((w, i) => (
               <article class:list={['why-item rv', i % 2 && 'why-flip']}>
-                <div class="frame ls-wrap"><Img id={w.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 50vw, 100vw" widths={[640, 960, 1280]} />{w.photo === 'rooftop-night-pyramids' && <LightShow id={`ls-${i}`} />}</div>
+                <div class="frame ls-wrap"><Img id={w.photo} lang={lang} ratio="4/3" sizes="(min-width:960px) 50vw, 100vw" widths={[640, 960, 1345]} />{w.photo === 'rooftop-night-pyramids' && <LightShow id={`ls-${i}`} />}</div>
                 <div class="why-text"><span class="marker">{digits(String(i + 1).padStart(2, '0'), lang)}</span><h2>{pick(w.title, lang)}</h2><p class="lead">{pick(w.text, lang)}</p></div>
               </article>
             ))}
@@ -118,6 +118,7 @@ const jsonld = soon ? [] : [{
                   <div class="room-track">{r.photos.map((ph, j) => <Img id={ph} lang={lang} ratio="4/3" sizes="(min-width:1100px) 25vw, (min-width:640px) 50vw, 100vw" widths={[420, 640, 900]} />)}</div>
                   <span class="room-m2"><b>{digits(r.m2, lang)}</b> {t('stay.m2')}</span>
                   {r.photos.length > 1 && <span class="room-dots" aria-hidden="true">{r.photos.map((_, j) => <i class:list={[j === 0 && 'on']}></i>)}</span>}
+                  {r.photos.length > 1 && <button class="room-nav room-prev" type="button" aria-label={t('gallery.prev')}><Icon name="arrowLeft" size={18} class="rtl-flip" /></button>}
                   {r.photos.length > 1 && <button class="room-nav room-next" type="button" aria-label={t('gallery.next')}><Icon name="arrowRight" size={18} class="rtl-flip" /></button>}
                 </div>
                 <div class="room-body">
@@ -179,7 +180,7 @@ const jsonld = soon ? [] : [{
             <p class="eyebrow">{t('stay.reviewsEyebrow')}</p>
             <h2>{t('stay.reviewsTitle')}</h2>
             <div class="scores">
-              {([['staff', scores.staff], ['wifi', scores.wifi], ['clean', scores.clean], ['location', scores.location]] as [string, number][]).map(([k, v]) => <div class="score"><span>{t(`stay.scores.${k}`)}</span><div class="bar"><i style={`--p:${v * 10}%`}></i></div><b>{v}</b></div>)}
+              {([['staff', scores.staff], ['wifi', scores.wifi], ['clean', scores.clean], ['location', scores.location]] as [string, number][]).map(([k, v]) => <div class="score"><span>{t(`stay.scores.${k}`)}</span><div class="bar"><i style={`--p:${v * 10}%`}></i></div><b>{digits(v, lang)}</b></div>)}
             </div>
             <p class="muted small">{t('stay.ratingBooking')} · {t('stay.reviews', { n: digits(scores.count, lang) })}</p>
             <a class="btn btn-outline" href={SITE.bookingUrl} target="_blank" rel="noopener">{t('stay.ctaBooking')} <Icon name="arrowUpRight" size={16} /></a>
@@ -218,16 +219,18 @@ const jsonld = soon ? [] : [{
 
 <script>
   document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((c) => {
-    const track = c.querySelector<HTMLElement>('.room-track')!; const dots = [...c.querySelectorAll('.room-dots i')]; const next = c.querySelector('.room-next');
+    const track = c.querySelector<HTMLElement>('.room-track')!; const dots = [...c.querySelectorAll('.room-dots i')]; const next = c.querySelector('.room-next'); const prev = c.querySelector('.room-prev');
     const idx = () => Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
     track.addEventListener('scroll', () => { const i = idx(); dots.forEach((d, j) => d.classList.toggle('on', j === i)); }, { passive: true });
+    const go = (d: number) => { const n = (idx() + d + dots.length) % dots.length; const dir = document.documentElement.dir === 'rtl' ? -1 : 1; track.scrollTo({ left: dir * n * track.clientWidth, behavior: 'smooth' }); };
+    prev?.addEventListener('click', () => go(-1));
     next?.addEventListener('click', () => { const n = (idx() + 1) % dots.length; const dir = document.documentElement.dir === 'rtl' ? -1 : 1; track.scrollTo({ left: dir * n * track.clientWidth, behavior: 'smooth' }); });
   });
 </script>
 
 <style>
   html[dir='rtl'] :global(.rtl-flip) { transform: scaleX(-1); }
-  .th-back { display: inline-flex; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
+  .th-back { display: flex; width: fit-content; gap: 6px; align-items: center; text-decoration: none; font-weight: 700; font-size: 0.9rem; opacity: 0.85; }
   .sh { position: relative; min-height: 86svh; display: grid; align-items: end; padding-top: var(--header-h); background: var(--nile-deep); overflow: hidden; }
   .sh-media { position: absolute; inset: 0; } .sh-media :global(.photo) { position: absolute; inset: 0; height: 100%; border-radius: 0; }
   .sh-media :global(img) { animation: kb 30s var(--ease) infinite alternate; }
@@ -235,7 +238,8 @@ const jsonld = soon ? [] : [{
   .sh-glow { position: absolute; inset: 0; background: radial-gradient(ellipse 28% 22% at 70% 34%, rgba(224, 185, 58, 0.5), transparent 70%); mix-blend-mode: screen; animation: glow 6s ease-in-out infinite alternate; }
   @keyframes glow { from { opacity: 0.25; } to { opacity: 0.85; } }
   /* the sunset sky is near-white at the top, so the header needs a darker band there to stay readable */
-  .sh-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7, 32, 47, 0.72), rgba(7, 32, 47, 0.15) 26%, rgba(7, 32, 47, 0.1) 45%, rgba(7, 32, 47, 0.94) 100%); }
+  .sh-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7, 32, 47, 0.6) 0%, rgba(7, 32, 47, 0.25) 45%, rgba(7, 32, 47, 0) 70%), linear-gradient(180deg, rgba(7, 32, 47, 0.72), rgba(7, 32, 47, 0.2) 26%, rgba(7, 32, 47, 0.15) 45%, rgba(7, 32, 47, 0.94) 100%); }
+  html[dir='rtl'] .sh-shade { background: linear-gradient(-90deg, rgba(7, 32, 47, 0.6) 0%, rgba(7, 32, 47, 0.25) 45%, rgba(7, 32, 47, 0) 70%), linear-gradient(180deg, rgba(7, 32, 47, 0.72), rgba(7, 32, 47, 0.2) 26%, rgba(7, 32, 47, 0.15) 45%, rgba(7, 32, 47, 0.94) 100%); }
   .sh-in .eyebrow { color: var(--papyrus); } .sh-in .eyebrow::before { background: var(--papyrus); }
   .sh-in { position: relative; padding-bottom: clamp(40px, 7vh, 80px); display: grid; gap: 14px; }
   .sh h1 { font-size: clamp(2.4rem, 7vw, 5.2rem); max-width: 12em; }
@@ -269,10 +273,11 @@ const jsonld = soon ? [] : [{
   .room-track > :global(.photo) { flex: 0 0 100%; scroll-snap-align: start; border-radius: 0; }
   .room-m2 { position: absolute; bottom: 12px; inset-inline-start: 12px; background: rgba(7, 32, 47, 0.78); color: var(--papyrus); backdrop-filter: blur(6px); padding: 5px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; }
   .room-m2 b { font-family: var(--display); font-size: 1.15rem; font-weight: 500; }
-  .room-dots { position: absolute; bottom: 18px; inset-inline-end: 14px; display: flex; gap: 5px; }
+  .room-dots { position: absolute; bottom: 14px; inset-inline-end: 12px; display: flex; gap: 5px; padding: 6px 8px; border-radius: 999px; background: rgba(7, 32, 47, 0.6); }
   .room-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(246, 240, 227, 0.55); transition: background 0.3s, transform 0.3s; }
   .room-dots i.on { background: var(--gold-light); transform: scale(1.3); }
   .room-nav { position: absolute; top: 50%; inset-inline-end: 10px; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(251, 247, 238, 0.92); color: var(--ink); display: grid; place-items: center; cursor: pointer; opacity: 0; transition: opacity 0.3s; box-shadow: var(--shadow-sm); }
+  .room-prev { inset-inline-end: auto; inset-inline-start: 10px; }
   .room:hover .room-nav, .room-nav:focus-visible { opacity: 1; }
   @media (hover: none) { .room-nav { display: none; } }
   .room-door { display: inline-flex; gap: 6px; align-items: center; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-text); }
@@ -304,11 +309,11 @@ const jsonld = soon ? [] : [{
   .enq-in { display: grid; gap: 36px; align-items: start; } .enq-in h2 { margin: 12px 0 16px; } @media (min-width: 960px) { .enq-in { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
 
   .soon { min-height: 100svh; display: grid; align-items: center; padding-top: var(--header-h); overflow: hidden; }
-  @media (max-width: 640px) { .soon :global(.soon-mark) { font-size: 6.5rem; } }
+  @media (max-width: 640px) { .soon :global(.soon-mark) { font-size: 5rem; } }
   .soon-in { display: grid; gap: 18px; max-width: 760px; padding-block: 60px; position: relative; }
   .soon-ribbon { width: min(600px, 100%); height: 40px; color: var(--gold); } .soon-ribbon path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 3s var(--ease-out) 0.3s forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
-  .soon :global(.soon-mark) { font-size: clamp(9rem, 30vw, 22rem); bottom: -0.3em; inset-inline-end: -0.04em; opacity: 0.12; }
+  .soon :global(.soon-mark) { font-size: clamp(6rem, 19vw, 15rem); bottom: 0.05em; top: auto; inset-inline-end: 2%; max-width: 92vw; opacity: 0.12; }
   .soon h1 { font-size: clamp(2.4rem, 7vw, 5rem); }
   .soon-title { font-family: var(--display); font-size: clamp(1.6rem, 4vw, 2.6rem); color: var(--gold-light); margin: 0; }
   .soon-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
