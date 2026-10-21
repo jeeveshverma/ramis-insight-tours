@@ -14,7 +14,7 @@ const photos = PHOTOS.filter((p) => p.cat !== 'video' && p.id !== 'logo-original
 <Layout lang={lang} page="gallery" title={`${t('nav.gallery')} · ${SITE.name[lang]}`} desc={t('gallery.lead')}>
   <section class="section ph">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('gallery.eyebrow')}</p><h1>{t('gallery.title')}</h1><p class="lead">{t('gallery.lead')}</p></div>
+      <div class="section-head rv" data-ar="صور"><p class="eyebrow">{t('gallery.eyebrow')}</p><h1>{t('gallery.title')}</h1><p class="lead">{t('gallery.lead')}</p></div>
       <div class="gchips rv" data-gchips><button class="chip" aria-pressed="true" data-cat="">{t('gallery.cats.all')}</button>{cats.map((c) => <button class="chip" aria-pressed="false" data-cat={c}>{t(`gallery.cats.${c}`)}</button>)}</div>
       <div class="masonry" data-masonry>
         {photos.map((p, i) => <button class="gitem rv" data-cat={p.cat} data-i={i} aria-label={pick(p.alt, lang)}><Img id={p.id} lang={lang} sizes="(min-width:960px) 33vw, 50vw" widths={[420, 640, 900]} /><span class="gcap">{pick(p.alt, lang)}</span></button>)}

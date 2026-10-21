@@ -1,0 +1,61 @@
+---
+/**
+ * A fanous: the Ramadan lantern hung in every Cairo street during the holy month — and Rami's story starts in
+ * Ramadan 2014. Brass cap and pierced body, three panes of coloured glass, a flame that flickers, the whole
+ * lantern swinging gently from its chain. Decorative; position it with a class from the parent.
+ */
+interface Props { class?: string; chain?: number; id?: string }
+const { class: cls = '', chain = 60, id = `f${Math.random().toString(36).slice(2, 7)}` } = Astro.props;
+const top = chain;
+---
+<svg class={`fanous ${cls}`} viewBox={`0 0 80 ${top + 150}`} width="80" height={top + 150} aria-hidden="true">
+  <defs>
+    <radialGradient id={`${id}-flame`} cx="0.5" cy="0.55" r="0.5">
+      <stop offset="0" stop-color="#fff6c8" stop-opacity="1" />
+      <stop offset="0.35" stop-color="#ffcf5a" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#e88a1c" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id={`${id}-halo`} cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffd27a" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#ffd27a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <g class="fan-swing" style={`transform-origin: 40px 0px`}>
+    <line x1="40" y1="0" x2="40" y2={top} class="fan-chain" />
+    <circle class="fan-halo" cx="40" cy={top + 62} r="58" fill={`url(#${id}-halo)`} />
+    <g transform={`translate(0 ${top})`}>
+      <circle cx="40" cy="3" r="3.2" class="fan-brass-o" />
+      <path d="M40 6 C33 10 28 16 27 24 L53 24 C52 16 47 10 40 6 Z" class="fan-brass" />
+      <rect x="23" y="24" width="34" height="6" rx="1" class="fan-brass" />
+      <!-- body: six-sided, pierced brass frame -->
+      <path d="M25 30 L55 30 L61 62 L55 100 L25 100 L19 62 Z" class="fan-body" />
+      <path class="fan-glass g1" d="M27 33 L39 33 L39 97 L27 97 L22 62 Z" />
+      <path class="fan-glass g2" d="M41 33 L53 33 L58 62 L53 97 L41 97 Z" />
+      <circle class="fan-flame" cx="40" cy="66" r="15" fill={`url(#${id}-flame)`} />
+      <path d="M25 30 L55 30 L61 62 L55 100 L25 100 L19 62 Z M40 30 V100 M19 62 H61" class="fan-frame" />
+      <path d="M30 46 l4 -4 4 4 -4 4 z M42 46 l4 -4 4 4 -4 4 z M30 80 l4 -4 4 4 -4 4 z M42 80 l4 -4 4 4 -4 4 z" class="fan-cut" />
+      <path d="M23 100 L57 100 L52 108 L28 108 Z" class="fan-brass" />
+      <path d="M28 108 L52 108 L40 128 Z" class="fan-brass" />
+      <circle cx="40" cy="132" r="3" class="fan-brass" />
+      <path d="M40 135 L40 146" class="fan-chain" />
+    </g>
+  </g>
+</svg>
+<style>
+  .fanous { overflow: visible; pointer-events: none; }
+  .fan-chain { stroke: var(--gold-text); stroke-width: 1.2; stroke-dasharray: 2.5 1.5; }
+  .fan-brass { fill: var(--gold); stroke: #8a6a14; stroke-width: 0.6; }
+  .fan-brass-o { fill: none; stroke: var(--gold); stroke-width: 1.6; }
+  .fan-body { fill: #1c3a4c; }
+  .fan-glass { opacity: 0.88; }
+  .g1 { fill: #b5442b; } .g2 { fill: #2a8f8c; }
+  .fan-frame { fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linejoin: round; }
+  .fan-cut { fill: #ffe39a; opacity: 0.85; }
+  .fan-flame { mix-blend-mode: screen; animation: fan-flicker 2.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .fan-halo { mix-blend-mode: screen; animation: fan-halo 3.4s ease-in-out infinite; }
+  .fan-swing { animation: fan-swing 6s ease-in-out infinite alternate; }
+  @keyframes fan-swing { from { transform: rotate(-3.5deg); } to { transform: rotate(3.5deg); } }
+  @keyframes fan-flicker { 0%, 100% { opacity: 0.95; transform: scale(1); } 18% { opacity: 0.7; transform: scale(0.92); } 37% { opacity: 1; transform: scale(1.05); } 61% { opacity: 0.8; transform: scale(0.96); } 79% { opacity: 1; } }
+  @keyframes fan-halo { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
+  @media (prefers-reduced-motion: reduce) { .fan-swing, .fan-flame, .fan-halo { animation: none; } }
+</style>

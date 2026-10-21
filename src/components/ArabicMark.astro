@@ -1,0 +1,22 @@
+---
+/**
+ * A large Arabic word in Ruq'ah calligraphy (the everyday hand of Egyptian shop signs and letters), set faint
+ * behind a composition — typography, not texture: the business is bilingual and these are Rami's words.
+ * It reveals right-to-left, the direction Arabic is read. Decorative only (aria-hidden).
+ * No dir attribute: dir="rtl" would flip inset-inline-* for the element itself; bidi isolation shapes the text.
+ */
+interface Props { word: string; class?: string; tone?: 'light' | 'dark'; font?: 'kufi' | 'ruqaa' }
+const { word, class: cls = '', tone = 'light', font = 'ruqaa' } = Astro.props;
+---
+<span class={`amark amark-${tone} amark-${font} rv ${cls}`} lang="ar" aria-hidden="true">{word}</span>
+<style>
+  .amark { position: absolute; pointer-events: none; user-select: none; white-space: nowrap; line-height: 1.1; z-index: 0; unicode-bidi: isolate;
+    font-size: clamp(5rem, 15vw, 12rem); font-weight: 700; color: var(--gold);
+    clip-path: inset(0 0 0 100%); opacity: 1; transform: none; transition: clip-path 2.2s var(--ease-out) 0.3s; }
+  .amark-kufi { font-family: 'Reem Kufi', 'Amiri', serif; }
+  .amark-ruqaa { font-family: 'Aref Ruqaa', 'Amiri', serif; }
+  .amark-light { opacity: 0.14; }
+  .amark-dark { color: var(--gold-light); opacity: 0.12; }
+  .amark.in, :global(html.no-js) .amark { clip-path: inset(0 0 0 0); }
+  @media (prefers-reduced-motion: reduce) { .amark { clip-path: none; transition: none; } }
+</style>

@@ -3,6 +3,9 @@ import Layout from '../components/Layout.astro';
 import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import Ribbon from '../components/Ribbon.astro';
+import ArabicMark from '../components/ArabicMark.astro';
+import Khayamiya from '../components/Khayamiya.astro';
+
 import EgyptMap from '../components/EgyptMap.astro';
 import TourCard from '../components/TourCard.astro';
 import EnquiryForm from '../components/EnquiryForm.astro';
@@ -51,6 +54,7 @@ const jsonld = custom ? [] : [{
 <Layout lang={lang} page="tour" sub={x.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(x.tagline, lang)} overHero jsonld={jsonld}>
   <!-- HERO -->
   <section class="th">
+    <ArabicMark word={x.name.ar} tone="dark" class="page-mark" />
     <div class="th-media"><Img id={x.hero} lang={lang} vt={`tour-${x.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="th-shade"></div></div>
     <div class="wrap th-in on-dark">
       <a class="th-back" href={path(lang, 'tours')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.tours')}</a>
@@ -69,6 +73,7 @@ const jsonld = custom ? [] : [{
       </div>
     </div>
   </section>
+  <Khayamiya />
 
   {!custom && (
     <section class="glance">

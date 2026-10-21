@@ -1,0 +1,30 @@
+---
+/** A few birds crossing the sky above the Nile, wings beating out of step. Decorative; parent positions it. */
+interface Props { class?: string }
+const { class: cls = '' } = Astro.props;
+const birds = [
+  { top: 18, size: 22, dur: 34, delay: 0, flap: 0.9 },
+  { top: 24, size: 16, dur: 38, delay: 1.6, flap: 0.75 },
+  { top: 14, size: 13, dur: 42, delay: 3.1, flap: 0.7 },
+  { top: 40, size: 18, dur: 46, delay: 17, flap: 0.85 },
+];
+---
+<div class={`birds ${cls}`} aria-hidden="true">
+  {birds.map((b) => (
+    <span class="bird" style={`top:${b.top}%;width:${b.size}px;animation-duration:${b.dur}s;animation-delay:${b.delay}s`}>
+      <svg viewBox="0 0 24 10"><path style={`animation-duration:${b.flap}s`} d="M0 6 Q6 -1 12 6 Q18 -1 24 6 Q18 2.5 12 8 Q6 2.5 0 6 Z" /></svg>
+    </span>
+  ))}
+</div>
+<style>
+  .birds { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+  .bird { position: absolute; left: -40px; display: block; animation: fly linear infinite; opacity: 0; }
+  .bird svg { width: 100%; height: auto; overflow: visible; }
+  .bird path { fill: rgba(246, 240, 227, 0.75); transform-origin: 12px 6px; animation: flap ease-in-out infinite alternate; }
+  @keyframes fly { 0% { transform: translate(0, 0); opacity: 0; } 4% { opacity: 1; } 50% { transform: translate(55vw, -3vh); } 96% { opacity: 1; } 100% { transform: translate(110vw, 2vh); opacity: 0; } }
+  @keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(-0.55); } }
+  :global(html[dir='rtl']) .bird { left: auto; right: -40px; animation-name: fly-rtl; }
+  :global(html[dir='rtl']) .bird svg { transform: scaleX(-1); }
+  @keyframes fly-rtl { 0% { transform: translate(0, 0); opacity: 0; } 4% { opacity: 1; } 50% { transform: translate(-55vw, -3vh); } 96% { opacity: 1; } 100% { transform: translate(-110vw, 2vh); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .birds { display: none; } }
+</style>

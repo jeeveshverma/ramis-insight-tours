@@ -12,7 +12,7 @@ const fmt = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(lang ===
 <Layout lang={lang} page="journal" title={`${t('nav.journal')} · ${SITE.name[lang]}`} desc={t('journal.lead')}>
   <section class="section ph">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('journal.eyebrow')}</p><h1>{t('journal.title')}</h1><p class="lead">{t('journal.lead')}</p></div>
+      <div class="section-head rv" data-ar="حكايات"><p class="eyebrow">{t('journal.eyebrow')}</p><h1>{t('journal.title')}</h1><p class="lead">{t('journal.lead')}</p></div>
       <div class="plist stagger">
         {POSTS.map((p, i) => (
           <a class:list={['pitem card', i === 0 && 'pitem-big']} href={path(lang, 'post', p.id)}>

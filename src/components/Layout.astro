@@ -6,6 +6,8 @@ import '@fontsource/amiri/700.css';
 import '@fontsource/ibm-plex-sans-arabic/400.css';
 import '@fontsource/ibm-plex-sans-arabic/500.css';
 import '@fontsource/ibm-plex-sans-arabic/700.css';
+import '@fontsource/reem-kufi/arabic-700.css';
+import '@fontsource/aref-ruqaa/arabic-700.css';
 import '../styles/global.css';
 import { LANGS, path, switchLang, useT, dirOf, type Lang, type PageKey } from '../i18n';
 import { SITE } from '../data/site';
@@ -13,6 +15,7 @@ import { waUrl, telUrl } from '../lib/wa';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import VideoPlayer from './VideoPlayer.astro';
+import Skyline from './Skyline.astro';
 
 interface Props { lang: Lang; page: PageKey; sub?: string; title: string; desc: string; overHero?: boolean; jsonld?: object[]; noindex?: boolean; ogImage?: string; dark?: boolean }
 const { lang, page, sub = '', title, desc, overHero = false, jsonld = [], noindex = false, ogImage, dark = false } = Astro.props;
@@ -97,11 +100,13 @@ const org = {
     <slot />
   </main>
 
+  <Skyline />
   <footer class="ftr on-dark">
     <div class="wrap ftr-in">
       <div class="ftr-brand">
         <Logo variant="stack" lang={lang} size={64} />
         <p class="muted small" style="margin-top:14px">{t('footer.madeWith')}</p>
+        <p class="ftr-sign" lang="ar" aria-hidden="true">أهلاً بيكم في بيتنا</p>
       </div>
       <div class="ftr-col">
         <p class="eyebrow">{t('footer.explore')}</p>
@@ -242,7 +247,10 @@ const org = {
   }
 
   /* a gold hairline so the footer never merges with a dark section above it */
-  .ftr { background: var(--nile-deep); color: rgba(246, 240, 227, 0.78); padding-block: 64px 28px; margin-top: 0; position: relative; z-index: 1; border-top: 1px solid rgba(201, 162, 39, 0.45); }
+  /* the footer continues the dusk skyline above it, so no border; the gold hairline sits on the skyline's top edge instead */
+  .ftr { background: var(--nile-deep); color: rgba(246, 240, 227, 0.78); padding-block: 40px 28px; margin-top: 0; position: relative; z-index: 1; }
+  .skyline { border-top: 1px solid rgba(201, 162, 39, 0.45); }
+  .ftr-sign { font-family: 'Aref Ruqaa', 'Amiri', serif; font-size: 1.6rem; color: var(--gold-light); margin: 10px 0 0; line-height: 1.3; opacity: 0.85; }
   .ftr-col a { align-items: flex-start; overflow-wrap: anywhere; } .ftr-col a svg { margin-top: 4px; flex: none; }
   .ftr .logo-stack .logo-name { color: var(--papyrus); } .ftr .logo-stack .logo-sub { color: var(--gold-light); }
   .ftr-in { display: grid; gap: 36px; }

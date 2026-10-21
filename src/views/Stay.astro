@@ -14,6 +14,10 @@ import { TOURS } from '../data/tours';
 import { REVIEWS, VIDEOS } from '../data/reviews';
 import VideoCard from '../components/VideoCard.astro';
 import LightShow from '../components/LightShow.astro';
+import ArabicMark from '../components/ArabicMark.astro';
+import Khayamiya from '../components/Khayamiya.astro';
+import NightSky from '../components/NightSky.astro';
+import Mashrabiya from '../components/Mashrabiya.astro';
 import { waUrl, mailUrl } from '../lib/wa';
 interface Props { lang: Lang; id: string }
 const { lang, id } = Astro.props;
@@ -37,7 +41,10 @@ const jsonld = soon ? [] : [{
 ---
 <Layout lang={lang} page="stay" sub={s.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(s.tagline, lang) + '. ' + pick(s.intro, lang).slice(0, 120)} overHero jsonld={jsonld} dark={soon}>
   {soon ? (
-    <section class="soon dark-deep on-dark pattern">
+    <section class="soon dark-deep on-dark has-sky">
+      <NightSky count={90} seed={4} moon />
+      <Mashrabiya variant="screen" fade="left" id="soon-lattice" />
+      <ArabicMark word="الأقصر" tone="dark" class="soon-mark" />
       <div class="wrap soon-in">
         <svg class="soon-ribbon" viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 20 C 50 4, 100 36, 150 20 S 250 4, 300 20 S 400 36, 450 20 S 550 4, 600 20" /></svg>
         <p class="eyebrow">{t('stay.soonEyebrow')} · {pick(s.place, lang)}</p>
@@ -56,6 +63,7 @@ const jsonld = soon ? [] : [{
     <>
       <!-- HERO -->
       <section class="sh">
+        <ArabicMark word={s.name.ar} tone="dark" class="page-mark" />
         <div class="sh-media"><Img id={s.hero} lang={lang} vt={`stay-${s.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={70} /><div class="sh-glow" aria-hidden="true"></div><div class="sh-shade"></div></div>
         <div class="wrap sh-in on-dark">
           <a class="th-back" href={path(lang, 'stays')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.stays')}</a>
@@ -72,6 +80,7 @@ const jsonld = soon ? [] : [{
           </div>
         </div>
       </section>
+      <Khayamiya />
 
       <!-- FACTS -->
       <section class="facts">
@@ -294,10 +303,12 @@ const jsonld = soon ? [] : [{
   .rules-in { display: grid; gap: 28px; } .rules-in h2 { margin-top: 12px; } @media (min-width: 960px) { .rules-in { grid-template-columns: 0.7fr 1.3fr; gap: 64px; } }
   .enq-in { display: grid; gap: 36px; align-items: start; } .enq-in h2 { margin: 12px 0 16px; } @media (min-width: 960px) { .enq-in { grid-template-columns: 0.9fr 1.1fr; gap: 72px; } }
 
-  .soon { min-height: 100svh; display: grid; align-items: center; padding-top: var(--header-h); }
+  .soon { min-height: 100svh; display: grid; align-items: center; padding-top: var(--header-h); overflow: hidden; }
+  @media (max-width: 640px) { .soon :global(.soon-mark) { font-size: 6.5rem; } }
   .soon-in { display: grid; gap: 18px; max-width: 760px; padding-block: 60px; position: relative; }
   .soon-ribbon { width: min(600px, 100%); height: 40px; color: var(--gold); } .soon-ribbon path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 3s var(--ease-out) 0.3s forwards; }
   @keyframes draw { to { stroke-dashoffset: 0; } }
+  .soon :global(.soon-mark) { font-size: clamp(9rem, 30vw, 22rem); bottom: -0.3em; inset-inline-end: -0.04em; opacity: 0.12; }
   .soon h1 { font-size: clamp(2.4rem, 7vw, 5rem); }
   .soon-title { font-family: var(--display); font-size: clamp(1.6rem, 4vw, 2.6rem); color: var(--gold-light); margin: 0; }
   .soon-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }

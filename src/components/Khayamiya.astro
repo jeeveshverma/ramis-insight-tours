@@ -1,0 +1,24 @@
+---
+/**
+ * Khayamiya: the appliqué tent panels sewn on the Street of the Tentmakers by Bab Zuweila.
+ * A band of saw-tooth borders (henna above, turquoise below) framing eight-pointed stars and diamonds,
+ * drifting slowly sideways like a panel unrolling. Use between a hero and the page, or at a section edge.
+ */
+interface Props { class?: string; size?: 'sm' | 'md' }
+const { class: cls = '', size = 'md' } = Astro.props;
+---
+<div class={`khay khay-${size} ${cls}`} aria-hidden="true"></div>
+<style>
+  .khay {
+    --tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='36' viewBox='0 0 56 36'%3E%3Crect width='56' height='36' fill='%23f1e3c4'/%3E%3Crect width='56' height='4' fill='%2312324a'/%3E%3Cpath d='M0 4 L7 10 L14 4 L21 10 L28 4 L35 10 L42 4 L49 10 L56 4 Z' fill='%23a8442a'/%3E%3Crect y='32' width='56' height='4' fill='%2312324a'/%3E%3Cpath d='M0 32 L7 26 L14 32 L21 26 L28 32 L35 26 L42 32 L49 26 L56 32 Z' fill='%232a8f8c'/%3E%3Cpolygon transform='translate(14 18) scale(.11) translate(-50 -50)' points='50,0 61.86,21.36 85.36,14.64 78.64,38.14 100,50 78.64,61.86 85.36,85.36 61.86,78.64 50,100 38.14,78.64 14.64,85.36 21.36,61.86 0,50 21.36,38.14 14.64,14.64 38.14,21.36' fill='%23c9a227'/%3E%3Ccircle cx='14' cy='18' r='1.6' fill='%23a8442a'/%3E%3Cpath d='M42 12.5 L47.5 18 L42 23.5 L36.5 18 Z' fill='%2312324a'/%3E%3Ccircle cx='42' cy='18' r='1.5' fill='%23c9a227'/%3E%3Ccircle cx='28' cy='18' r='1' fill='%232a8f8c'/%3E%3Ccircle cx='0' cy='18' r='1' fill='%232a8f8c'/%3E%3Ccircle cx='56' cy='18' r='1' fill='%232a8f8c'/%3E%3C/svg%3E");
+    position: relative; z-index: 2; width: 100%;
+    background: var(--tile) 0 0 / auto 100% repeat-x;
+    animation: khay-drift 60s linear infinite;
+    box-shadow: 0 6px 18px -10px rgba(7, 32, 47, 0.5);
+  }
+  .khay-md { height: 26px; } .khay-sm { height: 16px; }
+  @media (min-width: 960px) { .khay-md { height: 32px; } }
+  @keyframes khay-drift { to { background-position: 560px 0; } }
+  :global(html[dir='rtl']) .khay { animation-direction: reverse; }
+  @media (prefers-reduced-motion: reduce) { .khay { animation: none; } }
+</style>

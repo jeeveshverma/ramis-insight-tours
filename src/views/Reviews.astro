@@ -14,7 +14,7 @@ const { t } = useT(lang);
 <Layout lang={lang} page="reviews" title={`${t('nav.reviews')} · ${SITE.name[lang]}`} desc={t('reviews.lead')}>
   <section class="section ph">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('reviews.eyebrow')}</p><h1>{t('reviews.title')}</h1><p class="lead">{t('reviews.lead')}</p></div>
+      <div class="section-head rv" data-ar="قالوا"><p class="eyebrow">{t('reviews.eyebrow')}</p><h1>{t('reviews.title')}</h1><p class="lead">{t('reviews.lead')}</p></div>
       <div class="badges rv">
         <a class="badge card" href={SITE.bookingUrl} target="_blank" rel="noopener"><b>{SITE.ratings.booking.score}</b><span>Booking.com<br /><small class="muted">{t('stay.reviews', { n: digits(SITE.ratings.booking.count, lang) })}</small></span><Icon name="arrowUpRight" size={16} /></a>
         <a class="badge card" href={SITE.mapsSearchUrl} target="_blank" rel="noopener"><b>{SITE.ratings.google.score}<Icon name="starFill" size={18} /></b><span>Google<br /><small class="muted">{t('stay.reviews', { n: digits(SITE.ratings.google.count, lang) })}</small></span><Icon name="arrowUpRight" size={16} /></a>

@@ -13,7 +13,7 @@ const { t } = useT(lang);
 <Layout lang={lang} page="stays" title={`${t('nav.stays')} · ${SITE.name[lang]}`} desc={t('stays.lead')}>
   <section class="section ph">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('stays.eyebrow')}</p><h1>{t('stays.title')}</h1><p class="lead">{t('stays.lead')}</p></div>
+      <div class="section-head rv" data-ar="بيتنا"><p class="eyebrow">{t('stays.eyebrow')}</p><h1>{t('stays.title')}</h1><p class="lead">{t('stays.lead')}</p></div>
       <div class="scards stagger">
         {STAYS.map((s) => s.status === 'open' ? (
           <a class="scard card" href={path(lang, 'stay', s.id)}>

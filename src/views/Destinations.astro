@@ -17,7 +17,7 @@ const count = (id: string) => TOURS.filter((x) => x.route.includes(id as any) &&
 <Layout lang={lang} page="destinations" title={`${t('nav.destinations')} · ${SITE.name[lang]}`} desc={t('dest.lead')}>
   <section class="section ph">
     <div class="wrap">
-      <div class="section-head rv"><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{t('dest.title')}</h1><p class="lead">{t('dest.lead')}</p></div>
+      <div class="section-head rv" data-ar="وجهات"><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{t('dest.title')}</h1><p class="lead">{t('dest.lead')}</p></div>
       <div class="rv rv-d1 dmap"><EgyptMap lang={lang} dark={false} /></div>
       <div class="grid-3 stagger" style="margin-top:48px">
         {main.map((p) => (

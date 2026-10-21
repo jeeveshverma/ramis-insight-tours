@@ -4,6 +4,9 @@ import Img from '../components/Img.astro';
 import Icon from '../components/Icon.astro';
 import EgyptMap from '../components/EgyptMap.astro';
 import TourCard from '../components/TourCard.astro';
+import ArabicMark from '../components/ArabicMark.astro';
+import Khayamiya from '../components/Khayamiya.astro';
+
 import { useT, path, pick, type Lang } from '../i18n';
 import { SITE } from '../data/site';
 import { place as getPlace, type PlaceId } from '../data/places';
@@ -17,10 +20,14 @@ const tours = TOURS.filter((x) => x.route.includes(p.id) && x.style !== 'custom'
 ---
 <Layout lang={lang} page="destination" sub={p.id} title={`${name} · ${SITE.name[lang]}`} desc={pick(p.blurb, lang)} overHero={!!p.photo}>
   {p.photo ? (
+    <>
     <section class="dh">
+      <ArabicMark word={p.name.ar} tone="dark" class="page-mark" />
       <div class="dh-media"><Img id={p.photo} lang={lang} vt={`dest-${p.id}`} priority sizes="100vw" widths={[640, 960, 1280, 1680]} quality={68} /><div class="dh-shade"></div></div>
       <div class="wrap dh-in on-dark"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1></div>
     </section>
+    <Khayamiya />
+    </>
   ) : (
     <section class="dh-plain"><div class="wrap"><a class="th-back" href={path(lang, 'destinations')}><Icon name="arrowLeft" class="rtl-flip" size={16} /> {t('nav.destinations')}</a><p class="eyebrow">{t('dest.eyebrow')}</p><h1>{name}</h1></div></section>
   )}
